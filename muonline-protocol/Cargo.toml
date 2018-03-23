@@ -1,0 +1,19 @@
+[package]
+authors = ["Elliott Linder <elliott.darfink@gmail.com>"]
+name = "muonline-protocol"
+version = "0.1.0"
+
+[dependencies]
+serde = "1.0"
+serde_derive = "1.0"
+typenum = "1.10"
+
+[dependencies.muonline-packet]
+features = ["serialize"]
+path = "../muonline-packet"
+
+[dependencies.muonline-packet_derive]
+path = "../muonline-packet_derive"
+
+[dependencies.muonline-packet_serialize]
+path = "../muonline-packet_serialize"

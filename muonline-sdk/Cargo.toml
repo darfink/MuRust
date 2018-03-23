@@ -1,0 +1,6 @@
+[package]
+name = "muonline-sdk"
+version = "0.1.0"
+authors = ["Elliott Linder <elliott.darfink@gmail.com>"]
+
+[dependencies]

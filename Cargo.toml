@@ -1,0 +1,9 @@
+[workspace]
+members = [
+  "muonline-js",
+  "muonline-packet",
+  "muonline-packet_codec",
+  "muonline-packet_derive",
+  "muonline-packet_serialize",
+  "muonline-protocol",
+]

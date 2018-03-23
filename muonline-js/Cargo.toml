@@ -1,0 +1,30 @@
+[package]
+authors = ["Elliott Linder <elliott@linder.bz>"]
+name = "muonline-js"
+version = "0.1.0"
+
+[[bin]]
+doc = false
+name = "mujs"
+path = "src/bin/main.rs"
+
+[dependencies]
+closet = "0.2"
+cursive = "0.8"
+futures = "0.1"
+structopt = "0.2"
+tap = "0.2"
+tokio = "0.1"
+
+[dependencies.log]
+features = ["std"]
+version = "0.4"
+
+[dependencies.muonline-packet]
+path = "../muonline-packet"
+
+[dependencies.muonline-packet_codec]
+path = "../muonline-packet_codec"
+
+[dependencies.muonline-protocol]
+path = "../muonline-protocol"
