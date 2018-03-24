@@ -1,12 +1,9 @@
-use std::{io, mem};
-use std::thread::JoinHandle;
+use std::io;
 use mujs;
 
 mod logger;
 
-pub fn run(builder: mujs::Builder) -> JoinHandle<io::Result<()>> {
+pub fn run(builder: mujs::ServerBuilder) -> io::Result<()> {
   logger::StdLogger::init();
-  let (server, cancel) = builder.build();
-  mem::forget(cancel);
-  server.serve()
+  builder.spawn().and_then(|server| server.wait())
 }

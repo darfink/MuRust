@@ -1,10 +1,16 @@
 #[macro_use] extern crate log;
 #[macro_use] extern crate structopt;
+
+#[macro_use]
+extern crate jsonrpc_client_core;
+extern crate jsonrpc_client_http;
+
 extern crate cursive;
+extern crate futures;
 extern crate muonline_js as mujs;
 extern crate tap;
 
-use std::net::{Ipv4Addr, SocketAddrV4};
+use std::net::{Ipv4Addr, SocketAddrV4, SocketAddr, IpAddr};
 use structopt::StructOpt;
 
 mod headless;
@@ -13,6 +19,10 @@ mod tui;
 #[derive(Clone, Debug, StructOpt)]
 #[structopt(name = "mujs", about = "Mu Online Season 2 Join Server")]
 struct Options {
+  #[structopt(long = "rpc-host", value_name = "host", help = "Bind RPC to this IP address", default_value = "127.0.0.1")]
+  pub rpc_host: IpAddr,
+  #[structopt(long = "rpc-port", value_name = "port", help = "Bind RPC to this port", default_value = "0")]
+  pub rpc_port: u16,
   #[structopt(short = "h", long = "host", help = "Bind to this IPv4 address", default_value = "0.0.0.0")]
   pub host: Ipv4Addr,
   #[structopt(short = "p", long = "port", help = "Bind to this port", default_value = "2004")]
@@ -25,31 +35,26 @@ struct Options {
   pub local: Vec<u16>,
 }
 
+// TODO: Handle ctrl-c events
 fn main() {
   // Parse the options from the CLI
   let options = Options::from_args();
-  let socket = SocketAddrV4::new(options.host, options.port);
 
   // Configure the Join Server with the supplied options
-  let builder = mujs::JoinServer::builder(socket);
+  let builder = mujs::JoinServer::builder()
+    .service(SocketAddrV4::new(options.host, options.port))
+    .rpc(SocketAddr::new(options.rpc_host, options.rpc_port));
   let builder = options.remote.iter().fold(builder, |b, s| b.remote(*s));
   let builder = options.local.iter().fold(builder, |b, c| b.local(*c));
 
-  let thread = match options.headless {
+  let result = match options.headless {
     false => tui::run(builder),
     true => headless::run(builder),
   };
 
   // TODO: Log 'console' to file?
-  match thread.join() {
-    Ok(Err(error)) => {
-      error!("Server error; {}", error);
-      debug!("<main> {:#?}", error);
-    },
-    Err(error) => {
-      error!("Server thread error");
-      debug!("<main> {:#?}", error);
-    },
-    _ => (),
+  if let Err(error) = result {
+    error!("Server error; {}", error);
+    debug!("<main> {:#?}", error);
   }
 }

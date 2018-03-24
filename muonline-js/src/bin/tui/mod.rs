@@ -1,7 +1,5 @@
 use std::io;
-use std::sync::Arc;
-use std::thread::JoinHandle;
-use std::time::Instant;
+use std::time::{Instant, Duration};
 use mujs;
 use cursive::Cursive;
 use cursive::align::HAlign;
@@ -9,40 +7,72 @@ use cursive::menu::MenuTree;
 use cursive::traits::*;
 use cursive::view::ScrollStrategy;
 use cursive::views::{LinearLayout, TextView, TextContent, SelectView, Dialog, Panel};
+use futures::Async;
+use jsonrpc_client_http::HttpTransport;
+use futures::Future;
 
-mod ipc;
 mod logger;
 
-pub fn run(builder: mujs::Builder) -> JoinHandle<io::Result<()>> {
+jsonrpc_client!(pub struct JoinServiceClient {
+  /// Returns the status of the Join Service.
+  pub fn status(&mut self) -> RpcRequest<mujs::rpc::JoinServiceStatus>;
+});
+
+pub fn run(builder: mujs::ServerBuilder) -> io::Result<()> {
   // Setup the logging facade using a thread-safe text buffer
   let console = TextContent::new(String::default());
   logger::TuiLogger::init(console.clone());
 
   let mut gui = create(console.clone());
-  let tui_ipc = ipc::TuiIpc::new(gui.cb_sink().clone());
-  let (server, cancel) = builder.ipc(Arc::new(tui_ipc)).build();
-  let thread = server.serve();
+  let server = builder.spawn()?;
 
-  let boot = Instant::now();
-  let mut last_uptime = 0;
+  // TODO: Also fix finally close server pre-exit
+  let transport_handle = HttpTransport::new()
+    .unwrap()
+    .handle(server.uri())
+    .unwrap();
+  let mut client = JoinServiceClient::new(transport_handle);
+  let mut status_time = Instant::now();
+  let mut status_future = client.status();
 
   gui.set_fps(10);
   while gui.is_running() {
     gui.step();
 
-    // TODO: Uptime start after port has been bound?
-    let uptime = Instant::now().duration_since(boot).as_secs();
-    if uptime != last_uptime {
-      gui.find_id::<TextView>("uptime")
-        .expect("retrieving uptime element")
-        .set_content(seconds_to_hhmmss(uptime));
-      last_uptime = uptime;
+    let now = Instant::now();
+
+    if now.duration_since(status_time) > Duration::from_millis(900) {
+      match status_future.poll() {
+        Ok(Async::Ready(status)) => {
+          trace!("{:#?}", status);
+
+          status_future = client.status();
+          status_time = now;
+
+          gui.find_id::<TextView>("host")
+             .expect("retrieving host element")
+             .set_content(status.host.to_string());
+
+          gui.find_id::<TextView>("port")
+             .expect("retrieving port element")
+             .set_content(status.port.to_string());
+
+          gui.find_id::<TextView>("clients")
+             .expect("retrieving clients element")
+             .set_content(status.clients.to_string());
+
+          gui.find_id::<TextView>("uptime")
+             .expect("retrieving uptime element")
+             .set_content(seconds_to_hhmmss(status.uptime));
+        },
+        Ok(Async::NotReady) => (),
+        Err(error) => error!("RPC error; {}", error),
+      }
     }
   }
 
-  // If this fails, the server has already been stopped
-  let _ = cancel.send(());
-  thread
+  // Close the Join Server as well
+  server.close()
 }
 
 fn create(console: TextContent) -> Cursive {
@@ -56,8 +86,8 @@ fn create(console: TextContent) -> Cursive {
   // TODO: Implement max clients/queue?
   // TODO: Dynamic update host & port.
   let items = [
-    ("Host:",    "0.0.0.0",  "host"),
-    ("Port:",    "2004",     "port"),
+    ("Host:",    "-",        "host"),
+    ("Port:",    "-",        "port"),
     ("Uptime:",  "00:00:00", "uptime"),
     ("Clients:", "0",        "clients"),
   ];

@@ -22,7 +22,7 @@ impl log::Log for TuiLogger {
   }
 
   fn log(&self, record: &log::Record) {
-    // TODO: Cannot have infinite history, set maximum
+    // TODO: Cannot have infinite history, set maximum scroll back
     if self.enabled(record.metadata()) {
       unsafe {
         (*self.buffer.get()).append(format!("[{}]: {}\n", record.level(), record.args()));
