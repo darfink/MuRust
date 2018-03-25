@@ -66,11 +66,11 @@ impl TuiRpcClient {
         .into_future()
         .flatten();
 
+      // TODO: Add informative error message upon RPC server disconnect
       let request = client.status()
         .map_err(|error| io::Error::new(io::ErrorKind::Other, error.to_string()))
         .join(timeout)
-        .and_then(|(status, _)| Ok((status, client)));
-
+        .map(|(status, _)| (status, client));
       Some(request)
     }).for_each(|status| {
       gui
