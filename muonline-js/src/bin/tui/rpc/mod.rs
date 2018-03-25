@@ -1,10 +1,10 @@
-use std::{io, thread, thread::JoinHandle};
-use std::time::Duration;
-use std::sync::mpsc::Sender;
 use cursive::CbFunc;
-use futures::{Future, Stream, IntoFuture, stream};
 use futures::sync::oneshot;
+use futures::{stream, Future, IntoFuture, Stream};
 use jsonrpc_client_http::HttpTransport;
+use std::sync::mpsc::Sender;
+use std::time::Duration;
+use std::{io, thread, thread::JoinHandle};
 use tokio_core::reactor::{Core, Timeout};
 
 mod client;
@@ -20,10 +20,7 @@ impl TuiRpcClient {
     let uri = uri.to_string();
     let thread = thread::spawn(move || Self::serve(uri, gui, rx));
 
-    Ok(TuiRpcClient {
-      thread,
-      cancel: tx,
-    })
+    Ok(TuiRpcClient { thread, cancel: tx })
   }
 
   pub fn wait(self) -> io::Result<()> {
@@ -31,13 +28,16 @@ impl TuiRpcClient {
   }
 
   pub fn close(self) -> io::Result<()> {
-    self.cancel.send(())
+    self
+      .cancel
+      .send(())
       .map_err(|_| io::Error::new(io::ErrorKind::BrokenPipe, "service already closed"))?;
     Self::join_thread(self.thread)
   }
 
   fn join_thread(thread: JoinHandle<io::Result<()>>) -> io::Result<()> {
-    thread.join()
+    thread
+      .join()
       .map_err(|any| {
         let error = any.downcast_ref::<io::Error>().unwrap();
         io::Error::new(error.kind(), error.to_string())
@@ -45,11 +45,7 @@ impl TuiRpcClient {
       .and_then(|r| r)
   }
 
-  fn serve(
-      uri: String,
-      gui: Sender<Box<CbFunc>>,
-      cancel: oneshot::Receiver<()>,
-  ) -> io::Result<()> {
+  fn serve(uri: String, gui: Sender<Box<CbFunc>>, cancel: oneshot::Receiver<()>) -> io::Result<()> {
     let mut core = Core::new()?;
     let transport_handle = HttpTransport::shared(&core.handle())
       .and_then(|transport| transport.handle(&uri))
@@ -66,19 +62,32 @@ impl TuiRpcClient {
         .flatten();
 
       // TODO: Add informative error message upon RPC server disconnect
-      let request = client.status()
+      let request = client
+        .status()
         .map_err(|error| io::Error::new(io::ErrorKind::Other, error.to_string()))
         .join(timeout)
         .map(|(status, _)| (status, client));
       Some(request)
     }).for_each(|status| {
       gui
-        .send(Box::new(|gui: &mut ::cursive::Cursive| super::interface::refresh(gui, status)))
-        .map_err(|_| io::Error::new(io::ErrorKind::BrokenPipe, "RPC client error; GUI disconnected"))
+        .send(Box::new(|gui: &mut ::cursive::Cursive| {
+          super::interface::refresh(gui, status)
+        }))
+        .map_err(|_| {
+          io::Error::new(
+            io::ErrorKind::BrokenPipe,
+            "RPC client error; GUI disconnected",
+          )
+        })
     });
 
     let future = cancel
-      .map_err(|_| io::Error::new(io::ErrorKind::BrokenPipe, "RPC client error; Front-end disconnected"))
+      .map_err(|_| {
+        io::Error::new(
+          io::ErrorKind::BrokenPipe,
+          "RPC client error; Front-end disconnected",
+        )
+      })
       .select(status)
       .map(|(result, _)| result)
       .map_err(|(error, _)| error);

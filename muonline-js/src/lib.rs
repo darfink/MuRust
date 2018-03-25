@@ -1,12 +1,14 @@
-#[macro_use] extern crate log;
-#[macro_use] extern crate closet;
+#[macro_use]
+extern crate log;
+#[macro_use]
+extern crate closet;
 
-extern crate tokio;
 extern crate futures;
+extern crate tokio;
 
-extern crate muonline_protocol as protocol;
 extern crate muonline_packet as mupack;
 extern crate muonline_packet_codec as mucodec;
+extern crate muonline_protocol as protocol;
 
 #[macro_use]
 extern crate serde_derive;
@@ -17,12 +19,12 @@ extern crate jsonrpc_macros;
 extern crate jsonrpc_core;
 extern crate jsonrpc_http_server;
 
-use std::io;
 pub use self::builder::ServerBuilder;
+use std::io;
 
 mod builder;
-mod service;
 pub mod rpc;
+mod service;
 
 /// An implementation of a Join Server.
 pub struct JoinServer {

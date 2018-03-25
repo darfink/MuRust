@@ -1,6 +1,6 @@
+use cursive::views::TextContent;
 use log;
 use std::cell::UnsafeCell;
-use cursive::views::TextContent;
 
 pub struct TuiLogger {
   // `TextContent` has thread-safe interior mutability
@@ -10,7 +10,9 @@ pub struct TuiLogger {
 impl TuiLogger {
   /// Initializes a new text user interface logger.
   pub fn init(buffer: TextContent) {
-    let this = TuiLogger { buffer: UnsafeCell::new(buffer) };
+    let this = TuiLogger {
+      buffer: UnsafeCell::new(buffer),
+    };
     log::set_boxed_logger(Box::new(this)).expect("initializing standard logger");
     log::set_max_level(log::LevelFilter::Info);
   }
@@ -30,7 +32,7 @@ impl log::Log for TuiLogger {
     }
   }
 
-  fn flush(&self) { }
+  fn flush(&self) {}
 }
 
 unsafe impl Sync for TuiLogger {}

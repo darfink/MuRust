@@ -3,7 +3,7 @@ use cursive::align::HAlign;
 use cursive::menu::MenuTree;
 use cursive::traits::*;
 use cursive::view::ScrollStrategy;
-use cursive::views::{LinearLayout, TextView, TextContent, SelectView, Dialog, Panel};
+use cursive::views::{Dialog, LinearLayout, Panel, SelectView, TextContent, TextView};
 
 pub fn create(console: TextContent) -> Cursive {
   let mut root = Cursive::new();
@@ -16,19 +16,22 @@ pub fn create(console: TextContent) -> Cursive {
   // TODO: Implement max clients/queue?
   // TODO: Dynamic update host & port.
   let items = [
-    ("Host:",    "-",        "host"),
-    ("Port:",    "-",        "port"),
-    ("Uptime:",  "00:00:00", "uptime"),
-    ("Clients:", "0",        "clients"),
+    ("Host:", "-", "host"),
+    ("Port:", "-", "port"),
+    ("Uptime:", "00:00:00", "uptime"),
+    ("Clients:", "0", "clients"),
   ];
 
   for &(label, value, id) in &items {
-    info.add_child(LinearLayout::horizontal()
-      .child(TextView::new(label))
-      .child(TextView::new(value)
-        .h_align(HAlign::Right)
-        .with_id(id)
-        .full_width())
+    info.add_child(
+      LinearLayout::horizontal()
+        .child(TextView::new(label))
+        .child(
+          TextView::new(value)
+            .h_align(HAlign::Right)
+            .with_id(id)
+            .full_width(),
+        ),
     );
   }
 
@@ -45,10 +48,11 @@ pub fn create(console: TextContent) -> Cursive {
     LinearLayout::horizontal()
       .child(Panel::new(console).full_screen())
       .child(panel)
-      .full_screen()
+      .full_screen(),
   );
 
-  root.menubar()
+  root
+    .menubar()
     .add_subtree("Server", MenuTree::new().leaf("Quit", |s| s.quit()))
     .add_subtree("Options", MenuTree::new().leaf("Quit", |s| s.quit()));
 
@@ -58,23 +62,32 @@ pub fn create(console: TextContent) -> Cursive {
 }
 
 pub fn refresh(gui: &mut Cursive, status: ::mujs::rpc::JoinServiceStatus) {
-  gui.find_id::<TextView>("host")
-      .expect("retrieving host element")
-      .set_content(status.host.to_string());
+  gui
+    .find_id::<TextView>("host")
+    .expect("retrieving host element")
+    .set_content(status.host.to_string());
 
-  gui.find_id::<TextView>("port")
-      .expect("retrieving port element")
-      .set_content(status.port.to_string());
+  gui
+    .find_id::<TextView>("port")
+    .expect("retrieving port element")
+    .set_content(status.port.to_string());
 
-  gui.find_id::<TextView>("clients")
-      .expect("retrieving clients element")
-      .set_content(status.clients.to_string());
+  gui
+    .find_id::<TextView>("clients")
+    .expect("retrieving clients element")
+    .set_content(status.clients.to_string());
 
-  gui.find_id::<TextView>("uptime")
-      .expect("retrieving uptime element")
-      .set_content(seconds_to_hhmmss(status.uptime));
+  gui
+    .find_id::<TextView>("uptime")
+    .expect("retrieving uptime element")
+    .set_content(seconds_to_hhmmss(status.uptime));
 }
 
 fn seconds_to_hhmmss(seconds: u64) -> String {
-  format!("{:02}:{:02}:{:02}", seconds / 3600, seconds / 60, seconds % 60)
+  format!(
+    "{:02}:{:02}:{:02}",
+    seconds / 3600,
+    seconds / 60,
+    seconds % 60
+  )
 }

@@ -1,11 +1,11 @@
+use self::serve::serve;
+use futures::sync::oneshot;
 use std::io;
 use std::net::{SocketAddr, SocketAddrV4};
 use std::ops::Deref;
-use std::sync::{Arc, Mutex, atomic::{Ordering, AtomicUsize}};
+use std::sync::{Arc, Mutex, atomic::{AtomicUsize, Ordering}};
 use std::thread::{self, JoinHandle};
-use std::time::{Instant, Duration};
-use futures::sync::oneshot;
-use self::serve::serve;
+use std::time::{Duration, Instant};
 
 mod serve;
 
@@ -20,10 +20,7 @@ impl JoinService {
     let (tx, rx) = oneshot::channel();
     let thread = thread::spawn(move || serve(context, rx));
 
-    JoinService {
-      thread,
-      cancel: tx,
-    }
+    JoinService { thread, cancel: tx }
   }
 
   pub fn wait(self) -> io::Result<()> {
@@ -31,13 +28,16 @@ impl JoinService {
   }
 
   pub fn close(self) -> io::Result<()> {
-    self.cancel.send(())
+    self
+      .cancel
+      .send(())
       .map_err(|_| io::Error::new(io::ErrorKind::BrokenPipe, "service already closed"))?;
     Self::join_thread(self.thread)
   }
 
   fn join_thread(thread: JoinHandle<io::Result<()>>) -> io::Result<()> {
-    thread.join()
+    thread
+      .join()
       .map_err(|any| {
         let error = any.downcast_ref::<io::Error>().unwrap();
         io::Error::new(error.kind(), error.to_string())
@@ -86,14 +86,14 @@ impl JoinServiceContext {
   pub fn add_client(&self, socket: SocketAddr) -> usize {
     let id = self.id_pool.fetch_add(1, Ordering::SeqCst);
 
-    self.clients.lock()
-      .unwrap()
-      .push(Client::new(id, socket));
+    self.clients.lock().unwrap().push(Client::new(id, socket));
     id
   }
 
   pub fn remove_client(&self, id: usize) {
-    self.clients.lock()
+    self
+      .clients
+      .lock()
       .unwrap()
       .retain(|client| client.id != id);
   }

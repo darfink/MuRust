@@ -1,5 +1,5 @@
-use std::io::{self, Write};
 use log;
+use std::io::{self, Write};
 
 pub struct StdLogger;
 
@@ -20,7 +20,9 @@ impl log::Log for StdLogger {
     if self.enabled(record.metadata()) {
       // TODO: Cleanup the duplicate formatting
       let _ = match record.level() {
-        log::Level::Error => io::stderr().write_fmt(format_args!("[{}]: {}\n", record.level(), record.args())),
+        log::Level::Error => {
+          io::stderr().write_fmt(format_args!("[{}]: {}\n", record.level(), record.args()))
+        },
         _ => io::stdout().write_fmt(format_args!("[{}]: {}\n", record.level(), record.args())),
       };
     }

@@ -1,5 +1,5 @@
-use std::io;
 use mujs;
+use std::io;
 
 mod logger;
 

@@ -10,13 +10,11 @@ use tokio::net::TcpListener;
 use tokio::prelude::*;
 
 use mupack::{self, Packet, PacketEncodable};
-use {mucodec, log};
+use {log, mucodec};
 
 use service::JoinServiceContext;
 
-pub fn serve(
-    context: Arc<JoinServiceContext>,
-    cancel: oneshot::Receiver<()>) -> io::Result<()> {
+pub fn serve(context: Arc<JoinServiceContext>, cancel: oneshot::Receiver<()>) -> io::Result<()> {
   let socket = context.socket();
 
   info!("Binding service to {}...", socket);
@@ -83,14 +81,17 @@ fn protocol_core(packet: Packet) -> io::Result<Packet> {
       if (version.major, version.minor, version.patch) == (0, 0, 1) {
         protocol::join::JoinServerConnectResult(true).to_packet()
       } else {
-        Err(io::Error::new(io::ErrorKind::InvalidInput, "incorrect API version"))
+        Err(io::Error::new(
+          io::ErrorKind::InvalidInput,
+          "incorrect API version",
+        ))
       }
     },
-    //protocol::Client::GameServerConnectRequest(server) => {
-    //},
+    // protocol::Client::GameServerConnectRequest(server) => {
+    // },
     protocol::Client::GameServerListRequest(_) => {
-      use protocol::{GameServerCode, GameServerLoad};
       use protocol::join::{GameServerList, GameServerListEntry};
+      use protocol::{GameServerCode, GameServerLoad};
 
       (0..1)
         .map(|_| GameServerListEntry::new(GameServerCode::new(1, 1), GameServerLoad::Load(0.5)))

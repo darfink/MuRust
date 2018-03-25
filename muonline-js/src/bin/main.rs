@@ -1,17 +1,19 @@
-#[macro_use] extern crate log;
-#[macro_use] extern crate structopt;
+#[macro_use]
+extern crate log;
+#[macro_use]
+extern crate structopt;
 
 #[macro_use]
 extern crate jsonrpc_client_core;
 extern crate jsonrpc_client_http;
 
 extern crate cursive;
-extern crate tokio_core;
 extern crate futures;
 extern crate muonline_js as mujs;
 extern crate tap;
+extern crate tokio_core;
 
-use std::net::{Ipv4Addr, SocketAddrV4, SocketAddr, IpAddr};
+use std::net::{IpAddr, Ipv4Addr, SocketAddr, SocketAddrV4};
 use structopt::StructOpt;
 
 mod headless;
@@ -20,19 +22,24 @@ mod tui;
 #[derive(Clone, Debug, StructOpt)]
 #[structopt(name = "mujs", about = "Mu Online Season 2 Join Server")]
 struct Options {
-  #[structopt(long = "rpc-host", value_name = "host", help = "Bind RPC to this IP address", default_value = "127.0.0.1")]
+  #[structopt(long = "rpc-host", value_name = "host", help = "Bind RPC to this IP address",
+              default_value = "127.0.0.1")]
   pub rpc_host: IpAddr,
-  #[structopt(long = "rpc-port", value_name = "port", help = "Bind RPC to this port", default_value = "0")]
+  #[structopt(long = "rpc-port", value_name = "port", help = "Bind RPC to this port",
+              default_value = "0")]
   pub rpc_port: u16,
-  #[structopt(short = "h", long = "host", help = "Bind to this IPv4 address", default_value = "0.0.0.0")]
+  #[structopt(short = "h", long = "host", help = "Bind to this IPv4 address",
+              default_value = "0.0.0.0")]
   pub host: Ipv4Addr,
   #[structopt(short = "p", long = "port", help = "Bind to this port", default_value = "2004")]
   pub port: u16,
   #[structopt(long = "headless", help = "Disable the user interface")]
   pub headless: bool,
-  #[structopt(long = "gs-remote", value_name = "host:port", help = "Specify one or more remote Game Server", raw(display_order = "1000"))]
+  #[structopt(long = "gs-remote", value_name = "host:port",
+              help = "Specify one or more remote Game Server", raw(display_order = "1000"))]
   pub remote: Vec<SocketAddrV4>,
-  #[structopt(long = "gs-local", value_name = "code", help = "Specify one or more local Game Server", raw(display_order = "1001"))]
+  #[structopt(long = "gs-local", value_name = "code",
+              help = "Specify one or more local Game Server", raw(display_order = "1001"))]
   pub local: Vec<u16>,
 }
 

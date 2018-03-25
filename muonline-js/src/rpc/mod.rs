@@ -1,12 +1,12 @@
+use self::api::RpcServerApi;
+pub use self::models::JoinServiceStatus;
+use jsonrpc_core::{Error, IoHandler};
+use jsonrpc_http_server;
+use jsonrpc_http_server::ServerBuilder;
+use service::JoinServiceContext;
 use std::io;
 use std::net::SocketAddr;
 use std::sync::Arc;
-use jsonrpc_http_server;
-use jsonrpc_core::{Error, IoHandler};
-use jsonrpc_http_server::ServerBuilder;
-use service::JoinServiceContext;
-use self::api::RpcServerApi;
-pub use self::models::JoinServiceStatus;
 
 mod api;
 mod models;

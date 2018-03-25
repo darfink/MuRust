@@ -1,6 +1,7 @@
-use std::io;
+use self::rpc::TuiRpcClient;
 use cursive::views::TextContent;
 use mujs;
+use std::io;
 
 mod interface;
 mod logger;
@@ -12,9 +13,8 @@ pub fn run(builder: mujs::ServerBuilder) -> io::Result<()> {
   logger::TuiLogger::init(console.clone());
 
   let mut gui = interface::create(console.clone());
-
   let join_server = builder.spawn()?;
-  let rpc_client = rpc::TuiRpcClient::spawn(join_server.uri(), gui.cb_sink().clone())?;
+  let rpc_client = TuiRpcClient::spawn(join_server.uri(), gui.cb_sink().clone())?;
 
   gui.run();
   rpc_client.close()?;
