@@ -50,7 +50,7 @@ impl JoinServer {
   /// Waits for the server to finish.
   pub fn wait(self) -> io::Result<()> {
     self.service.wait()?;
-    self.rpc.wait();
+    self.rpc.close();
     Ok(())
   }
 

@@ -28,7 +28,7 @@ pub fn serve(
     // Retrieve the address of the connected user
     let remote_addr = tcp.peer_addr()?;
     let client_id = context.add_client(remote_addr);
-    info!("Client<{}> connect", remote_addr);
+    info!("Client<{}> connected", remote_addr);
 
     // Use a non C3/C4 encrypted TCP codec
     let codec = mucodec::PacketCodec::new(
@@ -53,7 +53,7 @@ pub fn serve(
       })
       .map(clone_army!([context] move |_| {
         context.remove_client(client_id);
-        info!("Client<{}> disconnect", remote_addr)
+        info!("Client<{}> disconnected", remote_addr)
       }));
 
     tokio::spawn(connection);
