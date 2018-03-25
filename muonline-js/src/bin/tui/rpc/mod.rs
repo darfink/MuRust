@@ -52,8 +52,7 @@ impl TuiRpcClient {
   ) -> io::Result<()> {
     let mut core = Core::new()?;
     let transport_handle = HttpTransport::shared(&core.handle())
-      .map_err(|error| io::Error::new(io::ErrorKind::Other, error.to_string()))?
-      .handle(&uri)
+      .and_then(|transport| transport.handle(&uri))
       .map_err(|error| io::Error::new(io::ErrorKind::Other, error.to_string()))?;
 
     // TODO: Support server exits from external RPC exit.
