@@ -57,6 +57,24 @@ pub fn create(console: TextContent) -> Cursive {
   root
 }
 
+pub fn refresh(gui: &mut Cursive, status: ::mujs::rpc::JoinServiceStatus) {
+  gui.find_id::<TextView>("host")
+      .expect("retrieving host element")
+      .set_content(status.host.to_string());
+
+  gui.find_id::<TextView>("port")
+      .expect("retrieving port element")
+      .set_content(status.port.to_string());
+
+  gui.find_id::<TextView>("clients")
+      .expect("retrieving clients element")
+      .set_content(status.clients.to_string());
+
+  gui.find_id::<TextView>("uptime")
+      .expect("retrieving uptime element")
+      .set_content(seconds_to_hhmmss(status.uptime));
+}
+
 fn seconds_to_hhmmss(seconds: u64) -> String {
   format!("{:02}:{:02}:{:02}", seconds / 3600, seconds / 60, seconds % 60)
 }

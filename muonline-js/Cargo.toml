@@ -9,7 +9,7 @@ name = "mujs"
 path = "src/bin/main.rs"
 
 [dependencies]
-closet = "0.2.2"
+closet = "0.2"
 cursive = "0.8"
 futures = "0.1"
 jsonrpc-client-core = "0.3"
@@ -22,6 +22,7 @@ serde_derive = "1.0"
 structopt = "0.2"
 tap = "0.2"
 tokio = "0.1"
+tokio-core = "0.1"
 
 [dependencies.log]
 features = ["std"]

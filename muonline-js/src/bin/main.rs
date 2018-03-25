@@ -6,7 +6,7 @@ extern crate jsonrpc_client_core;
 extern crate jsonrpc_client_http;
 
 extern crate cursive;
-extern crate tokio;
+extern crate tokio_core;
 extern crate futures;
 extern crate muonline_js as mujs;
 extern crate tap;
