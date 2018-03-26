@@ -1,4 +1,4 @@
-use serde::{Serialize, Serializer, Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 /// A Game Server's load balance.
 #[derive(Copy, Clone, Debug)]
@@ -32,13 +32,19 @@ impl From<u8> for GameServerLoad {
 }
 
 impl Serialize for GameServerLoad {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: Serializer,
+  {
     serializer.serialize_u8(self.clone().into())
   }
 }
 
 impl<'de> Deserialize<'de> for GameServerLoad {
-  fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: Deserializer<'de> {
+  fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+  where
+    D: Deserializer<'de>,
+  {
     u8::deserialize(deserializer).map(|v| v.into())
   }
 }

@@ -26,8 +26,8 @@ extern crate muonline_packet_derive;
 extern crate muonline_packet;
 extern crate muonline_packet_serialize as muserialize;
 
-pub use self::model::*;
 pub use self::client::Client;
+pub use self::model::*;
 
 pub mod client;
 pub mod join;

@@ -1,9 +1,9 @@
 //! Game Client
 
+use GameServerCode;
+use muonline_packet::{Packet, PacketDecodable, PacketType};
 use std::io;
 use std::ops::Deref;
-use muonline_packet::{Packet, PacketType, PacketDecodable};
-use GameServerCode;
 
 /// An aggregation of all possible client packets.
 #[derive(Debug)]
@@ -20,9 +20,15 @@ impl Client {
     // TODO: Handle this boilerplate
     match (packet.code(), packet.data()) {
       // TODO: Subcodes should be automatic
-      (JoinServerConnectRequest::CODE, _) => JoinServerConnectRequest::from_packet(packet).map(Client::JoinServerConnectRequest),
-      (GameServerConnectRequest::CODE, &[0x03, ..]) => GameServerConnectRequest::from_packet(packet).map(Client::GameServerConnectRequest),
-      (GameServerListRequest::CODE, &[0x06, ..]) => GameServerListRequest::from_packet(packet).map(Client::GameServerListRequest),
+      (JoinServerConnectRequest::CODE, _) => {
+        JoinServerConnectRequest::from_packet(packet).map(Client::JoinServerConnectRequest)
+      },
+      (GameServerConnectRequest::CODE, &[0x03, _..]) => {
+        GameServerConnectRequest::from_packet(packet).map(Client::GameServerConnectRequest)
+      },
+      (GameServerListRequest::CODE, &[0x06, _..]) => {
+        GameServerListRequest::from_packet(packet).map(Client::GameServerListRequest)
+      },
       _ => Ok(Client::None),
     }
   }
