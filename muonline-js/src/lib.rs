@@ -25,6 +25,7 @@ use std::io;
 mod builder;
 pub mod rpc;
 mod service;
+pub mod util;
 
 /// An implementation of a Join Server.
 pub struct JoinServer {

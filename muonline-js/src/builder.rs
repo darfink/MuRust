@@ -14,12 +14,7 @@ pub struct ServerBuilder {
 
 impl ServerBuilder {
   pub fn new() -> Self {
-    ServerBuilder {
-      socket_rpc: "127.0.0.1:0".parse().unwrap(),
-      socket_service: "0.0.0.0:2004".parse().unwrap(),
-      gs_remote: Vec::new(),
-      gs_local: Vec::new(),
-    }
+    ServerBuilder::default()
   }
 
   pub fn service(mut self, socket: SocketAddrV4) -> Self {
@@ -55,5 +50,16 @@ impl ServerBuilder {
       rpc_uri,
       service,
     })
+  }
+}
+
+impl Default for ServerBuilder {
+  fn default() -> Self {
+    ServerBuilder {
+      socket_rpc: "127.0.0.1:0".parse().unwrap(),
+      socket_service: "0.0.0.0:2004".parse().unwrap(),
+      gs_remote: Vec::new(),
+      gs_local: Vec::new(),
+    }
   }
 }

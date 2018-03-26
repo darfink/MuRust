@@ -55,9 +55,10 @@ fn main() {
   let builder = options.remote.iter().fold(builder, |b, s| b.remote(*s));
   let builder = options.local.iter().fold(builder, |b, c| b.local(*c));
 
-  let result = match options.headless {
-    false => tui::run(builder),
-    true => headless::run(builder),
+  let result = if options.headless {
+    headless::run(builder)
+  } else {
+    tui::run(builder)
   };
 
   // TODO: Log 'console' to file?

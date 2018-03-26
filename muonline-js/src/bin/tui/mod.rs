@@ -1,3 +1,4 @@
+use self::interface::TextUserInterface;
 use self::rpc::TuiRpcClient;
 use cursive::views::TextContent;
 use mujs;
@@ -12,11 +13,11 @@ pub fn run(builder: mujs::ServerBuilder) -> io::Result<()> {
   let console = TextContent::new(String::default());
   logger::TuiLogger::init(console.clone());
 
-  let mut gui = interface::create(console.clone());
+  let mut tui = TextUserInterface::new(console.clone());
   let join_server = builder.spawn()?;
-  let rpc_client = TuiRpcClient::spawn(join_server.uri(), gui.cb_sink().clone())?;
+  let rpc_client = TuiRpcClient::spawn(join_server.uri(), tui.remote())?;
 
-  gui.run();
+  tui.run();
   rpc_client.close()?;
   join_server.close()
 }

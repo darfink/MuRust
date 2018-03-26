@@ -1,48 +1,30 @@
 use self::serve::serve;
 use futures::sync::oneshot;
-use std::io;
 use std::net::{SocketAddr, SocketAddrV4};
 use std::ops::Deref;
 use std::sync::{Arc, Mutex, atomic::{AtomicUsize, Ordering}};
-use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
+use std::{io, thread};
+use util::CancellableService;
 
 mod serve;
 
-pub struct JoinService {
-  thread: JoinHandle<io::Result<()>>,
-  cancel: oneshot::Sender<()>,
-}
+pub struct JoinService(CancellableService);
 
 impl JoinService {
   /// Starts a new Join Service.
   pub fn spawn(context: Arc<JoinServiceContext>) -> Self {
     let (tx, rx) = oneshot::channel();
     let thread = thread::spawn(move || serve(context, rx));
-
-    JoinService { thread, cancel: tx }
+    JoinService(CancellableService::new(thread, tx))
   }
 
   pub fn wait(self) -> io::Result<()> {
-    Self::join_thread(self.thread)
+    self.0.wait()
   }
 
   pub fn close(self) -> io::Result<()> {
-    self
-      .cancel
-      .send(())
-      .map_err(|_| io::Error::new(io::ErrorKind::BrokenPipe, "service already closed"))?;
-    Self::join_thread(self.thread)
-  }
-
-  fn join_thread(thread: JoinHandle<io::Result<()>>) -> io::Result<()> {
-    thread
-      .join()
-      .map_err(|any| {
-        let error = any.downcast_ref::<io::Error>().unwrap();
-        io::Error::new(error.kind(), error.to_string())
-      })
-      .and_then(|r| r)
+    self.0.close()
   }
 }
 

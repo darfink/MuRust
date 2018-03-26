@@ -10,9 +10,9 @@ pub struct TuiLogger {
 impl TuiLogger {
   /// Initializes a new text user interface logger.
   pub fn init(buffer: TextContent) {
-    let this = TuiLogger {
-      buffer: UnsafeCell::new(buffer),
-    };
+    let buffer = UnsafeCell::new(buffer);
+    let this = TuiLogger { buffer };
+
     log::set_boxed_logger(Box::new(this)).expect("initializing standard logger");
     log::set_max_level(log::LevelFilter::Info);
   }

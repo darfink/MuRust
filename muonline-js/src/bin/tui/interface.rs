@@ -1,93 +1,124 @@
-use cursive::Cursive;
 use cursive::align::HAlign;
 use cursive::menu::MenuTree;
 use cursive::traits::*;
 use cursive::view::ScrollStrategy;
 use cursive::views::{Dialog, LinearLayout, Panel, SelectView, TextContent, TextView};
+use cursive::{CbFunc, Cursive};
+use std::io;
+use std::sync::mpsc::Sender;
 
-pub fn create(console: TextContent) -> Cursive {
-  let mut root = Cursive::new();
+pub struct TextUserInterface {
+  ui: Cursive,
+}
 
-  let console = TextView::new_with_content(console)
-    .scroll_strategy(ScrollStrategy::StickToBottom)
-    .full_screen();
+impl TextUserInterface {
+  pub fn new(console: TextContent) -> Self {
+    let mut root = Cursive::new();
+    let console = TextView::new_with_content(console)
+      .scroll_strategy(ScrollStrategy::StickToBottom)
+      .full_screen();
 
-  let mut info = LinearLayout::vertical();
-  // TODO: Implement max clients/queue?
-  // TODO: Dynamic update host & port.
-  let items = [
-    ("Host:", "-", "host"),
-    ("Port:", "-", "port"),
-    ("Uptime:", "00:00:00", "uptime"),
-    ("Clients:", "0", "clients"),
-  ];
+    let mut info = LinearLayout::vertical();
+    // TODO: Implement max clients/queue?
+    let items = [
+      ("Host:", "-", "host"),
+      ("Port:", "-", "port"),
+      ("Uptime:", "00:00:00", "uptime"),
+      ("Clients:", "0", "clients"),
+    ];
 
-  for &(label, value, id) in &items {
-    info.add_child(
+    for &(label, value, id) in &items {
+      info.add_child(
+        LinearLayout::horizontal()
+          .child(TextView::new(label))
+          .child(
+            TextView::new(value)
+              .h_align(HAlign::Right)
+              .with_id(id)
+              .full_width(),
+          ),
+      );
+    }
+
+    let servers = SelectView::new()
+      .item("GameServer 1 [0/10]", 1)
+      .on_submit(|s, _| s.add_layer(Dialog::around(TextView::new("FAG"))));
+
+    let panel = LinearLayout::vertical()
+      .child(Dialog::around(info).title("Join Server").full_width())
+      .child(Dialog::around(servers).title("Game Servers").full_screen())
+      .fixed_width(40);
+
+    root.add_fullscreen_layer(
       LinearLayout::horizontal()
-        .child(TextView::new(label))
-        .child(
-          TextView::new(value)
-            .h_align(HAlign::Right)
-            .with_id(id)
-            .full_width(),
-        ),
+        .child(Panel::new(console).full_screen())
+        .child(panel)
+        .full_screen(),
     );
+
+    root
+      .menubar()
+      .add_subtree("Server", MenuTree::new().leaf("Quit", |s| s.quit()))
+      .add_subtree("Options", MenuTree::new().leaf("Quit", |s| s.quit()));
+
+    root.set_fps(10);
+    root.set_autohide_menu(false);
+    TextUserInterface { ui: root }
   }
 
-  let servers = SelectView::new()
-    .item("GameServer 1 [0/10]", 1)
-    .on_submit(|s, _| s.add_layer(Dialog::around(TextView::new("FAG"))));
+  pub fn run(&mut self) {
+    self.ui.run();
+  }
 
-  let panel = LinearLayout::vertical()
-    .child(Dialog::around(info).title("Join Server").full_width())
-    .child(Dialog::around(servers).title("Game Servers").full_screen())
-    .fixed_width(40);
+  pub fn remote(&self) -> RemoteTextUserInterface {
+    RemoteTextUserInterface::new(self.ui.cb_sink().clone())
+  }
 
-  root.add_fullscreen_layer(
-    LinearLayout::horizontal()
-      .child(Panel::new(console).full_screen())
-      .child(panel)
-      .full_screen(),
-  );
+  fn refresh(tui: &mut Cursive, status: &::mujs::rpc::JoinServiceStatus) {
+    let items: &[(&str, &ToString)] = &[
+      ("host", &status.host),
+      ("port", &status.port),
+      ("clients", &status.clients),
+      ("uptime", &Self::seconds_to_hhmmss(status.uptime)),
+    ];
 
-  root
-    .menubar()
-    .add_subtree("Server", MenuTree::new().leaf("Quit", |s| s.quit()))
-    .add_subtree("Options", MenuTree::new().leaf("Quit", |s| s.quit()));
+    for &(id, content) in items.iter() {
+      tui
+        .find_id::<TextView>(id)
+        .expect("retrieving UI element")
+        .set_content(content.to_string());
+    }
+  }
 
-  root.set_fps(10);
-  root.set_autohide_menu(false);
-  root
+  fn seconds_to_hhmmss(seconds: u64) -> String {
+    format!(
+      "{:02}:{:02}:{:02}",
+      seconds / 3600,
+      seconds / 60,
+      seconds % 60
+    )
+  }
 }
 
-pub fn refresh(gui: &mut Cursive, status: ::mujs::rpc::JoinServiceStatus) {
-  gui
-    .find_id::<TextView>("host")
-    .expect("retrieving host element")
-    .set_content(status.host.to_string());
-
-  gui
-    .find_id::<TextView>("port")
-    .expect("retrieving port element")
-    .set_content(status.port.to_string());
-
-  gui
-    .find_id::<TextView>("clients")
-    .expect("retrieving clients element")
-    .set_content(status.clients.to_string());
-
-  gui
-    .find_id::<TextView>("uptime")
-    .expect("retrieving uptime element")
-    .set_content(seconds_to_hhmmss(status.uptime));
+pub struct RemoteTextUserInterface {
+  sender: Sender<Box<CbFunc>>,
 }
 
-fn seconds_to_hhmmss(seconds: u64) -> String {
-  format!(
-    "{:02}:{:02}:{:02}",
-    seconds / 3600,
-    seconds / 60,
-    seconds % 60
-  )
+impl RemoteTextUserInterface {
+  fn new(sender: Sender<Box<CbFunc>>) -> Self {
+    RemoteTextUserInterface { sender }
+  }
+
+  pub fn refresh(&self, status: ::mujs::rpc::JoinServiceStatus) -> io::Result<()> {
+    self.send(move |tui: &mut Cursive| TextUserInterface::refresh(tui, &status))
+  }
+
+  fn send<F: CbFunc + 'static>(&self, closure: F) -> io::Result<()> {
+    self.sender.send(Box::new(closure)).map_err(|_| {
+      io::Error::new(
+        io::ErrorKind::BrokenPipe,
+        "RPC client error; GUI disconnected",
+      )
+    })
+  }
 }

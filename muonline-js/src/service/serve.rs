@@ -38,7 +38,7 @@ pub fn serve(context: Arc<JoinServiceContext>, cancel: oneshot::Receiver<()>) ->
     // Provide a simple request-response service
     let connection = reader
       .fold(writer, |writer, packet| {
-        match protocol_core(packet) {
+        match protocol_core(&packet) {
           Ok(packet) => Either::A(writer.send(packet)),
           Err(error) => Either::B(Err(error).into_future()),
         }
@@ -66,13 +66,14 @@ pub fn serve(context: Arc<JoinServiceContext>, cancel: oneshot::Receiver<()>) ->
   });
 
   info!("Service running on port {}", socket.port());
-  Ok(tokio::run(server))
+  tokio::run(server);
+  Ok(())
 }
 
-fn protocol_core(packet: Packet) -> io::Result<Packet> {
+fn protocol_core(packet: &Packet) -> io::Result<Packet> {
   use protocol;
 
-  let client_packet = protocol::Client::from_packet(&packet)?;
+  let client_packet = protocol::Client::from_packet(packet)?;
   debug!("<ProtoCore> {:#?}", client_packet);
 
   match client_packet {
