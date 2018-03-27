@@ -75,18 +75,18 @@ impl TextUserInterface {
   }
 
   fn refresh(tui: &mut Cursive, status: &::mujs::rpc::JoinServiceStatus) {
-    let items: &[(&str, &ToString)] = &[
-      ("host", &status.host),
-      ("port", &status.port),
-      ("clients", &status.clients),
-      ("uptime", &Self::seconds_to_hhmmss(status.uptime)),
+    let items: &[(&str, &Fn() -> String)] = &[
+      ("host", &|| status.host.to_string()),
+      ("port", &|| status.port.to_string()),
+      ("clients", &|| status.clients.to_string()),
+      ("uptime", &|| Self::seconds_to_hhmmss(status.uptime)),
     ];
 
     for &(id, content) in items.iter() {
       tui
         .find_id::<TextView>(id)
         .expect("retrieving UI element")
-        .set_content(content.to_string());
+        .set_content(content());
     }
   }
 
