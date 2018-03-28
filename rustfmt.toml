@@ -1,5 +1,5 @@
 condense_wildcard_suffixes = true
-fn_single_line = false
+fn_single_line = true
 format_strings = true
 match_block_trailing_comma = true
 normalize_comments = true
