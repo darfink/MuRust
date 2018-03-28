@@ -12,9 +12,7 @@ impl StdLogger {
 
 impl log::Log for StdLogger {
   // TODO: Make this generic for all loggers
-  fn enabled(&self, meta: &log::Metadata) -> bool {
-    meta.target().starts_with("mu")
-  }
+  fn enabled(&self, meta: &log::Metadata) -> bool { meta.target().starts_with("mu") }
 
   fn log(&self, record: &log::Record) {
     if self.enabled(record.metadata()) {

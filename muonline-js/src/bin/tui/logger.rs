@@ -19,9 +19,7 @@ impl TuiLogger {
 }
 
 impl log::Log for TuiLogger {
-  fn enabled(&self, meta: &log::Metadata) -> bool {
-    meta.target().starts_with("mu")
-  }
+  fn enabled(&self, meta: &log::Metadata) -> bool { meta.target().starts_with("mu") }
 
   fn log(&self, record: &log::Record) {
     // TODO: Cannot have infinite history, set maximum scroll back

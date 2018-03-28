@@ -19,6 +19,7 @@ use structopt::StructOpt;
 mod headless;
 mod tui;
 
+// TODO: Parse remote game server URLs.
 #[derive(Clone, Debug, StructOpt)]
 #[structopt(name = "mujs", about = "Mu Online Season 2 Join Server")]
 struct Options {
@@ -35,9 +36,9 @@ struct Options {
   pub port: u16,
   #[structopt(long = "headless", help = "Disable the user interface")]
   pub headless: bool,
-  #[structopt(long = "gs-remote", value_name = "host:port",
+  #[structopt(long = "gs-remote", value_name = "url",
               help = "Specify one or more remote Game Server", raw(display_order = "1000"))]
-  pub remote: Vec<SocketAddrV4>,
+  pub remote: Vec<String>,
   #[structopt(long = "gs-local", value_name = "code",
               help = "Specify one or more local Game Server", raw(display_order = "1001"))]
   pub local: Vec<u16>,
@@ -50,10 +51,10 @@ fn main() {
 
   // Configure the Join Server with the supplied options
   let builder = mujs::JoinServer::builder()
-    .service(SocketAddrV4::new(options.host, options.port))
+    .join(SocketAddrV4::new(options.host, options.port))
     .rpc(SocketAddr::new(options.rpc_host, options.rpc_port));
-  let builder = options.remote.iter().fold(builder, |b, s| b.remote(*s));
-  let builder = options.local.iter().fold(builder, |b, c| b.local(*c));
+  let builder = options.remote.into_iter().fold(builder, |b, s| b.remote(s));
+  // let builder = options.local.into_iter().fold(builder, |b, c| b.local(*c));
 
   let result = if options.headless {
     headless::run(builder)

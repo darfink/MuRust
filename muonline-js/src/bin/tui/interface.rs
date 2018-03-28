@@ -66,15 +66,13 @@ impl TextUserInterface {
     TextUserInterface { ui: root }
   }
 
-  pub fn run(&mut self) {
-    self.ui.run();
-  }
+  pub fn run(&mut self) { self.ui.run(); }
 
   pub fn remote(&self) -> RemoteTextUserInterface {
     RemoteTextUserInterface::new(self.ui.cb_sink().clone())
   }
 
-  fn refresh(tui: &mut Cursive, status: &::mujs::rpc::JoinServiceStatus) {
+  fn refresh(tui: &mut Cursive, status: &::mujs::rpc::JoinServerStatus) {
     let items: &[(&str, &Fn() -> String)] = &[
       ("host", &|| status.host.to_string()),
       ("port", &|| status.port.to_string()),
@@ -105,11 +103,9 @@ pub struct RemoteTextUserInterface {
 }
 
 impl RemoteTextUserInterface {
-  fn new(sender: Sender<Box<CbFunc>>) -> Self {
-    RemoteTextUserInterface { sender }
-  }
+  fn new(sender: Sender<Box<CbFunc>>) -> Self { RemoteTextUserInterface { sender } }
 
-  pub fn refresh(&self, status: ::mujs::rpc::JoinServiceStatus) -> io::Result<()> {
+  pub fn refresh(&self, status: ::mujs::rpc::JoinServerStatus) -> io::Result<()> {
     self.send(move |tui: &mut Cursive| TextUserInterface::refresh(tui, &status))
   }
 

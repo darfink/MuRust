@@ -1,7 +1,10 @@
+#![feature(conservative_impl_trait)]
+
 #[macro_use]
 extern crate log;
 #[macro_use]
 extern crate closet;
+extern crate tap;
 
 extern crate futures;
 extern crate tokio;
@@ -20,47 +23,40 @@ extern crate jsonrpc_core;
 extern crate jsonrpc_http_server;
 
 pub use self::builder::ServerBuilder;
+pub use service::rpc;
 use std::io;
 
 mod builder;
-pub mod rpc;
 mod service;
-pub mod util;
 
 /// An implementation of a Join Server.
 pub struct JoinServer {
-  service: service::JoinService,
-  rpc: jsonrpc_http_server::Server,
-  rpc_uri: String,
+  join_service: service::JoinService,
+  rpc_service: service::RpcService,
 }
 
 impl JoinServer {
   /// Spawns a new Join Server using defaults.
-  pub fn spawn() -> io::Result<Self> {
-    Self::builder().spawn()
-  }
+  pub fn spawn() -> io::Result<Self> { Self::builder().spawn() }
 
   /// Returns a builder for the Join Server.
-  pub fn builder() -> ServerBuilder {
-    ServerBuilder::new()
-  }
+  pub fn builder() -> ServerBuilder { ServerBuilder::default() }
 
-  /// Returns the URI for the RPC server.
-  pub fn uri(&self) -> &str {
-    &self.rpc_uri
-  }
-
-  /// Waits for the server to finish.
-  pub fn wait(self) -> io::Result<()> {
-    self.service.wait()?;
-    self.rpc.close();
-    Ok(())
-  }
+  /// Returns the URI of the RPC service.
+  pub fn uri(&self) -> &str { self.rpc_service.uri() }
 
   /// Closes the server.
   pub fn close(self) -> io::Result<()> {
-    self.service.close()?;
-    self.rpc.close();
-    Ok(())
+    let result = self.join_service.close();
+    self.rpc_service.close();
+    result
+  }
+
+  /// Will block, waiting for the server to finish.
+  pub fn wait(self) -> io::Result<()> {
+    let result = self.join_service.wait();
+    // Explicitly close, and skip waiting for the RPC service.
+    self.rpc_service.close();
+    result
   }
 }
