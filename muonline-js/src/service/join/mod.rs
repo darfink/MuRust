@@ -1,16 +1,19 @@
-use self::worker::JoinServiceWorker;
-use super::JoinServiceInterface;
+use self::controller::JoinServiceController;
+use self::traits::JoinServiceControl;
 use futures::sync::mpsc;
+use futures::{Future, Stream};
+use service::JoinServiceInterface;
 use std::io;
 use std::net::SocketAddrV4;
 use std::thread::{self, JoinHandle};
 use tap::TapResultOps;
 
-mod context;
-mod worker;
+mod controller;
+mod server;
+mod traits;
 
 pub struct JoinService {
-  worker: JoinServiceWorker,
+  controller: JoinServiceController,
   thread: Option<JoinHandle<io::Result<()>>>,
 }
 
@@ -18,21 +21,25 @@ impl JoinService {
   /// Spawns a new Join Service instance.
   pub fn spawn(socket: SocketAddrV4) -> Self {
     let (tx, rx) = mpsc::channel(1);
-    let worker = JoinServiceWorker::new(socket, tx);
-    let thread = thread::spawn(clone_army!([worker] || worker.serve(rx)));
+
+    let controller = JoinServiceController::new(socket, tx);
+    let thread = thread::spawn(closet!([controller] move || {
+      let close = rx.into_future().map(|_| ()).map_err(|_| io::ErrorKind::Other.into());
+      server::serve(controller, close)
+    }));
 
     JoinService {
-      worker,
+      controller,
       thread: Some(thread),
     }
   }
 
   /// Returns an interface to the service instance.
-  pub fn interface(&self) -> impl JoinServiceInterface { self.worker.clone() }
+  pub fn interface(&self) -> impl JoinServiceInterface { self.controller.clone() }
 
   /// Closes the service.
   pub fn close(mut self) -> io::Result<()> {
-    self.worker.close()?;
+    self.controller.close()?;
     Self::join_thread(self.thread.take().unwrap())
   }
 
@@ -49,5 +56,5 @@ impl JoinService {
 }
 
 impl Drop for JoinService {
-  fn drop(&mut self) { let _ = self.worker.close(); }
+  fn drop(&mut self) { let _ = self.controller.close(); }
 }

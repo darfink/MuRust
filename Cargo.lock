@@ -125,11 +125,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "closet"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
 name = "core-foundation"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -561,7 +556,6 @@ dependencies = [
 name = "muonline-js"
 version = "0.1.0"
 dependencies = [
- "closet 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "cursive 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.1.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "jsonrpc-client-core 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1375,7 +1369,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum cc 1.0.9 (registry+https://github.com/rust-lang/crates.io-index)" = "2b4911e4bdcb4100c7680e7e854ff38e23f1b34d4d9e079efae3da2801341ffc"
 "checksum cfg-if 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "d4c819a1287eb618df47cc647173c5c4c66ba19d888a6e50d605672aed3140de"
 "checksum clap 2.31.2 (registry+https://github.com/rust-lang/crates.io-index)" = "f0f16b89cbb9ee36d87483dc939fe9f1e13c05898d56d7b230a0d4dff033a536"
-"checksum closet 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "49732b4442d72363c48beb01eb85128d66dc558e5f2718c9aa8249bff2e411c7"
 "checksum core-foundation 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "25bfd746d203017f7d5cbd31ee5d8e17f94b6521c7af77ece6c9e4b2d4b16c67"
 "checksum core-foundation-sys 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "065a5d7ffdcbc8fa145d6f0746f3555025b9097a9e9cda59f7467abae670c78d"
 "checksum crossbeam-deque 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "c1bdc73742c36f7f35ebcda81dbb33a7e0d33757d03a06d9ddca762712ec5ea2"

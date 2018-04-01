@@ -9,7 +9,7 @@ use std::net::SocketAddr;
 mod api;
 
 /// An RPC service instance.
-pub(crate) struct RpcService {
+pub struct RpcService {
   server: jsonrpc_http_server::Server,
   uri: String,
 }

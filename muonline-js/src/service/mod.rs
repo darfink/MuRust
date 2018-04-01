@@ -1,19 +1,21 @@
-pub(crate) use self::join::JoinService;
-pub(crate) use self::rpc::RpcService;
+pub use self::join::JoinService;
+pub use self::rpc::RpcService;
 use std::net::SocketAddrV4;
 use std::time::Duration;
 
 mod join;
 pub mod rpc;
 
-/// An interface exposing the Join Service to the RPC service.
-pub trait JoinServiceInterface: Sync + Send + 'static {
-  /// Returns the Join Service's socket.
+pub trait JoinServiceListen: Sync + Send + 'static {
+  /// Returns the service's socket.
   fn socket(&self) -> SocketAddrV4;
+}
 
-  /// Returns the Join Service's client count.
+/// An interface exposing the Join Service to the RPC service.
+pub trait JoinServiceInterface: JoinServiceListen {
+  /// Returns the service's client count.
   fn number_of_clients(&self) -> usize;
 
-  /// Returns the Join Service's uptime.
+  /// Returns the service's uptime.
   fn uptime(&self) -> Duration;
 }

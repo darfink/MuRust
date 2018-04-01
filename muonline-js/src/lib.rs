@@ -2,8 +2,6 @@
 
 #[macro_use]
 extern crate log;
-#[macro_use]
-extern crate closet;
 extern crate tap;
 
 extern crate futures;
@@ -26,6 +24,8 @@ pub use self::builder::ServerBuilder;
 pub use service::rpc;
 use std::io;
 
+#[macro_use]
+mod macros;
 mod builder;
 mod service;
 

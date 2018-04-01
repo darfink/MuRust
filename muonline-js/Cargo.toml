@@ -9,7 +9,6 @@ name = "mujs"
 path = "src/bin/main.rs"
 
 [dependencies]
-closet = "0.2"
 cursive = "0.8"
 futures = "0.1"
 jsonrpc-client-core = "0.3"

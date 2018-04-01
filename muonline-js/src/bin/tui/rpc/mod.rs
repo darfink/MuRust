@@ -63,6 +63,7 @@ impl TuiRpcClient {
         .map_err(|error| io::Error::new(io::ErrorKind::Other, error.to_string()))
         .join(timeout)
         .map(|(status, _)| (status, client));
+
       Some(request)
     }).for_each(|status| tui.refresh(status));
 
