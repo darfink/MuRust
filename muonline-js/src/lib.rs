@@ -21,13 +21,16 @@ extern crate jsonrpc_core;
 extern crate jsonrpc_http_server;
 
 pub use self::builder::ServerBuilder;
-pub use service::rpc;
 use std::io;
 
 #[macro_use]
 mod macros;
 mod builder;
 mod service;
+pub mod rpc {
+  // Re-export the RPC API
+  pub use service::rpc::api::*;
+}
 
 /// An implementation of a Join Server.
 pub struct JoinServer {

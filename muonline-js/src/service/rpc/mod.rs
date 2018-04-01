@@ -1,4 +1,4 @@
-pub use self::api::{JoinServerApi, JoinServerStatus};
+use self::api::{JoinServerApi, JoinServerStatus};
 use jsonrpc_core::{Error, IoHandler};
 use jsonrpc_http_server;
 use jsonrpc_http_server::ServerBuilder;
@@ -6,7 +6,7 @@ use service::JoinServiceInterface;
 use std::io;
 use std::net::SocketAddr;
 
-mod api;
+pub mod api;
 
 /// An RPC service instance.
 pub struct RpcService {
