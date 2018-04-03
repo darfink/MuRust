@@ -1,8 +1,7 @@
-use JoinServer;
-use service::JoinService;
-use service::RpcService;
+use service::{JoinService, QueryableGameServer, RpcService};
 use std::io;
 use std::net::{SocketAddr, SocketAddrV4};
+use {mugs, JoinServer};
 
 /// A builder for the Join Server.
 pub struct ServerBuilder {
@@ -30,21 +29,44 @@ impl ServerBuilder {
     self
   }
 
-  // Adds a local Game Server.
-  // pub fn local(mut self, builder: mugs::ServerBuilder) -> Self {
-  //   self.game_servers.push(GameServerOption::Local(builder));
-  //   self
-  // }
+  /// Adds a local Game Server.
+  pub fn local(mut self, builder: mugs::ServerBuilder) -> Self {
+    self.game_servers.push(GameServerOption::Local(builder));
+    self
+  }
 
   /// Spawns the Join & RPC services and returns a controller.
   pub fn spawn(self) -> io::Result<JoinServer> {
-    let join_service = JoinService::spawn(self.socket_join /* , self.game_servers */);
+    let game_servers = Self::spawn_game_servers(self.game_servers)?;
+    let game_servers_count = game_servers.len();
+
+    let join_service = JoinService::spawn(self.socket_join, game_servers)?;
     let rpc_service = RpcService::spawn(self.socket_rpc, join_service.interface())?;
+
+    info!("Running with {} Game Server(s)", game_servers_count);
+    info!("RPC servicing at {}", rpc_service.uri());
 
     Ok(JoinServer {
       join_service,
       rpc_service,
     })
+  }
+
+  /// Returns registered servers as a Queryable collection.
+  fn spawn_game_servers(
+    servers: Vec<GameServerOption>,
+  ) -> io::Result<Vec<Box<QueryableGameServer>>> {
+    servers
+      .into_iter()
+      .map(|option| match option {
+        // Remote server's are assumed to already have been spawned
+        GameServerOption::Remote(string) => Ok(Box::new(string) as Box<QueryableGameServer>),
+        // Local game servers must be spawned and managed
+        GameServerOption::Local(builder) => builder
+          .spawn()
+          .map(|s| Box::new(s) as Box<QueryableGameServer>),
+      })
+      .collect::<Result<Vec<Box<QueryableGameServer>>, _>>()
   }
 }
 
@@ -60,5 +82,5 @@ impl Default for ServerBuilder {
 
 enum GameServerOption {
   Remote(String),
-  // Local(mugs::ServerBuilder),
+  Local(mugs::ServerBuilder),
 }

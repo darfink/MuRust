@@ -1,11 +1,12 @@
 use super::JoinServiceControl;
 use futures::{Future, IntoFuture, Stream};
-use mupack::{self, PacketEncodable};
 use std::io;
 use std::net::{SocketAddr, SocketAddrV4};
 use tokio::io::AsyncRead;
 use tokio::net::{TcpListener, TcpStream};
-use {mucodec, protocol, tokio};
+use {mucodec, mupack, tokio};
+
+mod core;
 
 /// Starts the Join Server using the supplied state.
 pub fn serve<S, C>(state: S, cancel: C) -> io::Result<()>
@@ -20,17 +21,18 @@ where
     .incoming()
     // Process each new client connection
     .for_each(closet!([state] move |stream| process_client(&state, stream)))
-    // Listen for a cancellation event from the front-end
+    // Listen for any cancellation events from the front-end
     .select(cancel.into_future());
 
   tokio::run(
     server
       .map(|(item, _)| item)
-      .map_err(|(error, _)| error!("{}", error)),
+      .map_err(|(error, _)| error!("Join Service: {}", error)),
   );
   Ok(())
 }
 
+/// Setups and spawns a new task for a client.
 fn process_client<S: JoinServiceControl>(state: &S, stream: TcpStream) -> io::Result<()> {
   // Retrieve the client's address and store it
   let id = state.add_client(ipv4socket(&stream)?);
@@ -44,7 +46,7 @@ fn process_client<S: JoinServiceControl>(state: &S, stream: TcpStream) -> io::Re
 
   let client = reader
     // Each packet received maps to a response packet
-    .and_then(closet!([state] move |packet| process_packet(&state, &packet)))
+    .and_then(closet!([state] move |packet| core::proto_core(&state, &packet)))
     // Return each response packet to the client
     .forward(writer)
     // Remove the client from the service state
@@ -54,37 +56,12 @@ fn process_client<S: JoinServiceControl>(state: &S, stream: TcpStream) -> io::Re
     });
 
   // Spawn each client on an executor
-  tokio::spawn(client.map(|_| ()).map_err(|error| error!("{}", error)));
+  tokio::spawn(
+    client
+      .map(|_| ())
+      .map_err(|error| error!("Join Client: {}", error)),
+  );
   Ok(())
-}
-
-fn process_packet<S: JoinServiceControl>(
-  _state: &S,
-  packet: &mupack::Packet,
-) -> io::Result<mupack::Packet> {
-  let client_packet = protocol::Client::from_packet(packet)?;
-
-  match client_packet {
-    protocol::Client::JoinServerConnectRequest(version) => {
-      // TODO: Do not hardcode the version
-      if (version.major, version.minor, version.patch) == (0, 0, 1) {
-        protocol::join::JoinServerConnectResult(true).to_packet()
-      } else {
-        Err(io::Error::new(
-          io::ErrorKind::InvalidInput,
-          "incorrect API version",
-        ))
-      }
-    },
-    // protocol::Client::GameServerConnectRequest(server) => {
-    // },
-    // protocol::Client::GameServerListRequest(_) => {
-    // },
-    _ => {
-      let message = format!("unhandled packet {:x}", packet.code());
-      Err(io::Error::new(io::ErrorKind::InvalidInput, message))
-    },
-  }
 }
 
 /// Returns the codec used for a Join Server.

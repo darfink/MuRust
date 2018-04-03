@@ -9,6 +9,7 @@ extern crate jsonrpc_client_http;
 
 extern crate cursive;
 extern crate futures;
+extern crate muonline_gs as mugs;
 extern crate muonline_js as mujs;
 extern crate tap;
 extern crate tokio_core;
@@ -39,7 +40,7 @@ struct Options {
   #[structopt(long = "gs-remote", value_name = "url",
               help = "Specify one or more remote Game Server", raw(display_order = "1000"))]
   pub remote: Vec<String>,
-  #[structopt(long = "gs-local", value_name = "code",
+  #[structopt(long = "gs-local", value_name = "id",
               help = "Specify one or more local Game Server", raw(display_order = "1001"))]
   pub local: Vec<u16>,
 }
@@ -54,7 +55,10 @@ fn main() {
     .join(SocketAddrV4::new(options.host, options.port))
     .rpc(SocketAddr::new(options.rpc_host, options.rpc_port));
   let builder = options.remote.into_iter().fold(builder, |b, s| b.remote(s));
-  // let builder = options.local.into_iter().fold(builder, |b, c| b.local(*c));
+  let builder = options
+    .local
+    .into_iter()
+    .fold(builder, |b, id| b.local(mugs::GameServer::builder(id)));
 
   let result = if options.headless {
     headless::run(builder)

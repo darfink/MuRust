@@ -7,6 +7,7 @@ extern crate tap;
 extern crate futures;
 extern crate tokio;
 
+extern crate muonline_gs as mugs;
 extern crate muonline_packet as mupack;
 extern crate muonline_packet_codec as mucodec;
 extern crate muonline_protocol as protocol;
@@ -19,6 +20,10 @@ extern crate serde;
 extern crate jsonrpc_macros;
 extern crate jsonrpc_core;
 extern crate jsonrpc_http_server;
+
+#[macro_use]
+extern crate jsonrpc_client_core;
+extern crate jsonrpc_client_http;
 
 pub use self::builder::ServerBuilder;
 use std::io;

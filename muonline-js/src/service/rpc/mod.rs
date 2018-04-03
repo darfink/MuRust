@@ -44,4 +44,6 @@ impl<T: JoinServiceInterface> JoinServerApi for T {
       clients: self.number_of_clients(),
     })
   }
+
+  fn version(&self) -> Result<&'static str, Error> { Ok(env!("CARGO_PKG_VERSION")) }
 }

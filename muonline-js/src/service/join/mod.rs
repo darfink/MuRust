@@ -1,40 +1,48 @@
+use self::browser::GameServerBrowser;
 use self::controller::JoinServiceController;
 use self::traits::JoinServiceControl;
 use futures::sync::mpsc;
 use futures::{Future, Stream};
-use service::JoinServiceInterface;
+use service::{JoinServiceInterface, QueryableGameServer};
 use std::io;
 use std::net::SocketAddrV4;
 use std::thread::{self, JoinHandle};
 use tap::TapResultOps;
 
+mod browser;
 mod controller;
 mod server;
 mod traits;
 
+/// An implementation of a Join Service.
 pub struct JoinService {
   controller: JoinServiceController,
+  #[allow(unused)]
+  servers: Vec<Box<QueryableGameServer>>,
   thread: Option<JoinHandle<io::Result<()>>>,
 }
 
 impl JoinService {
   /// Spawns a new Join Service instance.
-  pub fn spawn(socket: SocketAddrV4) -> Self {
+  pub fn spawn(socket: SocketAddrV4, servers: Vec<Box<QueryableGameServer>>) -> io::Result<Self> {
     let (tx, rx) = mpsc::channel(1);
 
-    let controller = JoinServiceController::new(socket, tx);
+    let browser = GameServerBrowser::new(servers.iter().map(|s| s.uri()))?;
+    let controller = JoinServiceController::new(socket, browser, tx);
+
     let thread = thread::spawn(closet!([controller] move || {
       let close = rx.into_future().map(|_| ()).map_err(|_| io::ErrorKind::Other.into());
       server::serve(controller, close)
     }));
 
-    JoinService {
+    Ok(JoinService {
       controller,
+      servers,
       thread: Some(thread),
-    }
+    })
   }
 
-  /// Returns an interface to the service instance.
+  /// Returns an interface to the controller instance.
   pub fn interface(&self) -> impl JoinServiceInterface { self.controller.clone() }
 
   /// Closes the service.
@@ -56,5 +64,6 @@ impl JoinService {
 }
 
 impl Drop for JoinService {
+  /// Closes the service upon destruction.
   fn drop(&mut self) { let _ = self.controller.close(); }
 }

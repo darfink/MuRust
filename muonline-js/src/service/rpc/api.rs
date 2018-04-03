@@ -5,6 +5,9 @@ build_rpc_trait! {
   pub trait JoinServerApi {
     #[rpc(name = "status")]
     fn status(&self) -> Result<JoinServerStatus, Error>;
+
+    #[rpc(name = "version")]
+    fn version(&self) -> Result<&'static str, Error>;
   }
 }
 

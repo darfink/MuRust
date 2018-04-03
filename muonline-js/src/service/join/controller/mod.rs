@@ -1,6 +1,7 @@
 use self::client::Client;
-use super::JoinServiceControl;
-use futures::{Future, Sink, sync::mpsc};
+use super::{GameServerBrowser, JoinServiceControl};
+use futures::{Future, Sink, Stream, sync::mpsc};
+use mugs;
 use service::{JoinServiceInterface, JoinServiceListen};
 use std::io;
 use std::net::SocketAddrV4;
@@ -13,6 +14,7 @@ mod client;
 struct JoinServiceContext {
   client_idx: AtomicUsize,
   clients: Mutex<Vec<Client>>,
+  browser: GameServerBrowser,
   socket: SocketAddrV4,
   start_time: Instant,
 }
@@ -26,12 +28,13 @@ pub struct JoinServiceController {
 
 impl JoinServiceController {
   /// Constructs a new Join Service controller.
-  pub fn new(socket: SocketAddrV4, close_tx: mpsc::Sender<()>) -> Self {
+  pub fn new(socket: SocketAddrV4, browser: GameServerBrowser, close_tx: mpsc::Sender<()>) -> Self {
     JoinServiceController {
       close_tx,
       context: Arc::new(JoinServiceContext {
         client_idx: AtomicUsize::new(0),
         clients: Mutex::new(Vec::new()),
+        browser,
         socket,
         start_time: Instant::now(),
       }),
@@ -79,5 +82,12 @@ impl JoinServiceControl for JoinServiceController {
   /// Removes a client from the state.
   fn remove_client(&self, id: usize) {
     self.context.clients.lock().unwrap().retain(|c| c.id != id);
+  }
+
+  /// Queries all available game servers.
+  fn query_game_servers(
+    &self,
+  ) -> Box<Stream<Item = mugs::rpc::GameServerStatus, Error = io::Error> + Send> {
+    Box::new(self.context.browser.query_servers())
   }
 }

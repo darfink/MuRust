@@ -17,9 +17,6 @@ pub fn run(builder: mujs::ServerBuilder) -> io::Result<()> {
   let join_server = builder.spawn()?;
   let rpc_client = TuiRpcClient::spawn(join_server.uri(), tui.remote())?;
 
-  // TODO: This should be inside main()
-  info!("RPC servicing at {}", join_server.uri());
-
   tui.run();
   rpc_client.close()?;
   join_server.close()
