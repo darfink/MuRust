@@ -553,6 +553,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "muonline-gs"
+version = "0.1.0"
+dependencies = [
+ "futures 0.1.19 (registry+https://github.com/rust-lang/crates.io-index)",
+ "jsonrpc-core 8.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "jsonrpc-http-server 8.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "jsonrpc-macros 8.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "muonline-packet 0.1.0",
+ "muonline-packet_codec 0.1.0",
+ "muonline-protocol 0.1.0",
+ "serde 1.0.33 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_derive 1.0.33 (registry+https://github.com/rust-lang/crates.io-index)",
+ "structopt 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tap 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tokio 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "muonline-js"
 version = "0.1.0"
 dependencies = [
@@ -564,6 +583,7 @@ dependencies = [
  "jsonrpc-http-server 8.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "jsonrpc-macros 8.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "muonline-gs 0.1.0",
  "muonline-packet 0.1.0",
  "muonline-packet_codec 0.1.0",
  "muonline-protocol 0.1.0",

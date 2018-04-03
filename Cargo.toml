@@ -1,5 +1,6 @@
 [workspace]
 members = [
+  "muonline-gs",
   "muonline-js",
   "muonline-packet",
   "muonline-packet_codec",

@@ -1,0 +1,28 @@
+[package]
+authors = ["Elliott Linder <elliott@linder.bz>"]
+name = "muonline-gs"
+version = "0.1.0"
+
+[dependencies]
+futures = "0.1"
+jsonrpc-core = "8.0"
+jsonrpc-http-server = "8.0"
+jsonrpc-macros = "8.0"
+serde = "1.0"
+serde_derive = "1.0"
+structopt = "0.2"
+tap = "0.2"
+tokio = "0.1"
+
+[dependencies.log]
+features = ["std"]
+version = "0.4"
+
+[dependencies.muonline-packet]
+path = "../muonline-packet"
+
+[dependencies.muonline-packet_codec]
+path = "../muonline-packet_codec"
+
+[dependencies.muonline-protocol]
+path = "../muonline-protocol"
