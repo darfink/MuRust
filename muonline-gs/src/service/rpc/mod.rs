@@ -48,7 +48,5 @@ impl GameServerApi for GameServerController {
     })
   }
 
-  fn version(&self) -> Result<&'static str, Error> {
-    Ok(env!("CARGO_PKG_VERSION"))
-  }
+  fn version(&self) -> Result<&'static str, Error> { Ok(env!("CARGO_PKG_VERSION")) }
 }

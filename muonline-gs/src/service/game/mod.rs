@@ -45,4 +45,3 @@ impl GameService {
 impl Drop for GameService {
   fn drop(&mut self) { let _ = self.controller.close(); }
 }
-

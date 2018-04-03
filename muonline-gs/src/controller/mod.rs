@@ -24,7 +24,12 @@ pub struct GameServerController(Arc<GameServerControllerInner>);
 
 impl GameServerController {
   /// Constructs a new Game Server controller.
-  pub fn new(socket: SocketAddrV4, server_id: u16, max_clients: usize, context: GameServerContext) -> Self {
+  pub fn new(
+    socket: SocketAddrV4,
+    server_id: u16,
+    max_clients: usize,
+    context: GameServerContext,
+  ) -> Self {
     let (close_tx, close_rx) = mpsc::channel(1);
     let start_time = Instant::now();
 
