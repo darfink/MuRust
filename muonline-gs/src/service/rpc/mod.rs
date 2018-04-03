@@ -1,8 +1,8 @@
 use self::api::{GameServerApi, GameServerStatus};
+use controller::GameServerController;
 use jsonrpc_core::{Error, IoHandler};
 use jsonrpc_http_server;
 use jsonrpc_http_server::ServerBuilder;
-use service::GameServiceInterface;
 use std::io;
 use std::net::SocketAddr;
 
@@ -16,13 +16,12 @@ pub struct RpcService {
 
 impl RpcService {
   /// Spawns the RPC service on the HTTP protocol.
-  pub fn spawn<T: GameServiceInterface>(socket: SocketAddr, jsi: T) -> io::Result<Self> {
+  pub fn spawn(socket: SocketAddr, controller: GameServerController) -> io::Result<Self> {
     let mut io = IoHandler::new();
-    io.extend_with(jsi.to_delegate());
+    io.extend_with(controller.to_delegate());
 
     ServerBuilder::new(io).start_http(&socket).map(|server| {
       let uri = format!("http://{}", server.address());
-      info!("RPC servicing at {}", &uri);
       RpcService { server, uri }
     })
   }
@@ -34,17 +33,18 @@ impl RpcService {
   pub fn close(self) { self.server.close(); }
 }
 
-impl<T: GameServiceInterface> GameServerApi for T {
+impl GameServerApi for GameServerController {
   fn status(&self) -> Result<GameServerStatus, Error> {
+    let context = self.context();
     let socket = self.socket();
 
     Ok(GameServerStatus {
       id: self.id(),
-      capacity: self.capacity(),
       host: *socket.ip(),
       port: socket.port(),
+      clients: context.number_of_clients(),
+      max_clients: self.max_clients(),
       uptime: self.uptime().as_secs(),
-      clients: self.number_of_clients(),
     })
   }
 

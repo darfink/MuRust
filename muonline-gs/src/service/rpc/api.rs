@@ -14,9 +14,9 @@ build_rpc_trait! {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct GameServerStatus {
   pub id: u16,
-  pub capacity: usize,
-  pub clients: usize,
   pub host: Ipv4Addr,
   pub port: u16,
+  pub clients: usize,
+  pub max_clients: usize,
   pub uptime: u64,
 }

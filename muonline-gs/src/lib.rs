@@ -26,6 +26,7 @@ use std::io;
 #[macro_use]
 mod macros;
 mod builder;
+mod controller;
 mod service;
 pub mod rpc {
   // Re-export the RPC API
@@ -55,7 +56,6 @@ impl GameServer {
   /// Will block, waiting for the server to finish.
   pub fn wait(self) -> io::Result<()> {
     let result = self.game_service.wait();
-    // Explicitly close, and skip waiting for the RPC service.
     self.rpc_service.close();
     result
   }

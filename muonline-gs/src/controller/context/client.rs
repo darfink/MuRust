@@ -1,6 +1,6 @@
 use std::net::SocketAddrV4;
 
-/// A representation of a Join Service client.
+/// A representation of a service client.
 #[derive(Debug)]
 pub struct Client {
   pub id: usize,

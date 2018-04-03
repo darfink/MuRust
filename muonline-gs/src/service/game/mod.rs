@@ -1,41 +1,27 @@
-use self::controller::GameServiceController;
-use self::traits::GameServiceControl;
-use futures::sync::mpsc;
-use futures::{Future, Stream};
-use service::GameServiceInterface;
+use controller::GameServerController;
 use std::io;
-use std::net::SocketAddrV4;
 use std::thread::{self, JoinHandle};
 use tap::TapResultOps;
 
-mod controller;
 mod server;
-mod traits;
 
+/// An implementation of a Game Service.
 pub struct GameService {
-  controller: GameServiceController,
+  controller: GameServerController,
   thread: Option<JoinHandle<io::Result<()>>>,
 }
 
 impl GameService {
   /// Spawns a new Game Service instance.
-  pub fn spawn(socket: SocketAddrV4, id: u16, capacity: usize) -> Self {
-    let (tx, rx) = mpsc::channel(1);
-
-    let controller = GameServiceController::new(socket, id, capacity, tx);
-    let thread = thread::spawn(closet!([controller] move || {
-      let close = rx.into_future().map(|_| ()).map_err(|_| io::ErrorKind::Other.into());
-      server::serve(controller, close)
-    }));
+  pub fn spawn(controller: GameServerController) -> Self {
+    let cc = controller.clone();
+    let thread = thread::spawn(move || server::serve(cc));
 
     GameService {
       controller,
       thread: Some(thread),
     }
   }
-
-  /// Returns an interface to the controller instance.
-  pub fn interface(&self) -> impl GameServiceInterface { self.controller.clone() }
 
   /// Closes the service.
   pub fn close(mut self) -> io::Result<()> {
@@ -55,7 +41,8 @@ impl GameService {
   }
 }
 
+/// Closes the service upon destruction.
 impl Drop for GameService {
-  /// Closes the service upon destruction.
   fn drop(&mut self) { let _ = self.controller.close(); }
 }
+
