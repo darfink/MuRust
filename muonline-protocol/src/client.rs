@@ -1,6 +1,6 @@
 //! Game Client
 
-use GameServerCode;
+use model::GameServerCode;
 use muonline_packet::{Packet, PacketDecodable, PacketType};
 use std::io;
 use std::ops::Deref;
@@ -10,7 +10,7 @@ use std::ops::Deref;
 pub enum Client {
   JoinServerConnectRequest(JoinServerConnectRequest),
   GameServerConnectRequest(GameServerConnectRequest),
-  GameServerListRequest(GameServerListRequest),
+  GameServerListRequest,
   None,
 }
 
@@ -27,7 +27,7 @@ impl Client {
         GameServerConnectRequest::from_packet(packet).map(Client::GameServerConnectRequest)
       },
       (GameServerListRequest::CODE, &[0x06, _..]) => {
-        GameServerListRequest::from_packet(packet).map(Client::GameServerListRequest)
+        GameServerListRequest::from_packet(packet).map(|_| Client::GameServerListRequest)
       },
       _ => Ok(Client::None),
     }

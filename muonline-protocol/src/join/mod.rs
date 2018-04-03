@@ -35,7 +35,13 @@
 
 use muserialize::{IntegerLE, StringFixed, VectorLengthBE};
 use std::iter::FromIterator;
-use {typenum, GameServerCode, GameServerLoad};
+use typenum;
+use self::meta::GameServerListEntry;
+
+pub mod meta;
+
+/// The major, minor and patch version of this protocol.
+pub const VERSION: (u8, u8, u8) = (0, 0, 1);
 
 /// `C1:00` — Describes the result of a [JoinServerConnectRequest](../client/struct.JoinServerConnectRequest.html).
 ///
@@ -66,8 +72,8 @@ pub struct JoinServerConnectResult(pub bool);
 /// ## Example
 ///
 /// ```c
-/// [0xC1, 0x16, 0xF4, 0x03, 0x38, 0x35, 0x2E, 0x32, 0x32, 0x36, 0x2E, 0x33,
-/// 0x2E, 0x34, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0x57] ```
+/// [0xC1, 0x16, 0xF4, 0x03, 0x38, 0x35, 0x2E, 0x32, 0x32, 0x36, 0x2E, 0x33, 0x2E, 0x34, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAB, 0x57]
+/// ```
 #[derive(Serialize, MuPacket, Debug)]
 #[packet(kind = "C1", code = "F4", subcode = "03")]
 pub struct GameServerConnect {
@@ -83,20 +89,16 @@ pub struct GameServerConnect {
 ///
 /// Field | Type | Description | Endianess
 /// ----- | ---- | ----------- | ---------
-/// count | `U16` | The number of
-/// [GameServerListEntry](./struct.GameServerListEntry.html) in this response.
-/// | LE entries | `GameServerListEntry[]` | An array of server entries. | -
+/// count | `U16` | The number of [GameServerListEntry](./meta/struct.GameServerListEntry.html) in this response. | LE
+/// entries | `GameServerListEntry[]` | An array of server entries. | -
 ///
 /// ### Layout - entries
 ///
 /// Field | Type | Description | Endianess
 /// ----- | ---- | ----------- | ---------
-/// code | `U16` | The game server's code (segmented in 20 number intervals).
-/// Maps to localized names on the client. If the 2 lowest bits are *both* set
-/// or unset, marked as **Non-PvP**. | LE load | `U8` | The game server's load
-/// balance, specified in ranges (**1-99:** load, **100-127:** full, **≥128:**
-/// now preparing). | - unknown | `U8` | Unused by the game client. Fixed value
-/// on retail (`0x66`). | -
+/// code | `U16` | The game server's code (segmented in 20 number intervals). Maps to localized names on the client. If the 2 lowest bits are *both* set or unset, marked as **Non-PvP**. | LE
+/// load | `U8` | The game server's load balance, specified in ranges (**1-99:** load, **100-127:** full, **≥128:** now preparing). | -
+/// unknown | `U8` | Unused by the game client. Fixed value on retail (`0x66`). | -
 ///
 /// ## Example
 ///
@@ -106,23 +108,6 @@ pub struct GameServerConnect {
 #[derive(Serialize, MuPacket, Debug)]
 #[packet(kind = "C2", code = "F4", subcode = "06")]
 pub struct GameServerList(#[serde(with = "VectorLengthBE::<u16>")] pub Vec<GameServerListEntry>);
-
-#[derive(Serialize, Debug)]
-pub struct GameServerListEntry {
-  pub code: GameServerCode,
-  pub load: GameServerLoad,
-  unknown: u8,
-}
-
-impl GameServerListEntry {
-  pub fn new(code: GameServerCode, load: GameServerLoad) -> Self {
-    GameServerListEntry {
-      code,
-      load,
-      unknown: 0x77,
-    }
-  }
-}
 
 impl FromIterator<GameServerListEntry> for GameServerList {
   fn from_iter<I: IntoIterator<Item = GameServerListEntry>>(iter: I) -> Self {

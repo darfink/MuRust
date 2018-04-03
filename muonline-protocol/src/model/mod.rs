@@ -1,5 +1,5 @@
-pub use self::gs_code::GameServerCode;
-pub use self::gs_load::GameServerLoad;
+//! Protocol Models
 
-mod gs_code;
-mod gs_load;
+pub use self::gs::*;
+
+mod gs;

@@ -25,4 +25,14 @@ impl GameServerCode {
   pub fn group(&self) -> u8 {
     (self.code / GS_GROUP_MOD + 1) as u8
   }
+
+  pub fn code(&self) -> u16 {
+    self.code
+  }
+}
+
+impl From<u16> for GameServerCode {
+  fn from(code: u16) -> Self {
+    GameServerCode { code }
+  }
 }
