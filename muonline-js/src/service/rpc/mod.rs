@@ -1,8 +1,8 @@
 use self::api::{JoinServerApi, JoinServerStatus};
+use controller::JoinServerController;
 use jsonrpc_core::{Error, IoHandler};
 use jsonrpc_http_server;
 use jsonrpc_http_server::ServerBuilder;
-use service::JoinServiceInterface;
 use std::io;
 use std::net::SocketAddr;
 
@@ -16,9 +16,9 @@ pub struct RpcService {
 
 impl RpcService {
   /// Spawns the RPC service on the HTTP protocol.
-  pub fn spawn<T: JoinServiceInterface>(socket: SocketAddr, jsi: T) -> io::Result<Self> {
+  pub fn spawn(socket: SocketAddr, controller: JoinServerController) -> io::Result<Self> {
     let mut io = IoHandler::new();
-    io.extend_with(jsi.to_delegate());
+    io.extend_with(controller.to_delegate());
 
     ServerBuilder::new(io).start_http(&socket).map(|server| {
       let uri = format!("http://{}", server.address());
@@ -33,15 +33,16 @@ impl RpcService {
   pub fn close(self) { self.server.close(); }
 }
 
-impl<T: JoinServiceInterface> JoinServerApi for T {
+impl JoinServerApi for JoinServerController {
   fn status(&self) -> Result<JoinServerStatus, Error> {
+    let context = self.context();
     let socket = self.socket();
 
     Ok(JoinServerStatus {
       host: *socket.ip(),
       port: socket.port(),
       uptime: self.uptime().as_secs(),
-      clients: self.number_of_clients(),
+      clients: context.number_of_clients(),
     })
   }
 

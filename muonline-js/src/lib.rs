@@ -1,4 +1,5 @@
 #![feature(conservative_impl_trait)]
+#![feature(pattern_parentheses)]
 
 #[macro_use]
 extern crate log;
@@ -25,13 +26,18 @@ extern crate jsonrpc_http_server;
 extern crate jsonrpc_client_core;
 extern crate jsonrpc_client_http;
 
-pub use self::builder::ServerBuilder;
+// TODO: Replace all unwraps with expect
+
+pub use builder::ServerBuilder;
+use traits::QueryableGameServer;
 use std::io;
 
 #[macro_use]
 mod macros;
 mod builder;
+mod controller;
 mod service;
+mod traits;
 pub mod rpc {
   // Re-export the RPC API
   pub use service::rpc::api::*;
@@ -39,6 +45,8 @@ pub mod rpc {
 
 /// An implementation of a Join Server.
 pub struct JoinServer {
+  #[allow(unused)]
+  game_servers: Vec<Box<QueryableGameServer>>,
   join_service: service::JoinService,
   rpc_service: service::RpcService,
 }
@@ -63,7 +71,6 @@ impl JoinServer {
   /// Will block, waiting for the server to finish.
   pub fn wait(self) -> io::Result<()> {
     let result = self.join_service.wait();
-    // Explicitly close, and skip waiting for the RPC service.
     self.rpc_service.close();
     result
   }

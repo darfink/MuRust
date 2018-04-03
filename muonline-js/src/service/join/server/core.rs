@@ -1,11 +1,11 @@
-use super::JoinServiceControl;
+use controller::JoinServerController;
 use futures::{Future, IntoFuture, Stream, future::Either};
 use mupack::{self, PacketEncodable};
 use protocol;
 use std::io;
 
-pub fn proto_core<S: JoinServiceControl>(
-  state: &S,
+pub fn proto_core(
+  controller: &JoinServerController,
   packet: &mupack::Packet,
 ) -> impl Future<Item = mupack::Packet, Error = io::Error> + Send {
   let client_packet = match protocol::Client::from_packet(packet) {
@@ -28,8 +28,9 @@ pub fn proto_core<S: JoinServiceControl>(
     // protocol::Client::GameServerConnectRequest(server) => {
     // },
     protocol::Client::GameServerListRequest => {
-      let result = state
-        .query_game_servers()
+      let result = controller
+        .browser()
+        .query_all()
         .map(|status| {
           protocol::join::meta::GameServerListEntry::new(
             status.id.into(),

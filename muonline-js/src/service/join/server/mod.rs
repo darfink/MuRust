@@ -1,5 +1,5 @@
-use super::JoinServiceControl;
-use futures::{Future, IntoFuture, Stream};
+use controller::JoinServerController;
+use futures::{Future, Stream};
 use std::io;
 use std::net::{SocketAddr, SocketAddrV4};
 use tokio::io::AsyncRead;
@@ -8,21 +8,26 @@ use {mucodec, mupack, tokio};
 
 mod core;
 
-/// Starts the Join Server using the supplied state.
-pub fn serve<S, C>(state: S, cancel: C) -> io::Result<()>
-where
-  S: JoinServiceControl,
-  C: IntoFuture<Item = (), Error = io::Error>,
-  C::Future: Send + 'static,
-{
+/// Starts the Join Server using the supplied controller.
+pub fn serve(controller: JoinServerController) -> io::Result<()> {
+  let cancel = controller
+    // The controller supplies the exit invoker
+    .take_close_receiver()
+    // A stream is not of any interest
+    .into_future()
+    // The close action can only be triggered once
+    .map(|_| ())
+    // An MPSC receiver cannot produce an error
+    .map_err(|_| io::ErrorKind::Other.into());
+
   // Listen on the supplied TCP socket
-  let server = TcpListener::bind(&state.socket().into())?
+  let server = TcpListener::bind(&controller.socket().into())?
     // Wait for incoming connections
     .incoming()
     // Process each new client connection
-    .for_each(closet!([state] move |stream| process_client(&state, stream)))
-    // Listen for any cancellation events from the front-end
-    .select(cancel.into_future());
+    .for_each(closet!([controller] move |stream| process_client(&controller, stream)))
+    // Listen for any cancellation events from the controller
+    .select(cancel);
 
   tokio::run(
     server
@@ -33,10 +38,10 @@ where
 }
 
 /// Setups and spawns a new task for a client.
-fn process_client<S: JoinServiceControl>(state: &S, stream: TcpStream) -> io::Result<()> {
+fn process_client(controller: &JoinServerController, stream: TcpStream) -> io::Result<()> {
   // Retrieve the client's address and store it
-  let id = state.add_client(ipv4socket(&stream)?);
-  let state = state.clone();
+  let id = controller.context().add_client(ipv4socket(&stream)?);
+  let controller = controller.clone();
 
   let (writer, reader) = stream
     // Use a non C3/C4 encrypted TCP codec
@@ -46,12 +51,12 @@ fn process_client<S: JoinServiceControl>(state: &S, stream: TcpStream) -> io::Re
 
   let client = reader
     // Each packet received maps to a response packet
-    .and_then(closet!([state] move |packet| core::proto_core(&state, &packet)))
+    .and_then(closet!([controller] move |packet| core::proto_core(&controller, &packet)))
     // Return each response packet to the client
     .forward(writer)
     // Remove the client from the service state
     .then(move |future| {
-      state.remove_client(id);
+      controller.context().remove_client(id);
       future
     });
 

@@ -1,14 +1,11 @@
+use self::client::GameServerApi;
 use futures::{stream, Future, Stream};
 use jsonrpc_client_http::{HttpHandle, HttpTransport};
 use mugs;
 use std::io;
 use std::sync::Mutex;
 
-// TODO: Ensure Game Servers are a specific version?
-jsonrpc_client!(pub struct GameServerApi {
-  /// Returns the status of the Join Service.
-  pub fn status(&mut self) -> RpcRequest<mugs::rpc::GameServerStatus>;
-});
+mod client;
 
 /// A browser of all available Game Servers.
 pub struct GameServerBrowser {
@@ -17,30 +14,30 @@ pub struct GameServerBrowser {
 
 impl GameServerBrowser {
   /// Constructs a new Game Server browser.
-  pub fn new<'a, S, I>(servers: S) -> io::Result<Self>
+  pub fn new<'a, S, I>(uris: S) -> io::Result<Self>
   where
     S: IntoIterator<Item = I>,
     I: AsRef<str>,
   {
     let servers = HttpTransport::new()
       .and_then(|transport| {
-        servers
+        let uri_to_api = |uri: I| {
+          transport
+            .handle(uri.as_ref())
+            .map(|handle| GameServerApi::new(handle))
+        };
+        uris
           .into_iter()
-          .map(|uri| {
-            transport
-              .handle(uri.as_ref())
-              .map(|handle| GameServerApi::new(handle))
-          })
+          .map(uri_to_api)
           .collect::<Result<Vec<_>, _>>()
       })
       .map_err(|error| io::Error::new(io::ErrorKind::Other, error.to_string()))?;
-    Ok(GameServerBrowser {
-      servers: Mutex::new(servers),
-    })
+    let servers = Mutex::new(servers);
+    Ok(GameServerBrowser { servers })
   }
 
   /// Queries all available game servers.
-  pub fn query_servers(
+  pub fn query_all(
     &self,
   ) -> impl Stream<Item = mugs::rpc::GameServerStatus, Error = io::Error> + Send {
     let mut servers = self.servers.lock().unwrap();
