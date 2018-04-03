@@ -1,11 +1,11 @@
-use self::gsopt::GameServerOption;
+use self::gso::GameServerOption;
 use controller::{GameServerBrowser, JoinServerContext, JoinServerController};
 use service::{JoinService, RpcService};
 use std::io;
 use std::net::{SocketAddr, SocketAddrV4};
 use {mugs, JoinServer};
 
-mod gsopt;
+mod gso;
 
 /// A builder for the Join Server.
 pub struct ServerBuilder {
@@ -41,7 +41,7 @@ impl ServerBuilder {
 
   /// Spawns the Join & RPC services and returns a controller.
   pub fn spawn(self) -> io::Result<JoinServer> {
-    let game_servers = gsopt::spawn(self.game_servers)?;
+    let game_servers = gso::spawn_or_remote(self.game_servers)?;
     let game_servers_count = game_servers.len();
 
     let context = JoinServerContext::new();

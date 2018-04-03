@@ -10,12 +10,12 @@ mod context;
 
 /// The internal data of a Join Server controller instance.
 struct JoinServerControllerInner {
-  context: JoinServerContext,
   browser: GameServerBrowser,
-  socket: SocketAddrV4,
-  start_time: Instant,
   close_rx: Mutex<Option<mpsc::Receiver<()>>>,
   close_tx: mpsc::Sender<()>,
+  context: JoinServerContext,
+  socket: SocketAddrV4,
+  start_time: Instant,
 }
 
 /// A Join Server controller.
@@ -29,12 +29,12 @@ impl JoinServerController {
     let start_time = Instant::now();
 
     JoinServerController(Arc::new(JoinServerControllerInner {
-      context,
       browser,
-      socket,
-      start_time,
       close_rx: Mutex::new(Some(close_rx)),
       close_tx,
+      context,
+      socket,
+      start_time,
     }))
   }
 

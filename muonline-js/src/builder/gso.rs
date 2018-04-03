@@ -19,7 +19,7 @@ impl QueryableGameServer for mugs::GameServer {
 }
 
 /// Returns registered servers as a Queryable collection.
-pub fn spawn(servers: Vec<GameServerOption>) -> io::Result<Vec<Box<QueryableGameServer>>> {
+pub fn spawn_or_remote(servers: Vec<GameServerOption>) -> io::Result<Vec<Box<QueryableGameServer>>> {
   servers
     .into_iter()
     .map(|option| match option {
