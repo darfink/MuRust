@@ -63,15 +63,13 @@ pub struct JoinServerConnectRequest {
 #[derive(Deserialize, MuPacket, Debug)]
 #[packet(kind = "C1", code = "F4", subcode = "03")]
 pub struct GameServerConnectRequest {
-  pub code: GameServerCode,
+  pub id: GameServerCode,
 }
 
 impl Deref for GameServerConnectRequest {
   type Target = GameServerCode;
 
-  fn deref(&self) -> &Self::Target {
-    &self.code
-  }
+  fn deref(&self) -> &Self::Target { &self.id }
 }
 
 /// `C1:F4:06` - Request for the Game Server list.

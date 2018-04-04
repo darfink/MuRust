@@ -39,8 +39,8 @@ pub fn serve(controller: JoinServerController) -> io::Result<()> {
 
 /// Setups and spawns a new task for a client.
 fn process_client(controller: &JoinServerController, stream: TcpStream) -> io::Result<()> {
-  // Retrieve the client's address and store it
-  let id = controller.context().add_client(ipv4socket(&stream)?);
+  // Add the client to the manager
+  let id = controller.client_manager().add(ipv4socket(&stream)?);
   let controller = controller.clone();
 
   let (writer, reader) = stream
@@ -56,7 +56,7 @@ fn process_client(controller: &JoinServerController, stream: TcpStream) -> io::R
     .forward(writer)
     // Remove the client from the service state
     .then(move |future| {
-      controller.context().remove_client(id);
+      controller.client_manager().remove(id);
       future
     });
 

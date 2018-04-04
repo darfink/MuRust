@@ -1,5 +1,5 @@
 use self::gso::GameServerOption;
-use controller::{GameServerBrowser, JoinServerContext, JoinServerController};
+use controller::{GameServerBrowser, JoinServerController};
 use service::{JoinService, RpcService};
 use std::io;
 use std::net::{SocketAddr, SocketAddrV4};
@@ -44,9 +44,8 @@ impl ServerBuilder {
     let game_servers = gso::spawn_or_remote(self.game_servers)?;
     let game_servers_count = game_servers.len();
 
-    let context = JoinServerContext::new();
-    let browser = GameServerBrowser::new(game_servers.iter().map(|s| s.uri()))?;
-    let controller = JoinServerController::new(self.socket_join, context, browser);
+    let server_browser = GameServerBrowser::new(game_servers.iter().map(|s| s.uri()))?;
+    let controller = JoinServerController::new(self.socket_join, server_browser);
 
     let join_service = JoinService::spawn(controller.clone());
     let rpc_service = RpcService::spawn(self.socket_rpc, controller.clone())?;

@@ -29,8 +29,8 @@ extern crate jsonrpc_client_http;
 // TODO: Replace all unwraps with expect
 
 pub use builder::ServerBuilder;
-use traits::QueryableGameServer;
 use std::io;
+use traits::QueryableGameServer;
 
 #[macro_use]
 mod macros;

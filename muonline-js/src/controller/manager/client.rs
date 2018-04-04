@@ -1,5 +1,6 @@
 use std::net::SocketAddrV4;
 
+// TODO: Use strongly typed ID?
 /// A representation of a service client.
 #[derive(Debug)]
 pub struct Client {

@@ -25,21 +25,31 @@ pub fn proto_core(
       };
       Either::A(result.into_future())
     },
-    // protocol::Client::GameServerConnectRequest(server) => {
-    // },
+    protocol::Client::GameServerConnectRequest(server) => {
+      let result = controller
+        .server_browser()
+        .query(server.code())
+        .and_then(|status| {
+          protocol::join::GameServerConnect {
+            host: status.host.to_string(),
+            port: status.port,
+          }.to_packet()
+        });
+      Either::B(Box::new(result) as Box<Future<Item = mupack::Packet, Error = io::Error> + Send>)
+    },
     protocol::Client::GameServerListRequest => {
       let result = controller
-        .browser()
+        .server_browser()
         .query_all()
-        .map(|status| {
+        .map(|game_server| {
           protocol::join::meta::GameServerListEntry::new(
-            status.id.into(),
-            protocol::model::GameServerLoad::Load(0.5),
+            game_server.id.into(),
+            protocol::model::GameServerLoad::Load(game_server.load_factor()),
           )
         })
         .collect()
         .and_then(|entries| protocol::join::GameServerList(entries).to_packet());
-      Either::B(result)
+      Either::B(Box::new(result) as Box<Future<Item = mupack::Packet, Error = io::Error> + Send>)
     },
     _ => {
       let message = format!("unhandled packet {:x}", packet.code());

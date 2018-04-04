@@ -35,14 +35,13 @@ impl RpcService {
 
 impl JoinServerApi for JoinServerController {
   fn status(&self) -> Result<JoinServerStatus, Error> {
-    let context = self.context();
     let socket = self.socket();
 
     Ok(JoinServerStatus {
       host: *socket.ip(),
       port: socket.port(),
       uptime: self.uptime().as_secs(),
-      clients: context.number_of_clients(),
+      clients: self.client_manager().len(),
     })
   }
 
