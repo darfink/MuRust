@@ -16,7 +16,7 @@ impl ServerBuilder {
   pub fn new(id: u16) -> Self {
     ServerBuilder {
       socket_rpc: "127.0.0.1:0".parse().unwrap(),
-      socket_game: "0.0.0.0:2005".parse().unwrap(),
+      socket_game: "0.0.0.0:0".parse().unwrap(),
       server_id: id,
       max_clients: 100,
     }
