@@ -30,4 +30,4 @@ pub use self::client::Client;
 
 pub mod client;
 pub mod join;
-pub mod model;
+pub mod shared;

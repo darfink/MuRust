@@ -1,13 +1,13 @@
 //! Game Client
 
-use model::GameServerCode;
 use muonline_packet::{Packet, PacketDecodable, PacketType};
+use muserialize::IntegerLE;
 use std::io;
-use std::ops::Deref;
 
 /// An aggregation of all possible client packets.
 #[derive(Debug)]
 pub enum Client {
+  ClientTime(ClientTime),
   JoinServerConnectRequest(JoinServerConnectRequest),
   GameServerConnectRequest(GameServerConnectRequest),
   GameServerListRequest,
@@ -17,9 +17,11 @@ pub enum Client {
 impl Client {
   /// Constructs a client packet from an unidentified one.
   pub fn from_packet(packet: &Packet) -> io::Result<Self> {
-    // TODO: Handle this boilerplate
+    // TODO: Handle this boilerplate, subcodes should also be automatic
     match (packet.code(), packet.data()) {
-      // TODO: Subcodes should be automatic
+      (ClientTime::CODE, &[0x00, _..]) => {
+        ClientTime::from_packet(packet).map(Client::ClientTime)
+      },
       (JoinServerConnectRequest::CODE, _) => {
         JoinServerConnectRequest::from_packet(packet).map(Client::JoinServerConnectRequest)
       },
@@ -32,6 +34,28 @@ impl Client {
       _ => Ok(Client::None),
     }
   }
+}
+
+/// `C1:0E:00` - Local client timing values.
+///
+/// This is sent by default every 20th second.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// time | `U32` | The client's time instant in milliseconds. | LE
+/// speed (attack) | `U16` | The client's current attack speed. | LE
+/// speed (magic) | `U16` | The client's current magic speed. | LE
+#[derive(Deserialize, MuPacket, Debug)]
+#[packet(kind = "C1", code = "0E", subcode = "00")]
+pub struct ClientTime {
+    #[serde(with = "IntegerLE")]
+    pub time: u32,
+    #[serde(with = "IntegerLE")]
+    pub attack_speed: u16,
+    #[serde(with = "IntegerLE")]
+    pub magic_speed: u16,
 }
 
 /// `C1:A9` - Connect request to a Join Server.
@@ -59,17 +83,12 @@ pub struct JoinServerConnectRequest {
 ///
 /// Field | Type | Description | Endianess
 /// ----- | ---- | ----------- | ---------
-/// code | `U16` | The selected server's code. | LE
+/// id | `U16` | The selected server's id. | LE
 #[derive(Deserialize, MuPacket, Debug)]
 #[packet(kind = "C1", code = "F4", subcode = "03")]
-pub struct GameServerConnectRequest {
-  pub id: GameServerCode,
-}
-
-impl Deref for GameServerConnectRequest {
-  type Target = GameServerCode;
-
-  fn deref(&self) -> &Self::Target { &self.id }
+pub struct GameServerConnectRequest{
+  #[serde(with = "IntegerLE")]
+  pub id: u16,
 }
 
 /// `C1:F4:06` - Request for the Game Server list.

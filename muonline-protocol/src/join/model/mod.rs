@@ -12,6 +12,10 @@ pub enum GameServerLoad {
 /// The highest bit indicates whether the server is preparing or not.
 const IS_PREPARING: u8 = (1 << 7);
 
+impl From<f32> for GameServerLoad {
+  fn from(load: f32) -> Self { GameServerLoad::Load(load) }
+}
+
 impl From<GameServerLoad> for u8 {
   fn from(load: GameServerLoad) -> Self {
     match load {

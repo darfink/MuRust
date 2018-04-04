@@ -1,6 +1,7 @@
-//! Join packets' meta.
+//! Contains packet meta attributes.
 
-use model::{GameServerCode, GameServerLoad};
+use join::model::GameServerLoad;
+use muserialize::IntegerLE;
 
 /// A Game Server list entry.
 ///
@@ -8,7 +9,8 @@ use model::{GameServerCode, GameServerLoad};
 #[derive(Serialize, Debug)]
 pub struct GameServerListEntry {
   /// The Game Server's identifier.
-  pub code: GameServerCode,
+  #[serde(with = "IntegerLE")]
+  pub id: u16,
   /// The Game Server's load.
   pub load: GameServerLoad,
   /// Unknown field.
@@ -16,10 +18,10 @@ pub struct GameServerListEntry {
 }
 
 impl GameServerListEntry {
-  pub fn new(code: GameServerCode, load: GameServerLoad) -> Self {
+  pub fn new<T: Into<GameServerLoad>>(id: u16, load: T) -> Self {
     GameServerListEntry {
-      code,
-      load,
+      id,
+      load: load.into(),
       unknown: 0x77,
     }
   }

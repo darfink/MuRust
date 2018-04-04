@@ -38,6 +38,7 @@ use std::iter::FromIterator;
 use typenum;
 use self::meta::GameServerListEntry;
 
+pub mod model;
 pub mod meta;
 
 /// The major, minor and patch version of this protocol.
