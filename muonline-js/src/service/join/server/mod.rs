@@ -21,6 +21,7 @@ pub fn serve(controller: JoinServerController) -> io::Result<()> {
     .map_err(|_| io::ErrorKind::Other.into());
 
   // Listen on the supplied TCP socket
+  // TODO: Update actual port bound
   let server = TcpListener::bind(&controller.socket().into())?
     // Wait for incoming connections
     .incoming()

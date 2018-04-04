@@ -4,6 +4,7 @@ use mupack::{self, PacketEncodable};
 use protocol;
 use std::io;
 
+// TODO: Removing boxing in this function
 pub fn proto_core(
   controller: &JoinServerController,
   packet: &mupack::Packet,
@@ -28,7 +29,7 @@ pub fn proto_core(
     protocol::Client::GameServerConnectRequest(server) => {
       let result = controller
         .server_browser()
-        .query(server.code())
+        .query(server.id)
         .and_then(|status| {
           protocol::join::GameServerConnect {
             host: status.host.to_string(),
@@ -43,8 +44,8 @@ pub fn proto_core(
         .query_all()
         .map(|game_server| {
           protocol::join::meta::GameServerListEntry::new(
-            game_server.id.into(),
-            protocol::model::GameServerLoad::Load(game_server.load_factor()),
+            game_server.id,
+            game_server.load_factor(),
           )
         })
         .collect()

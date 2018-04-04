@@ -27,6 +27,8 @@ extern crate jsonrpc_client_core;
 extern crate jsonrpc_client_http;
 
 // TODO: Replace all unwraps with expect
+// TODO: Figure out Error string formatting
+// TODO: Determine how logging output should be
 
 pub use builder::ServerBuilder;
 use std::io;
