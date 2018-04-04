@@ -37,9 +37,7 @@ pub struct PacketCodec {
 
 impl PacketCodec {
   /// Creates a new packet codec.
-  pub fn new(encrypt: State, decrypt: State) -> Self {
-    PacketCodec { encrypt, decrypt }
-  }
+  pub fn new(encrypt: State, decrypt: State) -> Self { PacketCodec { encrypt, decrypt } }
 }
 
 impl Encoder for PacketCodec {
