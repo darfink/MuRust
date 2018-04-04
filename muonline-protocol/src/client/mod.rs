@@ -19,9 +19,7 @@ impl Client {
   pub fn from_packet(packet: &Packet) -> io::Result<Self> {
     // TODO: Handle this boilerplate, subcodes should also be automatic
     match (packet.code(), packet.data()) {
-      (ClientTime::CODE, &[0x00, _..]) => {
-        ClientTime::from_packet(packet).map(Client::ClientTime)
-      },
+      (ClientTime::CODE, &[0x00, _..]) => ClientTime::from_packet(packet).map(Client::ClientTime),
       (JoinServerConnectRequest::CODE, _) => {
         JoinServerConnectRequest::from_packet(packet).map(Client::JoinServerConnectRequest)
       },
@@ -50,12 +48,12 @@ impl Client {
 #[derive(Deserialize, MuPacket, Debug)]
 #[packet(kind = "C1", code = "0E", subcode = "00")]
 pub struct ClientTime {
-    #[serde(with = "IntegerLE")]
-    pub time: u32,
-    #[serde(with = "IntegerLE")]
-    pub attack_speed: u16,
-    #[serde(with = "IntegerLE")]
-    pub magic_speed: u16,
+  #[serde(with = "IntegerLE")]
+  pub time: u32,
+  #[serde(with = "IntegerLE")]
+  pub attack_speed: u16,
+  #[serde(with = "IntegerLE")]
+  pub magic_speed: u16,
 }
 
 /// `C1:A9` - Connect request to a Join Server.
@@ -86,7 +84,7 @@ pub struct JoinServerConnectRequest {
 /// id | `U16` | The selected server's id. | LE
 #[derive(Deserialize, MuPacket, Debug)]
 #[packet(kind = "C1", code = "F4", subcode = "03")]
-pub struct GameServerConnectRequest{
+pub struct GameServerConnectRequest {
   #[serde(with = "IntegerLE")]
   pub id: u16,
 }

@@ -31,12 +31,18 @@ pub enum JoinResult {
 impl JoinResult {
   /// Creates a new successful join result.
   pub fn success(client_id: u16) -> Self {
-    JoinResult::Success { client_id, version: VERSION }
+    JoinResult::Success {
+      client_id,
+      version: VERSION,
+    }
   }
 }
 
 impl Serialize for JoinResult {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: Serializer,
+  {
     #[derive(Serialize, Debug)]
     struct JoinResultSuccess {
       result: u8,
@@ -48,7 +54,11 @@ impl Serialize for JoinResult {
     match self {
       &JoinResult::Failure => 0u8.serialize(serializer),
       &JoinResult::Success { client_id, version } => {
-        let data = JoinResultSuccess { result: 1, client_id, version };
+        let data = JoinResultSuccess {
+          result: 1,
+          client_id,
+          version,
+        };
         data.serialize(serializer)
       },
     }

@@ -33,13 +33,13 @@
 //! [0xC2, 0x00, 0x0B, 0xF4, 0x06, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00]
 //! ```
 
+use self::meta::GameServerListEntry;
 use muserialize::{IntegerLE, StringFixed, VectorLengthBE};
 use std::iter::FromIterator;
 use typenum;
-use self::meta::GameServerListEntry;
 
-pub mod model;
 pub mod meta;
+pub mod model;
 
 /// The major, minor and patch version of this protocol.
 pub const VERSION: (u8, u8, u8) = (0, 0, 1);
