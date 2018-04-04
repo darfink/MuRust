@@ -35,15 +35,15 @@ impl RpcService {
 
 impl GameServerApi for GameServerController {
   fn status(&self) -> Result<GameServerStatus, Error> {
-    let context = self.context();
+    let clients = self.client_manager();
     let socket = self.socket();
 
     Ok(GameServerStatus {
       id: self.id(),
       host: *socket.ip(),
       port: socket.port(),
-      clients: context.number_of_clients(),
-      max_clients: self.max_clients(),
+      clients: clients.len(),
+      max_clients: clients.capacity(),
       uptime: self.uptime().as_secs(),
     })
   }

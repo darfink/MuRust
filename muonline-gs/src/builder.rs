@@ -1,5 +1,5 @@
 use GameServer;
-use controller::{GameServerContext, GameServerController};
+use controller::{ClientManager, GameServerController};
 use service::{GameService, RpcService};
 use std::io;
 use std::net::{SocketAddr, SocketAddrV4};
@@ -42,9 +42,8 @@ impl ServerBuilder {
 
   /// Spawns the Game & RPC services and returns a controller.
   pub fn spawn(self) -> io::Result<GameServer> {
-    let context = GameServerContext::new();
-    let controller =
-      GameServerController::new(self.socket_game, self.server_id, self.max_clients, context);
+    let manager = ClientManager::new(self.max_clients);
+    let controller = GameServerController::new(self.socket_game, self.server_id, manager);
 
     let game_service = GameService::spawn(controller.clone());
     let rpc_service = RpcService::spawn(self.socket_rpc, controller)?;
