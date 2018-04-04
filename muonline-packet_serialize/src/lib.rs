@@ -19,16 +19,12 @@ pub trait ByteOrderConverter {
 
 impl ByteOrderConverter for LittleEndian {
   /// Converts an integer to little endian.
-  fn to_endian<T: PrimInt>(value: T) -> T {
-    value.to_le()
-  }
+  fn to_endian<T: PrimInt>(value: T) -> T { value.to_le() }
 }
 
 impl ByteOrderConverter for BigEndian {
   /// Converts an integer to big endian.
-  fn to_endian<T: PrimInt>(value: T) -> T {
-    value.to_be()
-  }
+  fn to_endian<T: PrimInt>(value: T) -> T { value.to_be() }
 }
 
 pub use self::integer::{IntegerBE, IntegerLE};
