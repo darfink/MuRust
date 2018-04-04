@@ -21,11 +21,19 @@ impl ClientManager {
     }
   }
 
-  /// Adds a new client.
-  pub fn add(&self, socket: SocketAddrV4) -> usize {
+  /// Adds a new client, if there are free slots.
+  pub fn add(&self, socket: SocketAddrV4) -> Option<usize> {
+    let mut clients = self.clients();
+    let server_is_full = clients.len() >= self.capacity;
+
+    if server_is_full {
+      return None;
+    }
+
+    // TODO: Use crossbeam for ID pool?
     let id = self.idx.fetch_add(1, Ordering::Relaxed);
-    self.clients().push(Client::new(id, socket));
-    id
+    clients.push(Client::new(id, socket));
+    Some(id)
   }
 
   /// Removes a client.

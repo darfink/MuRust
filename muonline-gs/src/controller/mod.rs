@@ -14,7 +14,7 @@ pub struct GameServerController(Arc<GameServerControllerInner>);
 
 impl GameServerController {
   /// Constructs a new Game Server controller.
-  pub fn new(server_socket: SocketAddrV4, server_id: u16, client_manager: ClientManager) -> Self {
+  pub fn new(socket: SocketAddrV4, server_id: u16, client_manager: ClientManager) -> Self {
     let (close_tx, close_rx) = mpsc::channel(1);
     let inner = GameServerControllerInner {
       boot_time: Instant::now(),
@@ -22,7 +22,7 @@ impl GameServerController {
       close_rx: Mutex::new(Some(close_rx)),
       close_tx,
       server_id,
-      server_socket,
+      server_socket: Mutex::new(socket),
     };
 
     GameServerController(Arc::new(inner))
@@ -43,7 +43,7 @@ pub struct GameServerControllerInner {
   close_rx: Mutex<Option<mpsc::Receiver<()>>>,
   close_tx: mpsc::Sender<()>,
   server_id: u16,
-  server_socket: SocketAddrV4,
+  server_socket: Mutex<SocketAddrV4>,
 }
 
 impl GameServerControllerInner {
@@ -71,8 +71,13 @@ impl GameServerControllerInner {
   /// Returns the server's id.
   pub fn id(&self) -> u16 { self.server_id }
 
-  /// Returns the join service's socket.
-  pub fn socket(&self) -> SocketAddrV4 { self.server_socket }
+  /// Returns the game service's socket.
+  pub fn socket(&self) -> SocketAddrV4 { *self.server_socket.lock().unwrap() }
+
+  /// Refreshes the game service's socket.
+  pub fn refresh_socket(&self, socket: SocketAddrV4) {
+    *self.server_socket.lock().unwrap() = socket;
+  }
 
   /// Returns the server's context.
   pub fn client_manager(&self) -> &ClientManager { &self.client_manager }
