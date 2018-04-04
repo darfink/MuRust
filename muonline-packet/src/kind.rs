@@ -83,7 +83,5 @@ impl PacketKind {
   }
 
   /// Returns whether this is an encrypted kind or not.
-  pub fn is_encrypted(&self) -> bool {
-    *self == PacketKind::C3 || *self == PacketKind::C4
-  }
+  pub fn is_encrypted(&self) -> bool { *self == PacketKind::C3 || *self == PacketKind::C4 }
 }

@@ -90,39 +90,25 @@ impl Packet {
   }
 
   /// Appends a slice to the internal data.
-  pub fn append(&mut self, slice: &[u8]) {
-    self.data.extend_from_slice(slice);
-  }
+  pub fn append(&mut self, slice: &[u8]) { self.data.extend_from_slice(slice); }
 
   /// Returns the packet's kind (C1 or C2 only).
-  pub fn kind(&self) -> PacketKind {
-    self.kind
-  }
+  pub fn kind(&self) -> PacketKind { self.kind }
 
   /// Returns the packet's code designation.
-  pub fn code(&self) -> u8 {
-    self.code
-  }
+  pub fn code(&self) -> u8 { self.code }
 
   /// Returns the length of the entire packet.
-  pub fn len(&self) -> usize {
-    self.kind.offset() + self.data.len()
-  }
+  pub fn len(&self) -> usize { self.kind.offset() + self.data.len() }
 
   /// Returns whether the packet is empty or not.
-  pub fn is_empty(&self) -> bool {
-    self.len() == 0
-  }
+  pub fn is_empty(&self) -> bool { self.len() == 0 }
 
   /// Returns the content of the package.
-  pub fn data(&self) -> &[u8] {
-    self.data.as_ref()
-  }
+  pub fn data(&self) -> &[u8] { self.data.as_ref() }
 
   /// Converts a packet to raw bytes.
-  pub fn to_bytes(&self) -> Vec<u8> {
-    self.to_bytes_ex(None, None)
-  }
+  pub fn to_bytes(&self) -> Vec<u8> { self.to_bytes_ex(None, None) }
 
   /// Converts a packet to raw bytes with a specific encryption.
   pub fn to_bytes_ex(&self, cipher: Option<&[u8]>, encryption: Option<(&Crypto, u8)>) -> Vec<u8> {

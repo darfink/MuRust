@@ -246,9 +246,7 @@ impl Crypto {
   }
 
   /// Rounds a value up to a specific alignment.
-  fn align(value: usize, alignment: usize) -> usize {
-    (value + alignment - 1) / alignment
-  }
+  fn align(value: usize, alignment: usize) -> usize { (value + alignment - 1) / alignment }
 }
 
 #[cfg(test)]
