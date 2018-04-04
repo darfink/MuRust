@@ -11,7 +11,7 @@ build_rpc_trait! {
   }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub struct GameServerStatus {
   pub id: u16,
   pub host: Ipv4Addr,
@@ -19,4 +19,8 @@ pub struct GameServerStatus {
   pub clients: usize,
   pub max_clients: usize,
   pub uptime: u64,
+}
+
+impl GameServerStatus {
+  pub fn load_factor(&self) -> f32 { (self.clients as f32) / (self.max_clients as f32) }
 }
