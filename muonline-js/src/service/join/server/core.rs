@@ -43,10 +43,7 @@ pub fn proto_core(
         .server_browser()
         .query_all()
         .map(|game_server| {
-          protocol::join::meta::GameServerListEntry::new(
-            game_server.id,
-            game_server.load_factor(),
-          )
+          protocol::join::meta::GameServerListEntry::new(game_server.id, game_server.load_factor())
         })
         .collect()
         .and_then(|entries| protocol::join::GameServerList(entries).to_packet());
