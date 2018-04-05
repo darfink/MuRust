@@ -1,8 +1,8 @@
-use futures::{Future, IntoFuture, Sink};
+use futures::{Future, IntoFuture, Sink, Stream};
 use mupack::{self, PacketEncodable};
-use tokio::net::{TcpListener, TcpStream};
-use std::net::{SocketAddrV4, SocketAddr};
 use std::io;
+use std::net::{SocketAddr, SocketAddrV4};
+use tokio::net::{TcpListener, TcpStream};
 
 pub trait PacketSink: Sink<SinkItem = mupack::Packet, SinkError = io::Error> {
   fn send_packet<P: PacketEncodable>(
@@ -24,6 +24,29 @@ where
         .to_packet()
         .into_future()
         .and_then(move |packet| self.send(packet)),
+    )
+  }
+}
+
+pub trait PacketStream: Stream<Item = mupack::Packet, Error = io::Error> {
+  fn next_packet(self) -> Box<Future<Item = (Self::Item, Self), Error = io::Error> + Send>;
+}
+
+impl<S> PacketStream for S
+where
+  S: Stream<Item = mupack::Packet, Error = io::Error> + Send + 'static,
+{
+  fn next_packet(self) -> Box<Future<Item = (Self::Item, Self), Error = io::Error> + Send> {
+    Box::new(
+      self
+        .into_future()
+        .map_err(|(err, _)| err)
+        .and_then(move |(item, stream)| {
+          item
+            .map(move |item| (item, stream))
+            .ok_or(io::ErrorKind::ConnectionReset.into())
+            .into_future()
+        }),
     )
   }
 }
