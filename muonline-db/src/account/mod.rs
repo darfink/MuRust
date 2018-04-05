@@ -24,37 +24,37 @@ impl AccountInterface for Database {
 #[cfg(test)]
 mod tests {
   use super::AccountInterface;
-  use {bcrypt, diesel, schema, Database};
+  use Database;
 
-  fn hash_password(input: &str) -> String {
-    const BCRYPT_COST: u32 = 7;
-    bcrypt::hash(input, BCRYPT_COST).unwrap()
-  }
+  // fn hash_password(input: &str) -> String {
+  // const BCRYPT_COST: u32 = 7;
+  // bcrypt::hash(input, BCRYPT_COST).unwrap()
+  // }
+  //
+  // #[test]
+  // fn account_insert() {
+  // use diesel::prelude::*;
+  // use models::NewAccount;
+  //
+  // let password = hash_password("test");
+  // let account = NewAccount {
+  // username: "atomen",
+  // password: password.as_ref(),
+  // email: "test@mail.com",
+  // secret: 1234567,
+  // };
+  //
+  // let db = Database::new("database.sqlite");
+  // diesel::insert_into(schema::account::table)
+  // .values(&account)
+  // .execute(&db.connection)
+  // .expect("Error inserting account");
+  // }
 
   #[test]
-  fn account_insert() {
-    use diesel::prelude::*;
-    use models::NewAccount;
-
-    let password = hash_password("test");
-    let account = NewAccount {
-      username: "atomen",
-      password: password.as_ref(),
-      email: "test@mail.com",
-      secret: 1234567,
-    };
-
+  fn account_authenticate() {
     let db = Database::new("database.sqlite");
-    diesel::insert_into(schema::account::table)
-      .values(&account)
-      .execute(&db.connection)
-      .expect("Error inserting account");
-  }
-
-  #[test]
-  fn account_login() {
-    let db = Database::new("database.sqlite");
-    let account = db.login("atomen", "test");
+    let account = db.authenticate("atomen", "test");
     assert!(account.is_some());
   }
 }
