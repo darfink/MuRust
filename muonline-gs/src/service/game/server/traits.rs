@@ -8,7 +8,7 @@ pub trait PacketSink: Sink<SinkItem = mupack::Packet, SinkError = io::Error> {
   fn send_packet<P: PacketEncodable>(
     self,
     packet: &P,
-  ) -> Box<Future<Item = Self, Error = io::Error> + Send>;
+  ) -> Box<Future<Item = Self, Error = Self::SinkError> + Send>;
 }
 
 impl<S> PacketSink for S
@@ -18,7 +18,7 @@ where
   fn send_packet<P: PacketEncodable>(
     self,
     packet: &P,
-  ) -> Box<Future<Item = Self, Error = io::Error> + Send> {
+  ) -> Box<Future<Item = Self, Error = Self::SinkError> + Send> {
     Box::new(
       packet
         .to_packet()
@@ -29,14 +29,14 @@ where
 }
 
 pub trait PacketStream: Stream<Item = mupack::Packet, Error = io::Error> {
-  fn next_packet(self) -> Box<Future<Item = (Self::Item, Self), Error = io::Error> + Send>;
+  fn next_packet(self) -> Box<Future<Item = (Self::Item, Self), Error = Self::Error> + Send>;
 }
 
 impl<S> PacketStream for S
 where
   S: Stream<Item = mupack::Packet, Error = io::Error> + Send + 'static,
 {
-  fn next_packet(self) -> Box<Future<Item = (Self::Item, Self), Error = io::Error> + Send> {
+  fn next_packet(self) -> Box<Future<Item = (Self::Item, Self), Error = Self::Error> + Send> {
     Box::new(
       self
         .into_future()

@@ -1,10 +1,12 @@
-#![feature(conservative_impl_trait)]
+#![feature(proc_macro, generators)]
 
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate matches;
 extern crate tap;
 
-extern crate futures;
+extern crate futures_await as futures;
 extern crate tokio;
 
 extern crate muonline_db as mudb;

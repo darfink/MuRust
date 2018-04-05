@@ -4,10 +4,11 @@ name = "muonline-gs"
 version = "0.1.0"
 
 [dependencies]
-futures = "0.1"
+futures-await = { git = "https://github.com/PaulGrandperrin/futures-await" }
 jsonrpc-core = "8.0"
 jsonrpc-http-server = "8.0"
 jsonrpc-macros = "8.0"
+matches = "0.1.6"
 serde = "1.0"
 serde_derive = "1.0"
 structopt = "0.2"

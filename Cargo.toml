@@ -8,4 +8,5 @@ members = [
   "muonline-packet_derive",
   "muonline-packet_serialize",
   "muonline-protocol",
+  "muonline-sdk",
 ]
