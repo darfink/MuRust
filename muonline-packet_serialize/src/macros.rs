@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! primitive_serialize {
-  ($typ: ident, $int: ident) => {
+  ($typ:ident, $int:ident) => {
     impl ::serde::Serialize for $typ {
       fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
       where
@@ -31,7 +31,7 @@ macro_rules! primitive_serialize {
 
 #[macro_export]
 macro_rules! bitflags_serialize {
-  ($typ: ident, $int: ident) => {
+  ($typ:ident, $int:ident) => {
     impl ::serde::Serialize for $typ {
       fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
       where
