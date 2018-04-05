@@ -1,6 +1,3 @@
-#![feature(conservative_impl_trait)]
-#![feature(pattern_parentheses)]
-
 #[macro_use]
 extern crate log;
 extern crate tap;
