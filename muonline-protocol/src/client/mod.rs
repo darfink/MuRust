@@ -1,14 +1,18 @@
 //! Game Client
 
+use StringFixedCredentials;
 use muonline_packet::{Packet, PacketDecodable, PacketType};
 use muserialize::IntegerLE;
+use shared::{Serial, Version};
 use std::io;
+use typenum;
 
 /// An aggregation of all possible client packets.
 #[derive(Debug)]
 pub enum Client {
   ClientTime(ClientTime),
   JoinServerConnectRequest(JoinServerConnectRequest),
+  AccountLoginRequest(AccountLoginRequest),
   GameServerConnectRequest(GameServerConnectRequest),
   GameServerListRequest,
   None,
@@ -22,6 +26,9 @@ impl Client {
       (ClientTime::CODE, &[0x00, _..]) => ClientTime::from_packet(packet).map(Client::ClientTime),
       (JoinServerConnectRequest::CODE, _) => {
         JoinServerConnectRequest::from_packet(packet).map(Client::JoinServerConnectRequest)
+      },
+      (AccountLoginRequest::CODE, &[0x01, _..]) => {
+        AccountLoginRequest::from_packet(packet).map(Client::AccountLoginRequest)
       },
       (GameServerConnectRequest::CODE, &[0x03, _..]) => {
         GameServerConnectRequest::from_packet(packet).map(Client::GameServerConnectRequest)
@@ -71,6 +78,30 @@ pub struct JoinServerConnectRequest {
   pub major: u8,
   pub minor: u8,
   pub patch: u8,
+}
+
+/// `C1:F1:01` - Authentication request sent upon client login.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// username | `CHAR(10)` | The specified username. | -
+/// password | `CHAR(10)` | The specified password. | -
+/// time | `U32` | The client's time instant in milliseconds. | LE
+/// version | `U8(5)` | The client's protocol version. | -
+/// serial | `CHAR(16)` | The client's serial version. | -
+#[derive(Deserialize, MuPacket, Debug)]
+#[packet(kind = "C1", code = "F1", subcode = "01")]
+pub struct AccountLoginRequest {
+  #[serde(with = "StringFixedCredentials::<typenum::U10>")]
+  pub username: String,
+  #[serde(with = "StringFixedCredentials::<typenum::U10>")]
+  pub password: String,
+  #[serde(with = "IntegerLE")]
+  pub time: u32,
+  pub version: Version,
+  pub serial: Serial,
 }
 
 /// `C1:F4:03` - Request for a Game Server's connection information.
