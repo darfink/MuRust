@@ -1,3 +1,5 @@
+//! Shared types and constants.
+
 /// Serial identifier for the client.
 pub type Serial = [u8; 16];
 

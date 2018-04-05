@@ -1,4 +1,4 @@
-//! Join Server
+//! Join Server Packets
 //!
 //! ## Handshake
 //!
@@ -39,7 +39,6 @@ use std::iter::FromIterator;
 use typenum;
 
 pub mod meta;
-pub mod model;
 
 /// The major, minor and patch version of this protocol.
 pub const VERSION: (u8, u8, u8) = (0, 0, 1);

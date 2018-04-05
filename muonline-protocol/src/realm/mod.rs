@@ -1,6 +1,112 @@
-use muserialize::IntegerBE;
+//! Game Server Packets
+
+use self::meta::CharacterListEntry;
+use model::Color;
+use muserialize::{IntegerBE, IntegerLE, StringFixed, VectorLengthLE};
 use serde::{Serialize, Serializer};
 use shared::{Version, VERSION};
+use {mu, typenum};
+
+pub mod meta;
+
+/// `C1:0D` — Multicast text message sent from the server.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// type | `U8` | The message type. | -
+/// count | `U8` | The number of times the message is displayed. | -
+/// padding | `U8` | Ignored by the client. | -
+/// delay | `U16` | The delay of the message. | LE
+/// color | `U32` | The color component (ARGB) of the message. | LE
+/// speed | `U8` | The speed of the message. | -
+/// text | `CHAR(*)` | The message's content. | -
+///
+/// Only **Custom** uses the `count`, `delay`, `color` and `speed` attributes.
+///
+/// Type | Display
+/// ---- | -------
+/// `0` | Alert
+/// `1` | Notice
+/// `2` | Guild
+/// `10-15` | Custom
+#[derive(MuPacket, Debug)]
+#[packet(kind = "C1", code = "0D")]
+pub enum Message {
+  /// Displays the message in the center with yellow flickering text.
+  Alert(String),
+  /// Displays the message in the upper left corner with a blue tone.
+  Notice(String),
+  /// Displays the message in the center with green flickering text.
+  Guild(String),
+  /// Displays the message using custom attributes.
+  Custom {
+    kind: u8,
+    color: Color,
+    count: u8,
+    delay: u16,
+    speed: u8,
+    message: String,
+  },
+}
+
+impl Serialize for Message {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: Serializer,
+  {
+    #[derive(Serialize, Debug, Default)]
+    struct MessageData {
+      kind: u8,
+      count: u8,
+      padding: u8,
+      #[serde(with = "IntegerLE")]
+      delay: u16,
+      color: Color,
+      speed: u8,
+      // TODO: Add support for StringDynamic
+      // TODO: Allow string references with StringFixed
+      #[serde(with = "StringFixed::<typenum::U60>")]
+      message: String,
+      padding2: u8,
+    }
+
+    let mut data = MessageData::default();
+    match self {
+      // TODO: Refactor this somehowzzz
+      &Message::Alert(ref text) => {
+        data.kind = 0;
+        data.message = text.clone();
+      },
+      &Message::Notice(ref text) => {
+        data.kind = 1;
+        data.message = text.clone();
+      },
+      &Message::Guild(ref text) => {
+        data.kind = 2;
+        data.message = text.clone();
+      },
+      &Message::Custom {
+        kind,
+        color,
+        count,
+        delay,
+        speed,
+        ref message,
+      } => {
+        data.kind = kind + 10;
+        data.color = color;
+        data.count = count;
+        data.delay = delay;
+        data.speed = speed;
+        data.message = message.clone();
+      },
+    }
+
+    data.serialize(serializer)
+  }
+}
 
 /// `C1:F1:00` — Describes the result of an attempt to join a Game Server.
 ///
@@ -103,3 +209,45 @@ pub enum AccountLoginResult {
 }
 
 primitive_serialize!(AccountLoginResult, u8);
+
+/// `C1:F3:00` — Represents a list of available characters.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// limit | `U8` | The maximum class available. | -
+/// teleport | `U8` | The character's teleport information. | -
+/// count | `U8` | The number of characters in this response. | -
+/// characters | `Character[]` | An array of characters. | -
+///
+/// ### Layout - Character
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// index | `U8` | The character's index. | -
+/// name | `CHAR(10)` | The character's name. | -
+/// level | `U16` | The character's level. | LE
+/// class | `U8` | The character's class. | -
+/// EQ | `U8(17)` | The character's equipment. | -
+/// CTL | `U8` | The user's CTL code. | -
+/// guild | `U8` | The character's guild status. | -
+#[derive(Serialize, MuPacket, Debug)]
+#[packet(kind = "C1", code = "F3", subcode = "00")]
+pub struct CharacterList {
+  pub max_class: mu::Class,
+  pub teleport: u8,
+  #[serde(with = "VectorLengthLE::<u8>")]
+  pub characters: Vec<CharacterListEntry>,
+}
+
+impl Default for CharacterList {
+  /// The default for a new account.
+  fn default() -> Self {
+    CharacterList {
+      max_class: mu::Class::MagicGladiator,
+      teleport: 0,
+      characters: Vec::new(),
+    }
+  }
+}

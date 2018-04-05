@@ -1,4 +1,4 @@
-//! Game Client
+//! Game Client Packets
 
 use StringFixedCredentials;
 use muonline_packet::{Packet, PacketDecodable, PacketType};
@@ -7,12 +7,14 @@ use shared::{Serial, Version};
 use std::io;
 use typenum;
 
+// TODO: Box the largest packets to decrease total size?
 /// An aggregation of all possible client packets.
 #[derive(Debug)]
 pub enum Client {
   ClientTime(ClientTime),
   JoinServerConnectRequest(JoinServerConnectRequest),
   AccountLoginRequest(AccountLoginRequest),
+  CharacterListRequest,
   GameServerConnectRequest(GameServerConnectRequest),
   GameServerListRequest,
   None,
@@ -29,6 +31,9 @@ impl Client {
       },
       (AccountLoginRequest::CODE, &[0x01, _..]) => {
         AccountLoginRequest::from_packet(packet).map(Client::AccountLoginRequest)
+      },
+      (CharacterListRequest::CODE, &[0x00, _..]) => {
+        CharacterListRequest::from_packet(packet).map(|_| Client::CharacterListRequest)
       },
       (GameServerConnectRequest::CODE, &[0x03, _..]) => {
         GameServerConnectRequest::from_packet(packet).map(Client::GameServerConnectRequest)
@@ -103,6 +108,20 @@ pub struct AccountLoginRequest {
   pub version: Version,
   pub serial: Serial,
 }
+
+/// `C1:F3:00` - Request for an account's characters.
+///
+/// This is sent from the client as soon as it has successfully logged in with an
+/// account.
+///
+/// ## Example
+///
+/// ```c
+/// [0xC1, 0x04, 0xF3, 0x00]
+/// ```
+#[derive(Deserialize, MuPacket, Debug)]
+#[packet(kind = "C1", code = "F3", subcode = "00")]
+pub struct CharacterListRequest;
 
 /// `C1:F4:03` - Request for a Game Server's connection information.
 ///

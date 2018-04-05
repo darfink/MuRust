@@ -1,6 +1,6 @@
-//! Contains packet meta attributes.
+//! Meta attribute of packets.
 
-use join::model::GameServerLoad;
+use model::GameServerLoad;
 use muserialize::IntegerLE;
 
 /// A Game Server list entry.
