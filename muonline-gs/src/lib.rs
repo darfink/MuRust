@@ -7,6 +7,7 @@ extern crate tap;
 extern crate futures;
 extern crate tokio;
 
+extern crate muonline_db as mudb;
 extern crate muonline_packet as mupack;
 extern crate muonline_packet_codec as mucodec;
 extern crate muonline_protocol as protocol;

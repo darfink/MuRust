@@ -6,6 +6,7 @@ use tokio::io::AsyncRead;
 use tokio::net::{TcpListener, TcpStream};
 use {mucodec, mupack, protocol, tokio};
 
+mod login;
 mod traits;
 
 /// Starts the Game Server using the supplied controller.
@@ -23,6 +24,7 @@ pub fn serve(controller: GameServerController) -> io::Result<()> {
   // Listen on the supplied TCP socket
   let listener = TcpListener::bind(&controller.socket().into())?;
 
+  // TODO: The public IP needs to be retrieved
   // Update the controller with the TCP port that's been bound
   controller.refresh_socket(listener.ipv4socket()?);
 
@@ -57,8 +59,10 @@ fn process_client(controller: &GameServerController, stream: TcpStream) -> io::R
       let future = stream
         // The client periodically sends time information
         .filter(client_packet_filter)
-        // Inform the client of success and provide its ID
+        // Inform the client of the success by providing its ID
         .send_packet(&protocol::realm::JoinResult::success(client_id as u16))
+        // Hand over the control to the login module
+        .and_then(closet!([controller] |stream| login::serve(controller, stream)))
         // Remove the client from the service state
         .then(move |future| {
           controller.client_manager().remove(client_id);

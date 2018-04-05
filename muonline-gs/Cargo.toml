@@ -18,6 +18,9 @@ tokio = "0.1"
 features = ["std"]
 version = "0.4"
 
+[dependencies.muonline-db]
+path = "../muonline-db"
+
 [dependencies.muonline-packet]
 path = "../muonline-packet"
 

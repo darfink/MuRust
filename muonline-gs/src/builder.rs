@@ -1,8 +1,8 @@
-use GameServer;
 use controller::{ClientManager, GameServerController};
 use service::{GameService, RpcService};
 use std::io;
 use std::net::{SocketAddr, SocketAddrV4};
+use {mudb, GameServer};
 
 /// A builder for the GameServer.
 pub struct ServerBuilder {
@@ -42,8 +42,10 @@ impl ServerBuilder {
 
   /// Spawns the Game & RPC services and returns a controller.
   pub fn spawn(self) -> io::Result<GameServer> {
+    // TODO: Use a config to specify database
+    let database = mudb::Database::new("../muonline-db/database.sqlite");
     let manager = ClientManager::new(self.max_clients);
-    let controller = GameServerController::new(self.socket_game, self.server_id, manager);
+    let controller = GameServerController::new(self.socket_game, self.server_id, manager, database);
 
     let game_service = GameService::spawn(controller.clone());
     let rpc_service = RpcService::spawn(self.socket_rpc, controller)?;

@@ -1,5 +1,6 @@
 pub use self::manager::ClientManager;
 use futures::{Future, Sink, sync::mpsc};
+use mudb;
 use std::io;
 use std::net::SocketAddrV4;
 use std::ops::Deref;
@@ -14,7 +15,12 @@ pub struct GameServerController(Arc<GameServerControllerInner>);
 
 impl GameServerController {
   /// Constructs a new Game Server controller.
-  pub fn new(socket: SocketAddrV4, server_id: u16, client_manager: ClientManager) -> Self {
+  pub fn new(
+    socket: SocketAddrV4,
+    server_id: u16,
+    client_manager: ClientManager,
+    database: mudb::Database,
+  ) -> Self {
     let (close_tx, close_rx) = mpsc::channel(1);
     let inner = GameServerControllerInner {
       boot_time: Instant::now(),
@@ -23,6 +29,7 @@ impl GameServerController {
       close_tx,
       server_id,
       server_socket: Mutex::new(socket),
+      database,
     };
 
     GameServerController(Arc::new(inner))
@@ -44,6 +51,7 @@ pub struct GameServerControllerInner {
   close_tx: mpsc::Sender<()>,
   server_id: u16,
   server_socket: Mutex<SocketAddrV4>,
+  database: mudb::Database,
 }
 
 impl GameServerControllerInner {
@@ -73,6 +81,9 @@ impl GameServerControllerInner {
 
   /// Returns the game service's socket.
   pub fn socket(&self) -> SocketAddrV4 { *self.server_socket.lock().unwrap() }
+
+  /// Returns the database interface.
+  pub fn database(&self) -> &mudb::Database { &self.database }
 
   /// Refreshes the game service's socket.
   pub fn refresh_socket(&self, socket: SocketAddrV4) {
