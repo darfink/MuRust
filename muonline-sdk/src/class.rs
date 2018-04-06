@@ -12,8 +12,20 @@ pub enum Class {
   MuseElf = 10,
 }
 
-impl Default for Class {
-  fn default() -> Self { Class::DarkWizard }
+impl Class {
+  pub fn from_str(input: &str) -> Option<Self> {
+    match input {
+      "DW" => Some(Class::DarkWizard),
+      "DK" => Some(Class::DarkKnight),
+      "FE" => Some(Class::FairyElf),
+      "MG" => Some(Class::MagicGladiator),
+      "DL" => Some(Class::DarkLord),
+      "SM" => Some(Class::SoulMaster),
+      "BK" => Some(Class::BladeKnight),
+      "ME" => Some(Class::MuseElf),
+      _ => None,
+    }
+  }
 }
 
 primitive_serialize!(Class, u8);
