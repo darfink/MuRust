@@ -1,6 +1,6 @@
 /// A collection of all character equipment slots.
 #[repr(u8)]
-#[derive(Primitive, Debug, Clone, Copy, Eq, PartialEq, PartialOrd)]
+#[derive(Primitive, Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Hash)]
 pub enum Slot {
   WeaponRight = 0,
   WeaponLeft = 1,
