@@ -35,7 +35,7 @@
 
 use connect::models::ServerLoad;
 use muonline_packet_serialize::{IntegerLE, StringFixed, VectorLengthBE};
-use std::iter::IntoIterator;
+use std::iter::{FromIterator, IntoIterator};
 use typenum;
 
 /// `C1:00` — Describes the result of a [ConnectRequest](../client/struct.JoinServerConnectRequest.html).
@@ -121,9 +121,9 @@ impl GameServerConnect {
 #[packet(kind = "C2", code = "F4", subcode = "06")]
 pub struct GameServerList(#[serde(with = "VectorLengthBE::<u16>")] Vec<GameServerListEntry>);
 
-impl GameServerList {
+impl FromIterator<(u16, ServerLoad)> for GameServerList {
   /// Constructs a new Game Server list from a tuple of server ID and load balance.
-  pub fn new<I: IntoIterator<Item = (u16, ServerLoad)>>(servers: I) -> Self {
+  fn from_iter<I: IntoIterator<Item = (u16, ServerLoad)>>(servers: I) -> Self {
     let unused = 0x77;
     GameServerList(
       servers

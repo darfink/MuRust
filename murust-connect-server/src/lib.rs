@@ -1,8 +1,10 @@
+#![feature(proc_macro, generators)]
+
 #[macro_use]
 extern crate log;
 extern crate tap;
 
-extern crate futures;
+extern crate futures_await as futures;
 extern crate muonline_packet;
 extern crate muonline_packet_codec;
 extern crate murust_protocol as protocol;

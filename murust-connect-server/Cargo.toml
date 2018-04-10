@@ -9,7 +9,7 @@ name = "murust-cs"
 path = "src/bin/main.rs"
 
 [dependencies]
-futures = "0.1"
+futures-await = { git = "https://github.com/darfink/futures-await" }
 jsonrpc-client-core = "0.3"
 jsonrpc-client-http = "0.3"
 jsonrpc-core = "8.0"

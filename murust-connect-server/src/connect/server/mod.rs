@@ -62,7 +62,7 @@ fn process_client(
 
   let client = reader
     // Each packet received maps to a response packet
-    .and_then(closet!([browser] move |packet| core::proto_core(&browser, &packet)))
+    .and_then(closet!([browser] move |packet| core::proto_core(browser.clone(), packet)))
     // Return each response packet to the client
     .forward(writer)
     // Remove the client from the service state
