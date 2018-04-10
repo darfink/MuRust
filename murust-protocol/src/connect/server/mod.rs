@@ -88,7 +88,10 @@ pub struct GameServerConnect {
 
 impl GameServerConnect {
   pub fn new<S: Into<String>>(host: S, port: u16) -> Self {
-    GameServerConnect { host: host.into(), port }
+    GameServerConnect {
+      host: host.into(),
+      port,
+    }
   }
 }
 
