@@ -1,4 +1,4 @@
-use schema::{item_definition, item_qualified_class};
+use schema::{item_definition, item_eligible_class};
 
 #[derive(Identifiable, Queryable, AsChangeset)]
 #[table_name = "item_definition"]
@@ -17,9 +17,9 @@ pub struct ItemDefinition {
 }
 
 #[derive(Identifiable, Queryable)]
-#[table_name = "item_qualified_class"]
+#[table_name = "item_eligible_class"]
 #[primary_key(item_definition_id, class)]
-pub struct ItemQualifiedClass {
+pub struct ItemEligibleClass {
   pub item_definition_id: i32,
   pub class: i32,
 }

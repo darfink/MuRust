@@ -10,7 +10,7 @@ pub struct ItemDefinition {
   pub height: u8,
   pub drop_from_monster: bool,
   pub drop_level: u16,
-  pub qualified_classes: Vec<Class>,
+  pub eligible_classes: Vec<Class>,
 }
 
 impl ItemDefinition {
@@ -24,7 +24,7 @@ impl ItemDefinition {
       height: 1,
       drop_from_monster: false,
       drop_level: 0,
-      qualified_classes: Vec::new(),
+      eligible_classes: Vec::new(),
     }
   }
 }

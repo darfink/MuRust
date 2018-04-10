@@ -91,7 +91,7 @@ CREATE TABLE item_definition(
 );
 
 -- Whitelist of classes able to use an item
-CREATE TABLE item_qualified_class(
+CREATE TABLE item_eligible_class(
   item_definition_id INTEGER NOT NULL,
   class TEXT NOT NULL CHECK(class IN ('DW', 'DK', 'FE', 'MG', 'DL', 'SM', 'BK', 'ME')),
   FOREIGN KEY(item_definition_id) REFERENCES item_definition(id),

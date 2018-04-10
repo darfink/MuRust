@@ -100,7 +100,7 @@ table! {
 }
 
 table! {
-    item_qualified_class (item_definition_id, class) {
+    item_eligible_class (item_definition_id, class) {
         item_definition_id -> Integer,
         class -> Text,
     }
@@ -115,7 +115,7 @@ joinable!(inventory_item -> item (item_id));
 joinable!(item -> item_definition (item_definition_id));
 joinable!(item_attribute_boost -> item_definition (item_definition_id));
 joinable!(item_attribute_requirement -> item_definition (item_definition_id));
-joinable!(item_qualified_class -> item_definition (item_definition_id));
+joinable!(item_eligible_class -> item_definition (item_definition_id));
 
 allow_tables_to_appear_in_same_query!(
   account,
@@ -127,5 +127,5 @@ allow_tables_to_appear_in_same_query!(
   item_attribute_boost,
   item_attribute_requirement,
   item_definition,
-  item_qualified_class,
+  item_eligible_class,
 );
