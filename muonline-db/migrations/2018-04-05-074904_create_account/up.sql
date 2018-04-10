@@ -1,7 +1,0 @@
-CREATE TABLE account(
-  id INTEGER NOT NULL PRIMARY KEY,
-  username TEXT NOT NULL UNIQUE CHECK(LENGTH(username) <= 10),
-  password TEXT NOT NULL CHECK(LENGTH(password) == 60),
-  email TEXT NOT NULL UNIQUE,
-  secret INTEGER NOT NULL CHECK(LENGTH(secret) <= 7)
-);
