@@ -9,4 +9,5 @@ murust-data-model = { path = "../murust-data-model" }
 murust-repository = { path = "../murust-repository" }
 
 [dev-dependencies]
-lazy_static = "1.0"
+tempdir = "0.3"
+matches = "0.1"

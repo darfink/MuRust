@@ -101,8 +101,12 @@ impl AccountService {
       .ok_or_else(|| io::Error::from(io::ErrorKind::NotFound))?;
 
     // TODO: Can these allocations be prevented?
-    if account.username != object.username { object.username = account.username.clone(); }
-    if account.email != object.email { object.email = account.email.clone(); }
+    if account.username != object.username {
+      object.username = account.username.clone();
+    }
+    if account.email != object.email {
+      object.email = account.email.clone();
+    }
 
     object.security_code = account.security_code as i32;
     self.repository.update(&object)
