@@ -1,12 +1,9 @@
 [workspace]
 members = [
-  "muonline-db",
-  "muonline-gs",
-  "muonline-js",
-  "muonline-packet",
-  "muonline-packet_codec",
-  "muonline-packet_derive",
-  "muonline-packet_serialize",
-  "muonline-protocol",
-  "muonline-sdk",
+  "murust-connect-server",
+  "murust-data-model",
+  #"muonline-game-server",
+  "murust-protocol",
+  "murust-repository",
+  "murust-service",
 ]
