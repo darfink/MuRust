@@ -2,18 +2,17 @@ use entities::item::{self, Item};
 use std::collections::HashMap;
 
 #[derive(Debug)]
-// TODO: This and equipment, where should they be at?
-pub struct Storage {
+pub struct ItemStorage {
   width: u8,
   height: u8,
   items: HashMap<item::Id, Item>,
   grid: Vec<Option<item::Id>>,
 }
 
-impl Storage {
+impl ItemStorage {
   /// Creates a new storage with the specified size.
   pub fn new(width: u8, height: u8) -> Self {
-    Storage {
+    ItemStorage {
       width,
       height,
       items: HashMap::new(),
@@ -71,9 +70,7 @@ impl Storage {
   }
 
   /// Returns an item based on its ID.
-  pub fn get_item(&mut self, item_id: item::Id) -> Option<&Item> {
-    self.items.get(&item_id)
-  }
+  pub fn get_item(&mut self, item_id: item::Id) -> Option<&Item> { self.items.get(&item_id) }
 
   /// Returns any item that resides within the specified slot.
   pub fn get_item_at_slot(&self, slot: u8) -> Option<&Item> {
@@ -152,12 +149,12 @@ impl Storage {
 
 #[cfg(test)]
 mod tests {
-  use configuration::{Storage, ItemGroup, ItemTypeId};
+  use configuration::{ItemGroup, ItemStorage, ItemTypeId};
   use entities::{Item, ItemDefinition};
 
   #[test]
   fn add_item_1x1_top_left() {
-    let mut storage = Storage::new(8, 8);
+    let mut storage = ItemStorage::new(8, 8);
 
     let item = item_with_size(1, 1);
     storage.add_item_at_slot(0, item).unwrap();
@@ -168,7 +165,7 @@ mod tests {
 
   #[test]
   fn add_item_2x2_bottom_right() {
-    let mut storage = Storage::new(8, 8);
+    let mut storage = ItemStorage::new(8, 8);
 
     let item = item_with_size(2, 2);
     storage.add_item_at_slot(6 * 8 + 6, item).unwrap();
@@ -177,7 +174,7 @@ mod tests {
 
   #[test]
   fn add_item_fails_with_same_slot() {
-    let mut storage = Storage::new(8, 8);
+    let mut storage = ItemStorage::new(8, 8);
 
     let item = item_with_size(1, 1);
     storage.add_item_at_slot(12, item).unwrap();
@@ -189,7 +186,7 @@ mod tests {
 
   #[test]
   fn add_item_fails_when_overlapping() {
-    let mut storage = Storage::new(8, 8);
+    let mut storage = ItemStorage::new(8, 8);
 
     let item = item_with_size(2, 2);
     storage.add_item_at_slot(8, item).unwrap();
@@ -201,7 +198,7 @@ mod tests {
 
   #[test]
   fn add_item_fails_when_partially_outside_storage_horizontally() {
-    let mut storage = Storage::new(8, 8);
+    let mut storage = ItemStorage::new(8, 8);
 
     let item = item_with_size(2, 1);
     assert!(storage.add_item_at_slot(7, item).is_err());
@@ -210,7 +207,7 @@ mod tests {
 
   #[test]
   fn add_item_fails_when_partially_outside_storage_vertically() {
-    let mut storage = Storage::new(8, 8);
+    let mut storage = ItemStorage::new(8, 8);
 
     let item = item_with_size(1, 2);
     assert!(storage.add_item_at_slot(7 * 8, item).is_err());
@@ -218,8 +215,8 @@ mod tests {
   }
 
   #[test]
-  fn add_item_automatic() {
-    let mut storage = Storage::new(8, 8);
+  fn add_item_finds_slots_automatically() {
+    let mut storage = ItemStorage::new(8, 8);
     assert!(storage.add_item_at_slot(9, item_with_size(6, 2)).is_ok());
     assert!(storage.add_item_at_slot(33, item_with_size(4, 3)).is_ok());
     assert!(storage.add_item_at_slot(37, item_with_size(2, 1)).is_ok());

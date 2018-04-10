@@ -1,6 +1,5 @@
-use configuration::{Class, ItemSlot};
-use entities::{Inventory, Item};
-use enum_map::EnumMap;
+use configuration::{Class, Equipment};
+use entities::Inventory;
 
 #[derive(Debug)]
 pub struct Character {
@@ -22,6 +21,3 @@ pub struct Character {
   pub equipment: Equipment,
   pub inventory: Inventory,
 }
-
-// TODO: Where should this be?
-pub type Equipment = EnumMap<ItemSlot, Option<Item>>;
