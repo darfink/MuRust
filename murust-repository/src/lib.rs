@@ -26,7 +26,9 @@ mod tests {
     let path = path_buf.to_str().expect("converting temp DB path");
 
     let database = DataContext::new(path).expect("creating DB");
-    database.initialize_schema().expect("creating default schema");
+    database
+      .initialize_schema()
+      .expect("creating default schema");
     database.initialize_data().expect("creating test data");
 
     (tmp, database)
