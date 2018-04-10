@@ -1,0 +1,17 @@
+[package]
+authors = ["Elliott Linder <elliott.darfink@gmail.com>"]
+name = "murust-protocol"
+version = "0.1.0"
+
+[dependencies]
+bitfield = "0.12"
+enum-map = "0.2"
+enum-primitive-derive = "0.1"
+num-traits = "0.2"
+serde = "1.0"
+serde_derive = "1.0"
+typenum = "1.10"
+murust-data-model = { path = "../murust-data-model" }
+muonline-packet = { git = "https://github.com/darfink/muonline-packet", features = ["serialize"] }
+muonline-packet_derive = { git = "https://github.com/darfink/muonline-packet" }
+muonline-packet_serialize = { git = "https://github.com/darfink/muonline-packet" }
