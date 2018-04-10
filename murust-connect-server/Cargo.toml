@@ -1,0 +1,30 @@
+[package]
+authors = ["Elliott Linder <elliott@linder.bz>"]
+name = "murust-connect-server"
+version = "0.1.0"
+
+[[bin]]
+doc = false
+name = "murust-cs"
+path = "src/bin/main.rs"
+
+[dependencies]
+futures = "0.1"
+jsonrpc-client-core = "0.3"
+jsonrpc-client-http = "0.3"
+jsonrpc-core = "8.0"
+jsonrpc-http-server = "8.0"
+jsonrpc-macros = "8.0"
+muonline-packet = { git = "https://github.com/darfink/muonline-packet" }
+muonline-packet_codec = { git = "https://github.com/darfink/muonline-packet" }
+murust-protocol = { path = "../murust-protocol" }
+serde = "1.0"
+serde_derive = "1.0"
+structopt = "0.2"
+tap = "0.2"
+tokio = "0.1"
+tokio-core = "0.1"
+
+[dependencies.log]
+features = ["std"]
+version = "0.4"
