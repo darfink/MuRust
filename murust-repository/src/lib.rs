@@ -7,6 +7,7 @@ extern crate boolinator;
 
 pub use self::context::DataContext;
 pub use self::repository::AccountRepository;
+pub use self::repository::CharacterRepository;
 
 mod context;
 pub mod object;
@@ -17,6 +18,7 @@ mod util;
 #[cfg(test)]
 mod tests {
   use DataContext;
+  use repository::{AccountRepository, CharacterRepository};
   use tempdir::TempDir;
 
   // TODO: Share this between crates somehow?
@@ -35,9 +37,7 @@ mod tests {
   }
 
   #[test]
-  fn account_find() {
-    use repository::AccountRepository;
-
+  fn find_account_by_username_and_id() {
     let (_temp, db) = setup_test_db();
     let accounts = AccountRepository::new(&db);
 
@@ -46,9 +46,7 @@ mod tests {
   }
 
   #[test]
-  fn account_add_remove() {
-    use repository::AccountRepository;
-
+  fn add_and_then_remove_account() {
     let (_temp, db) = setup_test_db();
     let accounts = AccountRepository::new(&db);
 
@@ -61,5 +59,22 @@ mod tests {
       )
       .unwrap();
     assert!(accounts.delete(&account.id).is_ok());
+  }
+
+  #[test]
+  fn find_character_by_name() {
+    let (_temp, db) = setup_test_db();
+    let repository = CharacterRepository::new(&db);
+    assert!(repository.find_by_name("deadbeef").unwrap().is_some());
+  }
+
+  #[test]
+  fn find_characters_from_account() {
+    let (_temp, db) = setup_test_db();
+    let repository = CharacterRepository::new(&db);
+
+    let characters = repository.find_by_account_id(1).unwrap();
+    assert_eq!(characters.len(), 1);
+    assert_eq!(characters[0].name, "deadbeef");
   }
 }
