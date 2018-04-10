@@ -5,8 +5,8 @@
 - **murust-connect-server:** Implementation of the Connect Server.
 - **murust-data-model:** Contains domain models and constants.
 - **murust-protocol:** Defines all network packets and their layout.
-- **murust-repository:** Interface to persistent storage, exposing DTOs.
-- **murust-service:** Encases query logic and maps DTOs to domain models.
+- **murust-repository:** Interface to persistent storage, exposing DAOs.
+- **murust-service:** Encases query logic and maps DAOs to domain models.
 
 ## Screenshot
 
