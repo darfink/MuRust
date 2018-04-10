@@ -1,7 +1,6 @@
-use diesel::Connection;
-use diesel::sqlite::SqliteConnection;
-use std::io;
-use std::sync::{Arc, Mutex, MutexGuard};
+use diesel::{self, Connection, RunQueryDsl, sqlite::SqliteConnection};
+use schema;
+use std::{io, sync::{Arc, Mutex, MutexGuard}};
 use util::diesel_to_io;
 
 /// The inner connection of a data context
@@ -31,6 +30,25 @@ impl DataContext {
       .map(|conn| DataContext(DataContextInner(Arc::new(Mutex::new(conn)))))
   }
 
+  /// Creates the default data schema (if table do not exist).
+  pub fn initialize_schema(&self) -> io::Result<()> { self.execute_all(schema::DEFAULT) }
+
+  /// Inserts the default test data.
+  pub fn initialize_data(&self) -> io::Result<()> { self.execute_all(schema::TEST_DATA) }
+
   /// Returns the inner data context.
   pub(crate) fn clone(&self) -> DataContextInner { self.0.clone() }
+
+  /// Executes all statements in an SQL string.
+  fn execute_all<S: Into<String>>(&self, statements: S) -> io::Result<()> {
+    let connection = self.0.access();
+    statements
+      .into()
+      .split(";")
+      .filter(|s| !s.is_whitespace())
+      .map(|query| diesel::sql_query(query).execute(&*connection))
+      .collect::<Result<Vec<_>, _>>()
+      .map_err(|error| io::Error::new(io::ErrorKind::Other, error))
+      .map(|_| ())
+  }
 }

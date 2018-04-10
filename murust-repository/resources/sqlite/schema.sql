@@ -1,4 +1,4 @@
-CREATE TABLE account(
+CREATE TABLE IF NOT EXISTS account(
   id INTEGER NOT NULL,
   username TEXT NOT NULL UNIQUE CHECK(LENGTH(username) <= 10),
   password_hash TEXT NOT NULL CHECK(LENGTH(password_hash) == 60),
@@ -10,7 +10,7 @@ CREATE TABLE account(
   PRIMARY KEY(id)
 );
 
-CREATE TABLE character(
+CREATE TABLE IF NOT EXISTS character(
   -- Surrogate key due to Diesel limitations
   id INTEGER NOT NULL,
   slot INTEGER NOT NULL CHECK(slot BETWEEN 0 AND 4),
@@ -36,7 +36,7 @@ CREATE TABLE character(
   PRIMARY KEY(id)
 );
 
-CREATE TABLE inventory(
+CREATE TABLE IF NOT EXISTS inventory(
   id INTEGER NOT NULL,
   width INTEGER NOT NULL CHECK(width BETWEEN 1 AND 0xFF),
   height INTEGER NOT NULL CHECK(height BETWEEN 1 AND 0xFF),
@@ -44,7 +44,7 @@ CREATE TABLE inventory(
   PRIMARY KEY(id)
 );
 
-CREATE TABLE inventory_item(
+CREATE TABLE IF NOT EXISTS inventory_item(
   inventory_id INTEGER NOT NULL,
   item_id INTEGER NOT NULL,
   slot INTEGER NOT NULL CHECK(slot BETWEEN 0 AND 0xFF),
@@ -53,7 +53,7 @@ CREATE TABLE inventory_item(
   PRIMARY KEY(inventory_id, slot)
 );
 
-CREATE TABLE equipment_item(
+CREATE TABLE IF NOT EXISTS equipment_item(
   character_id INTEGER NOT NULL,
   item_id INTEGER NOT NULL,
   slot INTEGER NOT NULL CHECK(slot BETWEEN 0 AND 11),
@@ -62,7 +62,7 @@ CREATE TABLE equipment_item(
   PRIMARY KEY(character_id, slot)
 );
 
-CREATE TABLE item(
+CREATE TABLE IF NOT EXISTS item(
   id INTEGER NOT NULL,
   level INTEGER NOT NULL DEFAULT 0 CHECK(level BETWEEN 0 AND 15),
   durability INTEGER NOT NULL CHECK(durability BETWEEN 0 AND 0xFF),
@@ -72,7 +72,7 @@ CREATE TABLE item(
 );
 
 -- Add excellent, option, skill & luck
-CREATE TABLE item_definition(
+CREATE TABLE IF NOT EXISTS item_definition(
   -- Surrogate key due to Diesel limitations
   id INTEGER NOT NULL,
   name TEXT NOT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE item_definition(
 );
 
 -- Whitelist of classes able to use an item
-CREATE TABLE item_eligible_class(
+CREATE TABLE IF NOT EXISTS item_eligible_class(
   item_definition_id INTEGER NOT NULL,
   class TEXT NOT NULL CHECK(class IN ('DW', 'DK', 'FE', 'MG', 'DL', 'SM', 'BK', 'ME')),
   FOREIGN KEY(item_definition_id) REFERENCES item_definition(id),
@@ -99,7 +99,7 @@ CREATE TABLE item_eligible_class(
 );
 
 -- Whitelist of requirements for an item
-CREATE TABLE item_attribute_requirement(
+CREATE TABLE IF NOT EXISTS item_attribute_requirement(
   item_definition_id INTEGER NOT NULL,
   attribute TEXT NOT NULL,
   requirement INTEGER NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE item_attribute_requirement(
 );
 
 -- attribute power-ups from an item
-CREATE TABLE item_attribute_boost(
+CREATE TABLE IF NOT EXISTS item_attribute_boost(
   item_definition_id INTEGER NOT NULL,
   attribute TEXT NOT NULL,
   boost INTEGER NOT NULL,

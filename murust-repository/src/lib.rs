@@ -1,6 +1,5 @@
 #[cfg(test)]
-#[cfg_attr(test, macro_use)]
-extern crate lazy_static;
+extern crate tempdir;
 
 #[macro_use]
 extern crate diesel;
@@ -18,15 +17,27 @@ mod util;
 #[cfg(test)]
 mod tests {
   use DataContext;
+  use tempdir::TempDir;
 
-  lazy_static! {
-    static ref DATABASE: DataContext = { DataContext::new("database.sqlite").unwrap() };
+  // TODO: Share this between crates somehow?
+  fn setup_test_db() -> (TempDir, DataContext) {
+    let tmp = TempDir::new("murust-repository").expect("creating tempdir");
+    let path_buf = tmp.path().join("database.sqlite");
+    let path = path_buf.to_str().expect("converting temp DB path");
+
+    let database = DataContext::new(path).expect("creating DB");
+    database.initialize_schema().expect("creating default schema");
+    database.initialize_data().expect("creating test data");
+
+    (tmp, database)
   }
 
   #[test]
   fn account_find() {
     use repository::AccountRepository;
-    let accounts = AccountRepository::new(&*DATABASE);
+
+    let (_temp, db) = setup_test_db();
+    let accounts = AccountRepository::new(&db);
 
     assert!(accounts.find_by_username("foobar").unwrap().is_some());
     assert!(accounts.find_by_id(&1).unwrap().is_some());
@@ -35,7 +46,9 @@ mod tests {
   #[test]
   fn account_add_remove() {
     use repository::AccountRepository;
-    let accounts = AccountRepository::new(&*DATABASE);
+
+    let (_temp, db) = setup_test_db();
+    let accounts = AccountRepository::new(&db);
 
     let account = accounts
       .create(

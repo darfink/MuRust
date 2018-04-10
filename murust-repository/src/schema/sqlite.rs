@@ -1,3 +1,9 @@
+/// The SQL file the schema is based on.
+pub const DEFAULT: &'static str = include_str!("../../resources/sqlite/schema.sql");
+
+/// The default test data.
+pub const TEST_DATA: &'static str = include_str!("../../resources/sqlite/data.sql");
+
 table! {
     account (id) {
         id -> Integer,

@@ -9,4 +9,4 @@ boolinator = "2.4"
 diesel = { version = "1.0", features = ["sqlite", "x32-column-tables"] }
 
 [dev-dependencies]
-lazy_static = "1.0"
+tempdir = "0.3"
