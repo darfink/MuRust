@@ -2,8 +2,8 @@ use context::{DataContext, DataContextInner};
 use diesel::prelude::*;
 use object::Item;
 use schema::item::dsl;
-use types::Id;
 use std::io;
+use types::Id;
 use util::diesel_to_io;
 
 /// A repository for items.

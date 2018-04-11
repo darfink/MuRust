@@ -1,7 +1,7 @@
-use diesel::sql_types::Binary;
 use diesel::backend::Backend;
 use diesel::deserialize::{self, FromSql};
 use diesel::serialize::{self, Output, ToSql};
+use diesel::sql_types::Binary;
 use std::io;
 
 // TODO: Should this be named Uuid and have a uuid dependency?
@@ -28,7 +28,8 @@ impl Id {
 
 impl<DB: Backend> ToSql<Binary, DB> for Id
 where
-    [u8]: ToSql<Binary, DB> {
+  [u8]: ToSql<Binary, DB>,
+{
   fn to_sql<W: io::Write>(&self, out: &mut Output<W, DB>) -> serialize::Result {
     self.0.to_sql(out)
   }
@@ -36,7 +37,8 @@ where
 
 impl<DB: Backend> FromSql<Binary, DB> for Id
 where
-    *const [u8]: FromSql<Binary, DB> {
+  *const [u8]: FromSql<Binary, DB>,
+{
   fn from_sql(bytes: Option<&DB::RawValue>) -> deserialize::Result<Self> {
     let data = <*const [u8] as FromSql<Binary, DB>>::from_sql(bytes)?;
     let slice = unsafe { data.as_ref().unwrap() };

@@ -14,8 +14,8 @@ mod context;
 pub mod object;
 mod repository;
 mod schema;
-mod util;
 mod types;
+mod util;
 
 #[cfg(test)]
 mod tests {
