@@ -1,7 +1,7 @@
 use schema::{inventory, inventory_item};
 use types::Id;
 
-#[derive(Identifiable, Queryable, AsChangeset)]
+#[derive(Identifiable, Queryable, AsChangeset, Debug)]
 #[table_name = "inventory"]
 pub struct Inventory {
   pub id: i32,
@@ -10,7 +10,7 @@ pub struct Inventory {
   pub money: i32,
 }
 
-#[derive(Identifiable, Queryable, AsChangeset)]
+#[derive(Identifiable, Queryable, AsChangeset, Debug)]
 #[primary_key(inventory_id, slot)]
 #[table_name = "inventory_item"]
 pub struct InventoryItem {

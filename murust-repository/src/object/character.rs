@@ -1,6 +1,6 @@
 use schema::character;
 
-#[derive(Identifiable, Queryable, AsChangeset)]
+#[derive(Identifiable, Queryable, AsChangeset, Debug)]
 #[table_name = "character"]
 pub struct Character {
   pub id: i32,

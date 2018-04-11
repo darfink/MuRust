@@ -1,7 +1,7 @@
 use schema::equipment_item;
 use types::Id;
 
-#[derive(Identifiable, Queryable, AsChangeset)]
+#[derive(Identifiable, Queryable, AsChangeset, Debug)]
 #[primary_key(character_id, slot)]
 #[table_name = "equipment_item"]
 pub struct EquipmentItem {
