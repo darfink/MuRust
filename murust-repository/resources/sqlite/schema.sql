@@ -65,8 +65,8 @@ CREATE TABLE IF NOT EXISTS item(
   id BINARY NOT NULL CHECK(TYPEOF(id) = 'blob' AND LENGTH(id) = 16),
   level INTEGER NOT NULL DEFAULT 0 CHECK(level BETWEEN 0 AND 15),
   durability INTEGER NOT NULL CHECK(durability BETWEEN 0 AND 0xFF),
-  item_definition_code INTEGER NOT NULL,
-  FOREIGN KEY(item_definition_code) REFERENCES item_definition(code),
+  item_code INTEGER NOT NULL,
+  FOREIGN KEY(item_code) REFERENCES item_definition(code),
   PRIMARY KEY(id)
 );
 
@@ -86,26 +86,26 @@ CREATE TABLE IF NOT EXISTS item_definition(
 
 -- Whitelist of classes able to use an item
 CREATE TABLE IF NOT EXISTS item_eligible_class(
-  item_definition_code INTEGER NOT NULL,
+  item_code INTEGER NOT NULL,
   class TEXT NOT NULL CHECK(class IN ('DW', 'DK', 'FE', 'MG', 'DL', 'SM', 'BK', 'ME')),
-  FOREIGN KEY(item_definition_code) REFERENCES item_definition(code),
-  PRIMARY KEY(item_definition_code, class)
+  FOREIGN KEY(item_code) REFERENCES item_definition(code),
+  PRIMARY KEY(item_code, class)
 );
 
 -- Whitelist of requirements for an item
 CREATE TABLE IF NOT EXISTS item_attribute_requirement(
-  item_definition_code INTEGER NOT NULL,
+  item_code INTEGER NOT NULL,
   attribute TEXT NOT NULL,
   requirement INTEGER NOT NULL,
-  FOREIGN KEY(item_definition_code) REFERENCES item_definition(code),
-  PRIMARY KEY(item_definition_code, attribute)
+  FOREIGN KEY(item_code) REFERENCES item_definition(code),
+  PRIMARY KEY(item_code, attribute)
 );
 
 -- attribute power-ups from an item
 CREATE TABLE IF NOT EXISTS item_attribute_boost(
-  item_definition_code INTEGER NOT NULL,
+  item_code INTEGER NOT NULL,
   attribute TEXT NOT NULL,
   boost INTEGER NOT NULL,
-  FOREIGN KEY(item_definition_code) REFERENCES item_definition(code),
-  PRIMARY KEY(item_definition_code, attribute)
+  FOREIGN KEY(item_code) REFERENCES item_definition(code),
+  PRIMARY KEY(item_code, attribute)
 );

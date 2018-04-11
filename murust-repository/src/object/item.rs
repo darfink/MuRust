@@ -7,5 +7,5 @@ pub struct Item {
   pub id: Id,
   pub level: i32,
   pub durability: i32,
-  pub item_definition_code: i32,
+  pub item_code: i32,
 }

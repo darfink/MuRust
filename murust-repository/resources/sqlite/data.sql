@@ -25,7 +25,7 @@ VALUES
   (2, 'Rapier',      0, 23, 1, 3, 1, 9);
 
 -- Create an item instance of a 'Kris + 2' & 'Short Sword + 3'
-INSERT INTO item(id, level, durability, item_definition_code)
+INSERT INTO item(id, level, durability, item_code)
 VALUES
   (X'6606af63a93c11e4979700505690798f', 2, 20, 0),
   (X'3f06af63a93c11e4979700505690773f', 3, 22, 1);
@@ -40,7 +40,7 @@ INSERT INTO inventory_item(inventory_id, item_id, slot)
 VALUES
   (1, X'6606af63a93c11e4979700505690798f', 0);
 
-INSERT INTO item_eligible_class(item_definition_code, class)
+INSERT INTO item_eligible_class(item_code, class)
 VALUES
   (0, 'DW'), (0, 'DK'), (0, 'FE'), (0, 'MG'), (0, 'DL'),
   (1, 'DW'), (1, 'DK'), (1, 'FE'), (1, 'MG'), (1, 'DL'),

@@ -19,10 +19,13 @@ impl ItemEligibleClassRepository {
     }
   }
 
-  /// Returns an item definitions eligible clases.
-  pub fn find_by_item_definition_code(&self, item_definition_code: i32) -> io::Result<Vec<ItemEligibleClass>> {
+  /// Returns an item definitions eligible classes.
+  pub fn find_by_item_code(
+    &self,
+    item_code: i32,
+  ) -> io::Result<Vec<ItemEligibleClass>> {
     dsl::item_eligible_class
-      .filter(dsl::item_definition_code.eq(&item_definition_code))
+      .filter(dsl::item_code.eq(&item_code))
       .get_results::<ItemEligibleClass>(&*self.context.access())
       .map_err(diesel_to_io)
   }

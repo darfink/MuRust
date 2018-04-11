@@ -16,8 +16,8 @@ pub struct ItemDefinition {
 
 #[derive(Identifiable, Queryable, Debug)]
 #[table_name = "item_eligible_class"]
-#[primary_key(item_definition_code, class)]
+#[primary_key(item_code, class)]
 pub struct ItemEligibleClass {
-  pub item_definition_code: i32,
+  pub item_code: i32,
   pub class: String,
 }

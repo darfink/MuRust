@@ -97,6 +97,16 @@ mod tests {
   }
 
   #[test]
+  fn find_item_definition_from_item_code() {
+    let (_temp, db) = setup_test_db();
+    let repository = ItemDefinitionRepository::new(&db);
+
+    let definition = repository.find_by_item_code(2).unwrap().unwrap();
+    assert_eq!(definition.height, 3);
+    assert_eq!(definition.name, "Rapier");
+  }
+
+  #[test]
   fn find_inventory_by_id() {
     let (_temp, db) = setup_test_db();
     let repository = InventoryRepository::new(&db);
@@ -132,11 +142,11 @@ mod tests {
   }
 
   #[test]
-  fn find_item_eligible_classes_from_item_definition() {
+  fn find_item_eligible_classes_from_item_code() {
     let (_temp, db) = setup_test_db();
     let repository = ItemEligibleClassRepository::new(&db);
 
-    let classes = repository.find_by_item_definition_code(2).unwrap();
+    let classes = repository.find_by_item_code(2).unwrap();
     assert_eq!(classes.len(), 4);
   }
 }

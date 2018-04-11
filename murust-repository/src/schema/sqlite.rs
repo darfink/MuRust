@@ -69,21 +69,21 @@ table! {
         id -> Binary,
         level -> Integer,
         durability -> Integer,
-        item_definition_code -> Integer,
+        item_code -> Integer,
     }
 }
 
 table! {
-    item_attribute_boost (item_definition_code, attribute) {
-        item_definition_code -> Integer,
+    item_attribute_boost (item_code, attribute) {
+        item_code -> Integer,
         attribute -> Text,
         boost -> Integer,
     }
 }
 
 table! {
-    item_attribute_requirement (item_definition_code, attribute) {
-        item_definition_code -> Integer,
+    item_attribute_requirement (item_code, attribute) {
+        item_code -> Integer,
         attribute -> Text,
         requirement -> Integer,
     }
@@ -103,8 +103,8 @@ table! {
 }
 
 table! {
-    item_eligible_class (item_definition_code, class) {
-        item_definition_code -> Integer,
+    item_eligible_class (item_code, class) {
+        item_code -> Integer,
         class -> Text,
     }
 }
@@ -115,10 +115,10 @@ joinable!(equipment_item -> character (character_id));
 joinable!(equipment_item -> item (item_id));
 joinable!(inventory_item -> inventory (inventory_id));
 joinable!(inventory_item -> item (item_id));
-joinable!(item -> item_definition (item_definition_code));
-joinable!(item_attribute_boost -> item_definition (item_definition_code));
-joinable!(item_attribute_requirement -> item_definition (item_definition_code));
-joinable!(item_eligible_class -> item_definition (item_definition_code));
+joinable!(item -> item_definition (item_code));
+joinable!(item_attribute_boost -> item_definition (item_code));
+joinable!(item_attribute_requirement -> item_definition (item_code));
+joinable!(item_eligible_class -> item_definition (item_code));
 
 allow_tables_to_appear_in_same_query!(
   account,
