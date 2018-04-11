@@ -24,7 +24,12 @@ VALUES
   (2, 'Short Sword', 0, 1, 0, 0, 22, 1, 3, 1, 3);
 
 -- Create an item instance of a 'Short Sword + 3'
-INSERT INTO item(id, level, durability, item_definition_id) VALUES(1, 3, 22, 2);
+INSERT INTO item(id, level, durability, item_definition_id)
+VALUES
+  (X'6606af63a93c11e4979700505690798f', 2, 20, 1),
+  (X'3f06af63a93c11e4979700505690773f', 3, 22, 2);
 
 -- Equip the 'deadbeef' character with the Short Sword
-INSERT INTO equipment_item(character_id, item_id, slot) VALUES(1, 1, 0);
+INSERT INTO equipment_item(character_id, item_id, slot)
+VALUES
+  (1, X'3f06af63a93c11e4979700505690773f', 0);

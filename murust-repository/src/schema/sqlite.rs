@@ -42,7 +42,7 @@ table! {
 table! {
     equipment_item (character_id, slot) {
         character_id -> Integer,
-        item_id -> Integer,
+        item_id -> Binary,
         slot -> Integer,
     }
 }
@@ -59,14 +59,14 @@ table! {
 table! {
     inventory_item (inventory_id, slot) {
         inventory_id -> Integer,
-        item_id -> Integer,
+        item_id -> Binary,
         slot -> Integer,
     }
 }
 
 table! {
     item (id) {
-        id -> Integer,
+        id -> Binary,
         level -> Integer,
         durability -> Integer,
         item_definition_id -> Integer,

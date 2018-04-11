@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS inventory(
 
 CREATE TABLE IF NOT EXISTS inventory_item(
   inventory_id INTEGER NOT NULL,
-  item_id INTEGER NOT NULL,
+  item_id BINARY NOT NULL,
   slot INTEGER NOT NULL CHECK(slot BETWEEN 0 AND 0xFF),
   FOREIGN KEY(inventory_id) REFERENCES inventory(id),
   FOREIGN KEY(item_id) REFERENCES item(id),
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS inventory_item(
 
 CREATE TABLE IF NOT EXISTS equipment_item(
   character_id INTEGER NOT NULL,
-  item_id INTEGER NOT NULL,
+  item_id BINARY NOT NULL,
   slot INTEGER NOT NULL CHECK(slot BETWEEN 0 AND 11),
   FOREIGN KEY(character_id) REFERENCES character(id),
   FOREIGN KEY(item_id) REFERENCES item(id),
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS equipment_item(
 );
 
 CREATE TABLE IF NOT EXISTS item(
-  id INTEGER NOT NULL,
+  id BINARY NOT NULL CHECK(TYPEOF(id) = 'blob' AND LENGTH(id) = 16),
   level INTEGER NOT NULL DEFAULT 0 CHECK(level BETWEEN 0 AND 15),
   durability INTEGER NOT NULL CHECK(durability BETWEEN 0 AND 0xFF),
   item_definition_id INTEGER NOT NULL,

@@ -1,6 +1,6 @@
 use schema::account;
 
-#[derive(Identifiable, Queryable, AsChangeset)]
+#[derive(Identifiable, Queryable, AsChangeset, Debug)]
 #[changeset_options(treat_none_as_null = "true")]
 #[table_name = "account"]
 pub struct Account {

@@ -8,18 +8,21 @@ extern crate boolinator;
 pub use self::context::DataContext;
 pub use self::repository::AccountRepository;
 pub use self::repository::CharacterRepository;
+pub use self::repository::ItemRepository;
 
 mod context;
 pub mod object;
 mod repository;
 mod schema;
 mod util;
+mod types;
 
 #[cfg(test)]
 mod tests {
   use DataContext;
-  use repository::{AccountRepository, CharacterRepository};
+  use repository::{AccountRepository, CharacterRepository, ItemRepository};
   use tempdir::TempDir;
+  use types::Id;
 
   // TODO: Share this between crates somehow?
   fn setup_test_db() -> (TempDir, DataContext) {
@@ -76,5 +79,17 @@ mod tests {
     let characters = repository.find_by_account_id(1).unwrap();
     assert_eq!(characters.len(), 1);
     assert_eq!(characters[0].name, "deadbeef");
+  }
+
+  #[test]
+  fn find_item_by_id() {
+    let (_temp, db) = setup_test_db();
+    let repository = ItemRepository::new(&db);
+
+    let id = Id::from_hex("6606af63a93c11e4979700505690798f");
+    let item = repository.find_by_id(&id).unwrap().unwrap();
+
+    assert_eq!(item.level, 2);
+    assert_eq!(item.durability, 20);
   }
 }
