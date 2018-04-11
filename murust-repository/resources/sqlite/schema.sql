@@ -65,18 +65,15 @@ CREATE TABLE IF NOT EXISTS item(
   id BINARY NOT NULL CHECK(TYPEOF(id) = 'blob' AND LENGTH(id) = 16),
   level INTEGER NOT NULL DEFAULT 0 CHECK(level BETWEEN 0 AND 15),
   durability INTEGER NOT NULL CHECK(durability BETWEEN 0 AND 0xFF),
-  item_definition_id INTEGER NOT NULL,
-  FOREIGN KEY(item_definition_id) REFERENCES item_definition(id),
+  item_definition_code INTEGER NOT NULL,
+  FOREIGN KEY(item_definition_code) REFERENCES item_definition(code),
   PRIMARY KEY(id)
 );
 
 -- Add excellent, option, skill & luck
 CREATE TABLE IF NOT EXISTS item_definition(
-  id INTEGER NOT NULL,
+  code INTEGER NOT NULL CHECK(code BETWEEN 0 AND 0x1FFF),
   name TEXT NOT NULL,
-  `group` INTEGER NOT NULL CHECK(`group` BETWEEN 0 AND 15),
-  `index` INTEGER NOT NULL CHECK(`index` BETWEEN 0 AND 0x1FF),
-  modifier INTEGER NOT NULL DEFAULT 0 CHECK(modifier BETWEEN 0 AND 15),
   equippable_slot INTEGER CHECK(IFNULL(equippable_slot, 0) BETWEEN 0 AND 11),
   max_durability INTEGER NOT NULL CHECK(max_durability BETWEEN 0 AND 0xFF),
   width INTEGER NOT NULL DEFAULT 1 CHECK(width BETWEEN 1 AND 8),
@@ -84,32 +81,31 @@ CREATE TABLE IF NOT EXISTS item_definition(
   drop_from_monster TINYINT NOT NULL CHECK(drop_from_monster IN (0, 1)),
   drop_level INTEGER NOT NULL CHECK(drop_level BETWEEN 1 AND 0xFFFF),
   UNIQUE(name),
-  UNIQUE(`group`, `index`, modifier),
-  PRIMARY KEY(id)
+  PRIMARY KEY(code)
 );
 
 -- Whitelist of classes able to use an item
 CREATE TABLE IF NOT EXISTS item_eligible_class(
-  item_definition_id INTEGER NOT NULL,
+  item_definition_code INTEGER NOT NULL,
   class TEXT NOT NULL CHECK(class IN ('DW', 'DK', 'FE', 'MG', 'DL', 'SM', 'BK', 'ME')),
-  FOREIGN KEY(item_definition_id) REFERENCES item_definition(id),
-  PRIMARY KEY(item_definition_id, class)
+  FOREIGN KEY(item_definition_code) REFERENCES item_definition(code),
+  PRIMARY KEY(item_definition_code, class)
 );
 
 -- Whitelist of requirements for an item
 CREATE TABLE IF NOT EXISTS item_attribute_requirement(
-  item_definition_id INTEGER NOT NULL,
+  item_definition_code INTEGER NOT NULL,
   attribute TEXT NOT NULL,
   requirement INTEGER NOT NULL,
-  FOREIGN KEY(item_definition_id) REFERENCES item_definition(id),
-  PRIMARY KEY(item_definition_id, attribute)
+  FOREIGN KEY(item_definition_code) REFERENCES item_definition(code),
+  PRIMARY KEY(item_definition_code, attribute)
 );
 
 -- attribute power-ups from an item
 CREATE TABLE IF NOT EXISTS item_attribute_boost(
-  item_definition_id INTEGER NOT NULL,
+  item_definition_code INTEGER NOT NULL,
   attribute TEXT NOT NULL,
   boost INTEGER NOT NULL,
-  FOREIGN KEY(item_definition_id) REFERENCES item_definition(id),
-  PRIMARY KEY(item_definition_id, attribute)
+  FOREIGN KEY(item_definition_code) REFERENCES item_definition(code),
+  PRIMARY KEY(item_definition_code, attribute)
 );

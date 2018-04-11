@@ -18,17 +18,17 @@ VALUES
 
 -- Create item definitions for 'Short Sword' & 'Kris' (incomplete)
 INSERT INTO item_definition
-  (id, name, `group`, `index`, modifier, equippable_slot, max_durability, width, height, drop_from_monster, drop_level)
+  (code, name, equippable_slot, max_durability, width, height, drop_from_monster, drop_level)
 VALUES
-  (1, 'Kris',        0, 0, 0, 0, 20, 1, 2, 1, 6),
-  (2, 'Short Sword', 0, 1, 0, 0, 22, 1, 3, 1, 3),
-  (3, 'Rapier',      0, 2, 0, 0, 23, 1, 3, 1, 9);
+  (0, 'Kris',        0, 20, 1, 2, 1, 6),
+  (1, 'Short Sword', 0, 22, 1, 3, 1, 3),
+  (2, 'Rapier',      0, 23, 1, 3, 1, 9);
 
 -- Create an item instance of a 'Kris + 2' & 'Short Sword + 3'
-INSERT INTO item(id, level, durability, item_definition_id)
+INSERT INTO item(id, level, durability, item_definition_code)
 VALUES
-  (X'6606af63a93c11e4979700505690798f', 2, 20, 1),
-  (X'3f06af63a93c11e4979700505690773f', 3, 22, 2);
+  (X'6606af63a93c11e4979700505690798f', 2, 20, 0),
+  (X'3f06af63a93c11e4979700505690773f', 3, 22, 1);
 
 -- Equip the 'deadbeef' character with the Short Sword
 INSERT INTO equipment_item(character_id, item_id, slot)
@@ -40,8 +40,8 @@ INSERT INTO inventory_item(inventory_id, item_id, slot)
 VALUES
   (1, X'6606af63a93c11e4979700505690798f', 0);
 
-INSERT INTO item_eligible_class(item_definition_id, class)
+INSERT INTO item_eligible_class(item_definition_code, class)
 VALUES
+  (0, 'DW'), (0, 'DK'), (0, 'FE'), (0, 'MG'), (0, 'DL'),
   (1, 'DW'), (1, 'DK'), (1, 'FE'), (1, 'MG'), (1, 'DL'),
-  (2, 'DW'), (2, 'DK'), (2, 'FE'), (2, 'MG'), (2, 'DL'),
-  (3, 'DK'), (3, 'FE'), (3, 'MG'), (3, 'DL');
+  (2, 'DK'), (2, 'FE'), (2, 'MG'), (2, 'DL');

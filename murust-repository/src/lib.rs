@@ -136,7 +136,7 @@ mod tests {
     let (_temp, db) = setup_test_db();
     let repository = ItemEligibleClassRepository::new(&db);
 
-    let classes = repository.find_by_item_definition_id(3).unwrap();
+    let classes = repository.find_by_item_definition_code(2).unwrap();
     assert_eq!(classes.len(), 4);
   }
 }

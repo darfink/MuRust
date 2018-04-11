@@ -69,33 +69,30 @@ table! {
         id -> Binary,
         level -> Integer,
         durability -> Integer,
-        item_definition_id -> Integer,
+        item_definition_code -> Integer,
     }
 }
 
 table! {
-    item_attribute_boost (item_definition_id, attribute) {
-        item_definition_id -> Integer,
+    item_attribute_boost (item_definition_code, attribute) {
+        item_definition_code -> Integer,
         attribute -> Text,
         boost -> Integer,
     }
 }
 
 table! {
-    item_attribute_requirement (item_definition_id, attribute) {
-        item_definition_id -> Integer,
+    item_attribute_requirement (item_definition_code, attribute) {
+        item_definition_code -> Integer,
         attribute -> Text,
         requirement -> Integer,
     }
 }
 
 table! {
-    item_definition (id) {
-        id -> Integer,
+    item_definition (code) {
+        code -> Integer,
         name -> Text,
-        group -> Integer,
-        index -> Integer,
-        modifier -> Integer,
         equippable_slot -> Nullable<Integer>,
         max_durability -> Integer,
         width -> Integer,
@@ -106,8 +103,8 @@ table! {
 }
 
 table! {
-    item_eligible_class (item_definition_id, class) {
-        item_definition_id -> Integer,
+    item_eligible_class (item_definition_code, class) {
+        item_definition_code -> Integer,
         class -> Text,
     }
 }
@@ -118,10 +115,10 @@ joinable!(equipment_item -> character (character_id));
 joinable!(equipment_item -> item (item_id));
 joinable!(inventory_item -> inventory (inventory_id));
 joinable!(inventory_item -> item (item_id));
-joinable!(item -> item_definition (item_definition_id));
-joinable!(item_attribute_boost -> item_definition (item_definition_id));
-joinable!(item_attribute_requirement -> item_definition (item_definition_id));
-joinable!(item_eligible_class -> item_definition (item_definition_id));
+joinable!(item -> item_definition (item_definition_code));
+joinable!(item_attribute_boost -> item_definition (item_definition_code));
+joinable!(item_attribute_requirement -> item_definition (item_definition_code));
+joinable!(item_eligible_class -> item_definition (item_definition_code));
 
 allow_tables_to_appear_in_same_query!(
   account,
