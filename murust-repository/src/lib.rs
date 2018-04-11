@@ -6,12 +6,8 @@ extern crate diesel;
 extern crate boolinator;
 
 pub use self::context::DataContext;
-pub use self::repository::{
-  AccountRepository,
-  CharacterRepository,
-  InventoryRepository,
-  ItemRepository,
-};
+pub use self::repository::{AccountRepository, CharacterRepository, InventoryItemRepository,
+                           InventoryRepository, ItemRepository};
 
 mod context;
 pub mod object;
@@ -110,5 +106,17 @@ mod tests {
     assert_eq!(inventory.width, 8);
     assert_eq!(inventory.height, 8);
     assert_eq!(inventory.money, 1337);
+  }
+
+  #[test]
+  fn find_items_from_inventory() {
+    let (_temp, db) = setup_test_db();
+    let repository = InventoryItemRepository::new(&db);
+
+    let items = repository.find_by_inventory_id(1).unwrap();
+    assert_eq!(items.len(), 1);
+
+    let id = Id::from_hex("6606af63a93c11e4979700505690798f");
+    assert_eq!(items[0].item_id, id);
   }
 }

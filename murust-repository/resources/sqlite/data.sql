@@ -23,7 +23,7 @@ VALUES
   (1, 'Kris',        0, 0, 0, 0, 20, 1, 2, 1, 6),
   (2, 'Short Sword', 0, 1, 0, 0, 22, 1, 3, 1, 3);
 
--- Create an item instance of a 'Short Sword + 3'
+-- Create an item instance of a 'Kris + 2' & 'Short Sword + 3'
 INSERT INTO item(id, level, durability, item_definition_id)
 VALUES
   (X'6606af63a93c11e4979700505690798f', 2, 20, 1),
@@ -33,3 +33,8 @@ VALUES
 INSERT INTO equipment_item(character_id, item_id, slot)
 VALUES
   (1, X'3f06af63a93c11e4979700505690773f', 0);
+
+-- Add the Kris to the 'deadbeef' character's inventory
+INSERT INTO inventory_item(inventory_id, item_id, slot)
+VALUES
+  (1, X'6606af63a93c11e4979700505690798f', 0);
