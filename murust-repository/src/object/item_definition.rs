@@ -21,5 +21,5 @@ pub struct ItemDefinition {
 #[primary_key(item_definition_id, class)]
 pub struct ItemEligibleClass {
   pub item_definition_id: i32,
-  pub class: i32,
+  pub class: String,
 }

@@ -130,4 +130,13 @@ mod tests {
     let id = Id::from_hex("3f06af63a93c11e4979700505690773f");
     assert_eq!(items[0].item_id, id);
   }
+
+  #[test]
+  fn find_item_eligible_classes_from_item_definition() {
+    let (_temp, db) = setup_test_db();
+    let repository = ItemEligibleClassRepository::new(&db);
+
+    let classes = repository.find_by_item_definition_id(3).unwrap();
+    assert_eq!(classes.len(), 4);
+  }
 }
