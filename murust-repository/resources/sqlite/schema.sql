@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS account(
 );
 
 CREATE TABLE IF NOT EXISTS character(
-  -- Surrogate key due to Diesel limitations
   id INTEGER NOT NULL,
   slot INTEGER NOT NULL CHECK(slot BETWEEN 0 AND 4),
   name TEXT NOT NULL CHECK(LENGTH(name) <= 10),
@@ -73,7 +72,6 @@ CREATE TABLE IF NOT EXISTS item(
 
 -- Add excellent, option, skill & luck
 CREATE TABLE IF NOT EXISTS item_definition(
-  -- Surrogate key due to Diesel limitations
   id INTEGER NOT NULL,
   name TEXT NOT NULL,
   `group` INTEGER NOT NULL CHECK(`group` BETWEEN 0 AND 15),
