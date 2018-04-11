@@ -4,9 +4,9 @@ CREATE TABLE IF NOT EXISTS account(
   password_hash TEXT NOT NULL CHECK(LENGTH(password_hash) == 60),
   security_code INTEGER NOT NULL CHECK(LENGTH(security_code) <= 7 AND security_code >= 0),
   email TEXT NOT NULL UNIQUE,
-  logged_in INTEGER NOT NULL DEFAULT 0 CHECK(logged_in IN (0, 1)),
+  logged_in TINYINT NOT NULL DEFAULT 0 CHECK(logged_in IN (0, 1)),
   failed_login_attempts INTEGER NOT NULL DEFAULT 0 CHECK(failed_login_attempts >= 0),
-  failed_login_time INTEGER,
+  failed_login_time BIGINT,
   PRIMARY KEY(id)
 );
 
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS item_definition(
   max_durability INTEGER NOT NULL CHECK(max_durability BETWEEN 0 AND 0xFF),
   width INTEGER NOT NULL DEFAULT 1 CHECK(width BETWEEN 1 AND 8),
   height INTEGER NOT NULL DEFAULT 1 CHECK(height BETWEEN 1 AND 8),
-  drop_from_monster INTEGER NOT NULL CHECK(drop_from_monster IN (0, 1)),
+  drop_from_monster TINYINT NOT NULL CHECK(drop_from_monster IN (0, 1)),
   drop_level INTEGER NOT NULL CHECK(drop_level BETWEEN 1 AND 0xFFFF),
   UNIQUE(name),
   UNIQUE(`group`, `index`, modifier),
