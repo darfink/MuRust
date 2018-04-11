@@ -82,14 +82,20 @@ mod tests {
   }
 
   #[test]
-  fn find_item_by_id() {
+  fn find_item_by_id_and_update() {
     let (_temp, db) = setup_test_db();
     let repository = ItemRepository::new(&db);
 
     let id = Id::from_hex("6606af63a93c11e4979700505690798f");
-    let item = repository.find_by_id(&id).unwrap().unwrap();
+    let mut item = repository.find_by_id(&id).unwrap().unwrap();
 
     assert_eq!(item.level, 2);
     assert_eq!(item.durability, 20);
+
+    item.level = 3;
+    repository.save(&item).unwrap();
+
+    let item = repository.find_by_id(&id).unwrap().unwrap();
+    assert_eq!(item.level, 3);
   }
 }

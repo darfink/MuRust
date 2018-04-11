@@ -1,7 +1,7 @@
 use schema::item;
 use types::Id;
 
-#[derive(Identifiable, Queryable, AsChangeset)]
+#[derive(Identifiable, Insertable, Queryable, AsChangeset)]
 #[table_name = "item"]
 pub struct Item {
   pub id: Id,

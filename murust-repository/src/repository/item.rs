@@ -1,5 +1,5 @@
 use context::{DataContext, DataContextInner};
-use diesel::prelude::*;
+use diesel::{self, prelude::*};
 use object::Item;
 use schema::item::dsl;
 use std::io;
@@ -27,5 +27,14 @@ impl ItemRepository {
       .first::<Item>(&*self.context.access())
       .optional()
       .map_err(diesel_to_io)
+  }
+
+  /// Saves an item by updating or replacing it.
+  pub fn save(&self, item: &Item) -> io::Result<()> {
+    diesel::replace_into(dsl::item)
+      .values(item)
+      .execute(&*self.context.access())
+      .map_err(diesel_to_io)?;
+    Ok(())
   }
 }
