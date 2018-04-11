@@ -49,23 +49,19 @@ impl AccountService {
       Some(account) => account,
     };
 
-    if self.is_timed_out(&account)? {
-      Ok(Err(AccountLoginError::TooManyAttempts(
-        util::map_to_entity(account)?,
-      )))
+    let error = if self.is_timed_out(&account)? {
+      AccountLoginError::TooManyAttempts(util::map_to_entity(account)?)
     } else if !self.is_valid_password(password, &account)? {
       self.increment_login_attempts(&mut account)?;
-      Ok(Err(AccountLoginError::InvalidPassword(
-        util::map_to_entity(account)?,
-      )))
+      AccountLoginError::InvalidPassword(util::map_to_entity(account)?)
     } else if account.logged_in {
-      Ok(Err(AccountLoginError::AlreadyConnected(
-        util::map_to_entity(account)?,
-      )))
+      AccountLoginError::AlreadyConnected(util::map_to_entity(account)?)
     } else {
       self.login_account(&mut account)?;
-      util::map_to_entity(account).map(Ok)
-    }
+      return util::map_to_entity(account).map(Ok);
+    };
+
+    Ok(Err(error))
   }
 
   /// Logs out an account from the underlying repository.
