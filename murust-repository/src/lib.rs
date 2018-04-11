@@ -6,9 +6,12 @@ extern crate diesel;
 extern crate boolinator;
 
 pub use self::context::DataContext;
-pub use self::repository::AccountRepository;
-pub use self::repository::CharacterRepository;
-pub use self::repository::ItemRepository;
+pub use self::repository::{
+  AccountRepository,
+  CharacterRepository,
+  InventoryRepository,
+  ItemRepository,
+};
 
 mod context;
 pub mod object;
@@ -19,8 +22,7 @@ mod util;
 
 #[cfg(test)]
 mod tests {
-  use DataContext;
-  use repository::{AccountRepository, CharacterRepository, ItemRepository};
+  use super::*;
   use tempdir::TempDir;
   use types::Id;
 
@@ -97,5 +99,16 @@ mod tests {
 
     let item = repository.find_by_id(&id).unwrap().unwrap();
     assert_eq!(item.level, 3);
+  }
+
+  #[test]
+  fn find_inventory_by_id() {
+    let (_temp, db) = setup_test_db();
+    let repository = InventoryRepository::new(&db);
+
+    let inventory = repository.find_by_id(1).unwrap().unwrap();
+    assert_eq!(inventory.width, 8);
+    assert_eq!(inventory.height, 8);
+    assert_eq!(inventory.money, 1337);
   }
 }
