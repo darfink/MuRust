@@ -1,4 +1,4 @@
-use configuration::{Class, Equipment};
+use configuration::{Class, Position, Equipment};
 use entities::Inventory;
 
 #[derive(Debug)]
@@ -15,8 +15,7 @@ pub struct Character {
   pub energy: u16,
   pub command: u16,
   pub map: u8,
-  pub position_x: u8,
-  pub position_y: u8,
+  pub position: Position,
   pub player_kills: i32,
   pub equipment: Equipment,
   pub inventory: Inventory,
