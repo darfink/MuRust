@@ -149,7 +149,7 @@ impl ItemStorage {
 
 #[cfg(test)]
 mod tests {
-  use configuration::{ItemGroup, ItemStorage, ItemTypeId};
+  use configuration::{ItemGroup, ItemStorage, ItemCode};
   use entities::{Item, ItemDefinition};
 
   #[test]
@@ -227,7 +227,7 @@ mod tests {
   }
 
   fn item_with_size(width: u8, height: u8) -> Item {
-    let mut definition = ItemDefinition::new(ItemTypeId::new((ItemGroup::Helper, 0)), "Test");
+    let mut definition = ItemDefinition::new(ItemCode::new(ItemGroup::Helper, 0), "Test");
     definition.width = width;
     definition.height = height;
     Item::with_definition(definition)

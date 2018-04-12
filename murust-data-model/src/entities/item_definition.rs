@@ -1,8 +1,8 @@
-use configuration::{Class, ItemSlot, ItemTypeId};
+use configuration::{Class, ItemSlot, ItemCode};
 
 #[derive(Debug)]
 pub struct ItemDefinition {
-  pub id: ItemTypeId,
+  pub code: ItemCode,
   pub name: String,
   pub equippable_slot: Option<ItemSlot>,
   pub max_durability: u8,
@@ -14,9 +14,9 @@ pub struct ItemDefinition {
 }
 
 impl ItemDefinition {
-  pub fn new<S: Into<String>>(id: ItemTypeId, name: S) -> Self {
+  pub fn new<S: Into<String>>(code: ItemCode, name: S) -> Self {
     ItemDefinition {
-      id,
+      code,
       name: name.into(),
       equippable_slot: None,
       max_durability: 0,

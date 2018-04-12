@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 use murust_data_model::configuration::Equipment;
-use murust_data_model::configuration::{ItemCode, ItemGroup, ItemSlot, ItemTypeId};
+use murust_data_model::configuration::{ItemCode, ItemGroup, ItemSlot};
 
 /// The size required by the protocol.
 const CHAR_SET_SIZE: usize = 17;
@@ -14,7 +14,7 @@ impl CharacterEquipmentSet {
     {
       let mut view = CharacterEquipmentView(&mut data);
       for (slot, item) in equipment {
-        view.set_item_slot(slot, item.as_ref().map(|i| i.definition.id.clone()));
+        view.set_item_slot(slot, item.as_ref().map(|i| i.definition.code.clone()));
       }
     }
     CharacterEquipmentSet(data)
@@ -97,7 +97,7 @@ bitfield! {
 }
 
 impl<T: AsMut<[u8]> + AsRef<[u8]>> CharacterEquipmentView<T> {
-  pub fn set_wings(&mut self, item: Option<ItemTypeId>) {
+  pub fn set_wings(&mut self, item: Option<ItemCode>) {
     match item {
       Some(item) => {
         match item.tuple() {
@@ -126,7 +126,7 @@ impl<T: AsMut<[u8]> + AsRef<[u8]>> CharacterEquipmentView<T> {
     }
   }
 
-  pub fn set_helper(&mut self, item: Option<ItemTypeId>) {
+  pub fn set_helper(&mut self, item: Option<ItemCode>) {
     self.set_helper_low2(0b11);
     self.set_has_dinorant(0);
     self.set_dark_horse(0);
@@ -156,13 +156,13 @@ impl<T: AsMut<[u8]> + AsRef<[u8]>> CharacterEquipmentView<T> {
     }
   }
 
-  pub fn set_weapon_right(&mut self, item: Option<ItemTypeId>) {
+  pub fn set_weapon_right(&mut self, item: Option<ItemCode>) {
     let code = item.map(|item| item.as_raw()).unwrap_or(0x1FFF);
     self.set_weapon_right_low8((code & 0xFF) as u8);
     self.set_weapon_right_high4(((code & 0xF00) >> 8) as u8);
   }
 
-  pub fn set_weapon_left(&mut self, item: Option<ItemTypeId>) {
+  pub fn set_weapon_left(&mut self, item: Option<ItemCode>) {
     let code = item
       .map(|item| {
         // Dark Raven is sent as 'Legendary Staff'
@@ -177,7 +177,7 @@ impl<T: AsMut<[u8]> + AsRef<[u8]>> CharacterEquipmentView<T> {
     self.set_weapon_left_high4(((code & 0xF00) >> 8) as u8);
   }
 
-  pub fn set_boots(&mut self, item: Option<ItemTypeId>) {
+  pub fn set_boots(&mut self, item: Option<ItemCode>) {
     let index = item
       .map(|item| {
         assert_eq!(item.group(), ItemGroup::Boots);
@@ -189,7 +189,7 @@ impl<T: AsMut<[u8]> + AsRef<[u8]>> CharacterEquipmentView<T> {
     self.set_boots_high4(((index & 0x1E0) >> 5) as u8);
   }
 
-  pub fn set_gloves(&mut self, item: Option<ItemTypeId>) {
+  pub fn set_gloves(&mut self, item: Option<ItemCode>) {
     let index = item
       .map(|item| {
         assert_eq!(item.group(), ItemGroup::Gloves);
@@ -201,7 +201,7 @@ impl<T: AsMut<[u8]> + AsRef<[u8]>> CharacterEquipmentView<T> {
     self.set_gloves_high4(((index & 0x1E0) >> 5) as u8);
   }
 
-  pub fn set_pants(&mut self, item: Option<ItemTypeId>) {
+  pub fn set_pants(&mut self, item: Option<ItemCode>) {
     let index = item
       .map(|item| {
         assert_eq!(item.group(), ItemGroup::Pants);
@@ -213,7 +213,7 @@ impl<T: AsMut<[u8]> + AsRef<[u8]>> CharacterEquipmentView<T> {
     self.set_pants_high4(((index & 0x1E0) >> 5) as u8);
   }
 
-  pub fn set_armor(&mut self, item: Option<ItemTypeId>) {
+  pub fn set_armor(&mut self, item: Option<ItemCode>) {
     let index = item
       .map(|item| {
         assert_eq!(item.group(), ItemGroup::Armor);
@@ -225,7 +225,7 @@ impl<T: AsMut<[u8]> + AsRef<[u8]>> CharacterEquipmentView<T> {
     self.set_armor_high4(((index & 0x1E0) >> 5) as u8);
   }
 
-  pub fn set_helm(&mut self, item: Option<ItemTypeId>) {
+  pub fn set_helm(&mut self, item: Option<ItemCode>) {
     let index = item
       .map(|item| {
         assert_eq!(item.group(), ItemGroup::Helm);
@@ -237,7 +237,7 @@ impl<T: AsMut<[u8]> + AsRef<[u8]>> CharacterEquipmentView<T> {
     self.set_helm_high4(((index & 0x1E0) >> 5) as u8);
   }
 
-  pub fn set_item_slot(&mut self, slot: ItemSlot, item: Option<ItemTypeId>) {
+  pub fn set_item_slot(&mut self, slot: ItemSlot, item: Option<ItemCode>) {
     match slot {
       ItemSlot::WeaponRight => self.set_weapon_right(item),
       ItemSlot::WeaponLeft => self.set_weapon_left(item),
