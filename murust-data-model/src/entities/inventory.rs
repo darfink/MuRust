@@ -3,7 +3,6 @@ use std::ops::{Deref, DerefMut};
 
 #[derive(Debug)]
 pub struct Inventory {
-  pub id: i32,
   pub storage: ItemStorage,
   pub money: u32,
 }
