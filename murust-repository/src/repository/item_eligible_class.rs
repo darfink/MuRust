@@ -19,7 +19,7 @@ impl ItemEligibleClassRepository {
     }
   }
 
-  /// Returns an item definitions eligible classes.
+  /// Returns an item definition's eligible classes.
   pub fn find_by_item_code(
     &self,
     item_code: i32,
