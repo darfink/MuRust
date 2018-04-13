@@ -25,6 +25,7 @@ impl CharacterService {
     }
   }
 
+  /// Returns an account's characters.
   pub fn find_by_account_id(&self, account_id: i32) -> Result<Vec<Character>> {
     self
       .repo_characters
