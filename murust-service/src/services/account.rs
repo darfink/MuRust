@@ -1,6 +1,6 @@
 use bcrypt;
 use error::{Error, Result};
-use mapping::MappableEntity;
+use mapping::MappableToDomain;
 use murust_data_model::entities::Account;
 use murust_repository::{models, AccountRepository};
 
@@ -50,7 +50,7 @@ impl AccountService {
       Some(account) => account,
     };
 
-    let map_to_entity = |account: models::Account| Account::try_map(account, ());
+    let map_to_entity = |account: models::Account| account.map_to_entity(());
     let error = if self.is_timed_out(&account)? {
       AccountLoginError::TooManyAttempts(map_to_entity(account)?)
     } else if !self.is_valid_password(password, &account)? {
@@ -73,7 +73,7 @@ impl AccountService {
       .find_by_id(&account.id)?
       .ok_or(Error::MissingPersistence)?;
     models.logged_in = true;
-    Ok(self.repository.update(&models)?)
+    self.repository.update(&models).map_err(Into::into)
   }
 
   /// Creates a new account and returns it as an models.
@@ -85,10 +85,11 @@ impl AccountService {
     email: &str,
   ) -> Result<Account> {
     let password_hash = self.hash_password(password)?;
-    let account = self
+    self
       .repository
-      .create(username, &password_hash, security_code as i32, email)?;
-    Ok(Account::try_map(account, ())?)
+      .create(username, &password_hash, security_code as i32, email)?
+      .map_to_entity(())
+      .map_err(Into::into)
   }
 
   /// Updates an account's underlying storage.
@@ -107,7 +108,7 @@ impl AccountService {
     }
 
     models.security_code = account.security_code as i32;
-    Ok(self.repository.update(&models)?)
+    self.repository.update(&models).map_err(Into::into)
   }
 
   /// Removes an account from the underlying storage.
