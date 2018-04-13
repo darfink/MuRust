@@ -1,5 +1,5 @@
 pub use self::color::Color;
-pub use self::equipment::CharacterEquipmentSet;
+pub use self::equipment_set::CharacterEquipmentSet;
 
 mod color;
-mod equipment;
+mod equipment_set;
