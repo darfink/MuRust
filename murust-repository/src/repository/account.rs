@@ -1,7 +1,7 @@
 use boolinator::Boolinator;
 use context::{DataContext, DataContextInner};
 use diesel::{self, prelude::*};
-use object::Account;
+use models::Account;
 use schema::account::dsl;
 use std::io;
 use util::diesel_to_io;

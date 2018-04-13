@@ -10,7 +10,7 @@ pub use self::context::DataContext;
 pub use self::repository::*;
 
 mod context;
-pub mod object;
+pub mod models;
 mod repository;
 mod schema;
 mod types;

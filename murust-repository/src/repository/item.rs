@@ -1,6 +1,6 @@
 use context::{DataContext, DataContextInner};
 use diesel::{self, prelude::*};
-use object::Item;
+use models::Item;
 use schema::item::dsl;
 use std::io;
 use types::UuidWrapper;

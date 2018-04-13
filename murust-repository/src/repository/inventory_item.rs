@@ -1,6 +1,6 @@
 use context::{DataContext, DataContextInner};
 use diesel::prelude::*;
-use object::InventoryItem;
+use models::InventoryItem;
 use schema::inventory_item::dsl;
 use std::io;
 use util::diesel_to_io;

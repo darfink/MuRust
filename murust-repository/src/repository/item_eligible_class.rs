@@ -1,6 +1,6 @@
 use context::{DataContext, DataContextInner};
 use diesel::prelude::*;
-use object::ItemEligibleClass;
+use models::ItemEligibleClass;
 use schema::item_eligible_class::dsl;
 use std::io;
 use util::diesel_to_io;

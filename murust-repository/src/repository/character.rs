@@ -1,6 +1,6 @@
 use context::{DataContext, DataContextInner};
 use diesel::prelude::*;
-use object::Character;
+use models::Character;
 use schema::character::dsl;
 use std::io;
 use util::diesel_to_io;

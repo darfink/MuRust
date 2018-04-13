@@ -1,6 +1,6 @@
 use context::{DataContext, DataContextInner};
 use diesel::prelude::*;
-use object::EquipmentItem;
+use models::EquipmentItem;
 use schema::equipment_item::dsl;
 use std::io;
 use util::diesel_to_io;
