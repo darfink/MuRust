@@ -149,7 +149,7 @@ impl ItemStorage {
 
 #[cfg(test)]
 mod tests {
-  use configuration::{ItemGroup, ItemStorage, ItemCode};
+  use configuration::{ItemCode, ItemGroup, ItemStorage};
   use entities::{Item, ItemDefinition};
 
   #[test]

@@ -1,6 +1,7 @@
-use configuration::{Class, ItemSlot, ItemCode};
+use configuration::{Class, ItemCode, ItemSlot};
 
 #[derive(Debug)]
+// TODO: Should Item definition arc itself?
 pub struct ItemDefinition {
   pub code: ItemCode,
   pub name: String,
@@ -14,9 +15,9 @@ pub struct ItemDefinition {
 }
 
 impl ItemDefinition {
-  pub fn new<S: Into<String>>(code: ItemCode, name: S) -> Self {
+  pub fn new<C: Into<ItemCode>, S: Into<String>>(code: C, name: S) -> Self {
     ItemDefinition {
-      code,
+      code: code.into(),
       name: name.into(),
       equippable_slot: None,
       max_durability: 0,

@@ -1,4 +1,4 @@
-use configuration::{Class, Position, Equipment};
+use configuration::{Class, Equipment, Position};
 use entities::Inventory;
 
 #[derive(Debug)]
