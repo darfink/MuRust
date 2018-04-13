@@ -19,6 +19,15 @@ impl CharacterRepository {
     }
   }
 
+  /// Returns a character by its ID.
+  pub fn find_by_id(&self, id: i32) -> io::Result<Option<Character>> {
+    dsl::character
+      .find(id)
+      .first::<Character>(&*self.context.access())
+      .optional()
+      .map_err(diesel_to_io)
+  }
+
   /// Returns a character by its name.
   pub fn find_by_name(&self, name: &str) -> io::Result<Option<Character>> {
     dsl::character
