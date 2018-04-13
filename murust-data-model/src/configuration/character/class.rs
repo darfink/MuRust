@@ -14,20 +14,18 @@ pub enum Class {
   MuseElf = 10,
 }
 
-impl FromStr for Class {
-  type Err = &'static str;
-
-  fn from_str(input: &str) -> Result<Self, Self::Err> {
+impl Class {
+  pub fn from_str(input: &str) -> Option<Self> {
     match input {
-      "DW" => Ok(Class::DarkWizard),
-      "DK" => Ok(Class::DarkKnight),
-      "FE" => Ok(Class::FairyElf),
-      "MG" => Ok(Class::MagicGladiator),
-      "DL" => Ok(Class::DarkLord),
-      "SM" => Ok(Class::SoulMaster),
-      "BK" => Ok(Class::BladeKnight),
-      "ME" => Ok(Class::MuseElf),
-      _ => Err("invalid class acronym"),
+      "DW" => Some(Class::DarkWizard),
+      "DK" => Some(Class::DarkKnight),
+      "FE" => Some(Class::FairyElf),
+      "MG" => Some(Class::MagicGladiator),
+      "DL" => Some(Class::DarkLord),
+      "SM" => Some(Class::SoulMaster),
+      "BK" => Some(Class::BladeKnight),
+      "ME" => Some(Class::MuseElf),
+      _ => None,
     }
   }
 }
