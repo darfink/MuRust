@@ -1,5 +1,5 @@
-use configuration::{Class, Equipment, Position};
-use entities::Inventory;
+use configuration::{Class, Position};
+use entities::{Inventory, Equipment};
 
 #[derive(Debug)]
 pub struct Character {
