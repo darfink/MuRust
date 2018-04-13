@@ -1,6 +1,6 @@
 use bcrypt::BcryptError;
 use mapping::MappingError;
-use std::io;
+use murust_repository;
 use std::time::SystemTimeError;
 
 #[derive(Debug, Fail)]
@@ -10,7 +10,7 @@ pub enum Error {
   #[fail(display = "The specified entity does not exist in the persistence storage")]
   MissingPersistence,
   #[fail(display = "A repository error occurred.")]
-  Repository(#[cause] io::Error),
+  Repository(#[cause] murust_repository::Error),
   #[fail(display = "An entity mapping error occurred.")]
   Mapping(#[cause] MappingError),
   #[fail(display = "An hasing error occurred.")]
@@ -19,8 +19,8 @@ pub enum Error {
   SystemTime(#[cause] SystemTimeError),
 }
 
-impl From<io::Error> for Error {
-  fn from(error: io::Error) -> Self { Error::Repository(error) }
+impl From<murust_repository::Error> for Error {
+  fn from(error: murust_repository::Error) -> Self { Error::Repository(error) }
 }
 
 impl From<MappingError> for Error {
@@ -35,4 +35,5 @@ impl From<SystemTimeError> for Error {
   fn from(error: SystemTimeError) -> Self { Error::SystemTime(error) }
 }
 
+/// The default result type.
 pub type Result<T> = ::std::result::Result<T, Error>;

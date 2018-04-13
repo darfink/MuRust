@@ -2,19 +2,23 @@
 extern crate tempdir;
 
 #[macro_use]
+extern crate failure;
+
+#[macro_use]
 extern crate diesel;
 extern crate boolinator;
 extern crate uuid;
 
 pub use self::context::DataContext;
 pub use self::repository::*;
+pub use error::Error;
 
 mod context;
+mod error;
 pub mod models;
 mod repository;
 mod schema;
 mod types;
-mod util;
 
 #[cfg(test)]
 mod tests {

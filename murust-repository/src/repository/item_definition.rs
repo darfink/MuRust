@@ -1,9 +1,8 @@
 use context::{DataContext, DataContextInner};
 use diesel::prelude::*;
+use error::Result;
 use models::ItemDefinition;
 use schema::item_definition::dsl;
-use std::io;
-use util::diesel_to_io;
 
 /// A repository for item definitions.
 #[derive(Clone)]
@@ -20,11 +19,11 @@ impl ItemDefinitionRepository {
   }
 
   /// Returns an item definition by item code.
-  pub fn find_by_item_code(&self, item_code: i32) -> io::Result<Option<ItemDefinition>> {
+  pub fn find_by_item_code(&self, item_code: i32) -> Result<Option<ItemDefinition>> {
     dsl::item_definition
       .find(item_code)
       .first::<ItemDefinition>(&*self.context.access())
       .optional()
-      .map_err(diesel_to_io)
+      .map_err(Into::into)
   }
 }

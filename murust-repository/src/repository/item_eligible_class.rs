@@ -1,9 +1,8 @@
 use context::{DataContext, DataContextInner};
 use diesel::prelude::*;
+use error::Result;
 use models::ItemEligibleClass;
 use schema::item_eligible_class::dsl;
-use std::io;
-use util::diesel_to_io;
 
 /// A repository for eligible item classes.
 #[derive(Clone)]
@@ -20,10 +19,10 @@ impl ItemEligibleClassRepository {
   }
 
   /// Returns an item definition's eligible classes.
-  pub fn find_by_item_code(&self, item_code: i32) -> io::Result<Vec<ItemEligibleClass>> {
+  pub fn find_by_item_code(&self, item_code: i32) -> Result<Vec<ItemEligibleClass>> {
     dsl::item_eligible_class
       .filter(dsl::item_code.eq(&item_code))
       .get_results::<ItemEligibleClass>(&*self.context.access())
-      .map_err(diesel_to_io)
+      .map_err(Into::into)
   }
 }
