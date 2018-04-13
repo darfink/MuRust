@@ -5,7 +5,7 @@ use types::Id;
 #[table_name = "item"]
 pub struct Item {
   pub id: Id,
+  pub code: i32,
   pub level: i32,
   pub durability: i32,
-  pub item_code: i32,
 }

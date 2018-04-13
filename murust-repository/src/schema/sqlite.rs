@@ -67,9 +67,9 @@ table! {
 table! {
     item (id) {
         id -> Binary,
+        code -> Integer,
         level -> Integer,
         durability -> Integer,
-        item_code -> Integer,
     }
 }
 
@@ -115,7 +115,7 @@ joinable!(equipment_item -> character (character_id));
 joinable!(equipment_item -> item (item_id));
 joinable!(inventory_item -> inventory (inventory_id));
 joinable!(inventory_item -> item (item_id));
-joinable!(item -> item_definition (item_code));
+joinable!(item -> item_definition (code));
 joinable!(item_attribute_boost -> item_definition (item_code));
 joinable!(item_attribute_requirement -> item_definition (item_code));
 joinable!(item_eligible_class -> item_definition (item_code));
