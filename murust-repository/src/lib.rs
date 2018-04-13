@@ -4,6 +4,7 @@ extern crate tempdir;
 #[macro_use]
 extern crate diesel;
 extern crate boolinator;
+extern crate uuid;
 
 pub use self::context::DataContext;
 pub use self::repository::*;
@@ -19,7 +20,7 @@ mod util;
 mod tests {
   use super::*;
   use tempdir::TempDir;
-  use types::Id;
+  use uuid::Uuid;
 
   // TODO: Share this between crates somehow?
   fn setup_test_db() -> (TempDir, DataContext) {
@@ -83,8 +84,8 @@ mod tests {
     let (_temp, db) = setup_test_db();
     let repository = ItemRepository::new(&db);
 
-    let id = Id::from_hex("6606af63a93c11e4979700505690798f");
-    let mut item = repository.find_by_id(&id).unwrap().unwrap();
+    let id = Uuid::parse_str("6606af63a93c11e4979700505690798f").unwrap();
+    let mut item = repository.find_by_id(id).unwrap().unwrap();
 
     assert_eq!(item.level, 2);
     assert_eq!(item.durability, 20);
@@ -92,7 +93,7 @@ mod tests {
     item.level = 3;
     repository.save(&item).unwrap();
 
-    let item = repository.find_by_id(&id).unwrap().unwrap();
+    let item = repository.find_by_id(id).unwrap().unwrap();
     assert_eq!(item.level, 3);
   }
 
@@ -125,8 +126,8 @@ mod tests {
     let items = repository.find_by_inventory_id(1).unwrap();
     assert_eq!(items.len(), 1);
 
-    let id = Id::from_hex("6606af63a93c11e4979700505690798f");
-    assert_eq!(items[0].item_id, id);
+    let id = Uuid::parse_str("6606af63a93c11e4979700505690798f").unwrap();
+    assert_eq!(*items[0].item_id, id);
   }
 
   #[test]
@@ -137,8 +138,8 @@ mod tests {
     let items = repository.find_by_character_id(1).unwrap();
     assert_eq!(items.len(), 1);
 
-    let id = Id::from_hex("3f06af63a93c11e4979700505690773f");
-    assert_eq!(items[0].item_id, id);
+    let id = Uuid::parse_str("3f06af63a93c11e4979700505690773f").unwrap();
+    assert_eq!(*items[0].item_id, id);
   }
 
   #[test]
