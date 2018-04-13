@@ -5,8 +5,11 @@ authors = ["Elliott Linder <elliott@linder.bz>"]
 
 [dependencies]
 bcrypt = "0.2"
+failure = "0.1"
 murust-data-model = { path = "../murust-data-model" }
 murust-repository = { path = "../murust-repository" }
+num-traits = "0.2"
+uuid = { version = "0.6", features = ["v4"] }
 
 [dev-dependencies]
 tempdir = "0.3"
