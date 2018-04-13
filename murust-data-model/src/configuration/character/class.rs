@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 /// A collection of all character classes.
 #[repr(u8)]
 #[derive(Primitive, Debug, Clone, Copy, Eq, PartialEq, PartialOrd)]
