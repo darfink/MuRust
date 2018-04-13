@@ -121,25 +121,25 @@ mod tests {
   #[test]
   fn find_inventory_items_from_inventory() {
     let (_temp, db) = setup_test_db();
-    let repository = InventoryItemRepository::new(&db);
+    let repository = ItemRepository::new(&db);
 
-    let items = repository.find_by_inventory_id(1).unwrap();
+    let items = repository.find_items_by_inventory_id(1).unwrap();
     assert_eq!(items.len(), 1);
 
     let id = Uuid::parse_str("6606af63a93c11e4979700505690798f").unwrap();
-    assert_eq!(*items[0].item_id, id);
+    assert_eq!(*items[0].0.item_id, id);
   }
 
   #[test]
   fn find_equipment_items_from_character() {
     let (_temp, db) = setup_test_db();
-    let repository = EquipmentItemRepository::new(&db);
+    let repository = ItemRepository::new(&db);
 
-    let items = repository.find_by_character_id(1).unwrap();
+    let items = repository.find_equipment_by_character_id(1).unwrap();
     assert_eq!(items.len(), 1);
 
     let id = Uuid::parse_str("3f06af63a93c11e4979700505690773f").unwrap();
-    assert_eq!(*items[0].item_id, id);
+    assert_eq!(*items[0].0.item_id, id);
   }
 
   #[test]
