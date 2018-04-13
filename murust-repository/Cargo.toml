@@ -4,7 +4,6 @@ version = "0.1.0"
 authors = ["Elliott Linder <elliott.darfink@gmail.com>"]
 
 [dependencies]
-bcrypt = "0.2"
 boolinator = "2.4"
 diesel = { version = "1.0", features = ["sqlite", "x32-column-tables"] }
 
