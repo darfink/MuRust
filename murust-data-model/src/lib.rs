@@ -13,5 +13,5 @@ extern crate uuid;
 extern crate serde_derive;
 extern crate serde;
 
-pub mod configuration;
 pub mod entities;
+pub mod types;

@@ -1,6 +1,6 @@
 #![allow(dead_code)]
-use murust_data_model::configuration::{ItemCode, ItemGroup, ItemSlot};
 use murust_data_model::entities::Equipment;
+use murust_data_model::types::{ItemCode, ItemGroup, ItemSlot};
 
 /// The size required by the protocol.
 const CHAR_SET_SIZE: usize = 17;

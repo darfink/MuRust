@@ -1,5 +1,5 @@
-use configuration::ItemGroup;
 use num_traits::FromPrimitive;
+use types::ItemGroup;
 
 /// An item code.
 #[derive(Debug, Serialize, Deserialize, Copy, Clone, Eq, PartialEq)]

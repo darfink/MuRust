@@ -3,8 +3,8 @@
 use super::{Version, util::serialize_class, VERSION};
 use game::models::{CharacterEquipmentSet, Color};
 use muonline_packet_serialize::{IntegerBE, IntegerLE, StringFixed, VectorLengthLE};
-use murust_data_model::configuration::{Class, CtlCode, GuildRole};
 use murust_data_model::entities::Character;
+use murust_data_model::types::{Class, CtlCode, GuildRole};
 use serde::{Serialize, Serializer};
 use std::iter::IntoIterator;
 use typenum;

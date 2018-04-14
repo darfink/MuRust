@@ -1,5 +1,5 @@
-use configuration::ItemStorage;
 use std::ops::{Deref, DerefMut};
+use types::ItemStorage;
 
 #[derive(Debug)]
 pub struct Inventory {

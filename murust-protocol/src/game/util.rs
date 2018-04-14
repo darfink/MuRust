@@ -1,5 +1,5 @@
 use muonline_packet_serialize::{StringFixedTransform, StringTransform};
-use murust_data_model::configuration::Class;
+use murust_data_model::types::Class;
 use serde::{Serialize, Serializer};
 
 /// A transform for credentials.

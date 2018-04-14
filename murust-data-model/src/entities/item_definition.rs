@@ -1,4 +1,4 @@
-use configuration::{Class, ItemCode, ItemSlot};
+use types::{Class, ItemCode, ItemSlot};
 
 #[derive(Debug)]
 // TODO: Should Item definition arc itself?

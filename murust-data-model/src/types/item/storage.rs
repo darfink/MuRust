@@ -149,8 +149,8 @@ impl ItemStorage {
 
 #[cfg(test)]
 mod tests {
-  use configuration::{ItemCode, ItemGroup, ItemStorage};
   use entities::{Item, ItemDefinition};
+  use types::{ItemCode, ItemGroup, ItemStorage};
 
   #[test]
   fn add_item_1x1_top_left() {
