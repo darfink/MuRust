@@ -72,7 +72,7 @@ mod tests {
     assert_eq!(characters[0].name, "deadbeef");
 
     let weapon = characters[0].equipment[ItemSlot::WeaponRight].as_ref();
-    assert_eq!(weapon.unwrap().definition.name, "Short Sword");
+    assert_eq!(weapon.unwrap().name, "Short Sword");
   }
 
   #[test]
@@ -84,6 +84,6 @@ mod tests {
     let item = service.find_by_id(&id).unwrap().unwrap();
 
     assert_eq!(item.level, 2);
-    assert_eq!(item.definition.name, "Kris");
+    assert_eq!(item.name, "Kris");
   }
 }

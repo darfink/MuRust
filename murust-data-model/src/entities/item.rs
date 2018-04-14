@@ -1,5 +1,6 @@
 use entities::ItemDefinition;
 use std::sync::Arc;
+use std::ops::Deref;
 use uuid::Uuid;
 
 /// The type of ID used by item entities.
@@ -21,5 +22,13 @@ impl Item {
       durability: definition.max_durability,
       definition: Arc::new(definition),
     }
+  }
+}
+
+impl Deref for Item {
+  type Target = ItemDefinition;
+
+  fn deref(&self) -> &Self::Target {
+    self.definition.as_ref()
   }
 }
