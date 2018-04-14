@@ -2,6 +2,7 @@ use murust_repository::*;
 use {AccountService, CharacterService, ItemService};
 
 /// A manager for all services.
+#[derive(Clone)]
 pub struct ServiceManager {
   context: DataContext,
 }

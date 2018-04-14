@@ -1,5 +1,5 @@
-use murust_data_model::configuration::{Class, ItemCode, ItemSlot, ItemStorage, Position};
 use murust_data_model::entities::*;
+use murust_data_model::types::{Class, ItemCode, ItemSlot, ItemStorage, Position};
 use murust_repository::models;
 use num_traits::FromPrimitive;
 use std::{convert::TryFrom, num::TryFromIntError};
