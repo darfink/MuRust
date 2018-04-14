@@ -14,7 +14,7 @@ impl ItemEligibleClassRepository {
   /// Creates a new eligible item class repository instance.
   pub fn new(context: &DataContext) -> Self {
     ItemEligibleClassRepository {
-      context: context.clone(),
+      context: context.inner(),
     }
   }
 

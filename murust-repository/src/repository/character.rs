@@ -14,7 +14,7 @@ impl CharacterRepository {
   /// Creates a new character repository instance.
   pub fn new(context: &DataContext) -> Self {
     CharacterRepository {
-      context: context.clone(),
+      context: context.inner(),
     }
   }
 

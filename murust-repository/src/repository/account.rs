@@ -15,7 +15,7 @@ impl AccountRepository {
   /// Creates a new account repository instance.
   pub fn new(context: &DataContext) -> Self {
     AccountRepository {
-      context: context.clone(),
+      context: context.inner(),
     }
   }
 

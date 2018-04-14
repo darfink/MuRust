@@ -14,6 +14,7 @@ impl DataContextInner {
 }
 
 /// A data storage context.
+#[derive(Clone)]
 pub struct DataContext(DataContextInner);
 
 impl DataContext {
@@ -31,7 +32,7 @@ impl DataContext {
   pub fn initialize_data(&self) -> Result<()> { self.execute_all(schema::TEST_DATA) }
 
   /// Returns the inner data context.
-  pub(crate) fn clone(&self) -> DataContextInner { self.0.clone() }
+  pub(crate) fn inner(&self) -> DataContextInner { self.0.clone() }
 
   /// Executes all statements in an SQL string.
   fn execute_all<S: Into<String>>(&self, statements: S) -> Result<()> {

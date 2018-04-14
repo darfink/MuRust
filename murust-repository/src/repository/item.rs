@@ -15,7 +15,7 @@ impl ItemRepository {
   /// Creates a new item repository instance.
   pub fn new(context: &DataContext) -> Self {
     ItemRepository {
-      context: context.clone(),
+      context: context.inner(),
     }
   }
 

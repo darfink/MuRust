@@ -14,7 +14,7 @@ impl InventoryRepository {
   /// Creates a new inventory repository instance.
   pub fn new(context: &DataContext) -> Self {
     InventoryRepository {
-      context: context.clone(),
+      context: context.inner(),
     }
   }
 
