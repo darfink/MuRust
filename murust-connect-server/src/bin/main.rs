@@ -3,10 +3,17 @@ extern crate log;
 #[macro_use]
 extern crate structopt;
 extern crate murust_connect_server as mucs;
+extern crate murust_game_server as mugs;
+extern crate murust_repository;
+extern crate murust_service;
+extern crate tempdir;
 
 use self::options::Options;
+use murust_repository::DataContext;
+use murust_service::ServiceManager;
 use std::net::{SocketAddr, SocketAddrV4};
 use structopt::StructOpt;
+use tempdir::TempDir;
 
 mod logger;
 mod options;
@@ -38,6 +45,25 @@ fn main() {
     }
   }
 
+  let (_temp, manager) = setup_test_env();
+  let gs = mugs::GameServer::builder(1, manager).spawn().unwrap();
+  server.add_game_server(gs.uri()).unwrap();
+
   // Start the connect server
   server.wait().unwrap();
+  gs.wait().unwrap();
+}
+
+fn setup_test_env() -> (TempDir, ServiceManager) {
+  let tmp = TempDir::new("murust-repository").expect("creating tempdir");
+  let path_buf = tmp.path().join("database.sqlite");
+  let path = path_buf.to_str().expect("converting temp DB path");
+
+  let database = DataContext::new(path).expect("creating DB");
+  database
+    .initialize_schema()
+    .expect("creating default schema");
+  database.initialize_data().expect("creating test data");
+
+  (tmp, ServiceManager::new(database))
 }

@@ -707,20 +707,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "muonline-service"
-version = "0.1.0"
-dependencies = [
- "bcrypt 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "matches 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "murust-data-model 0.1.0",
- "murust-repository 0.1.0",
- "num-traits 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "tempdir 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "uuid 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "murust-connect-server"
 version = "0.1.0"
 dependencies = [
@@ -733,11 +719,15 @@ dependencies = [
  "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "muonline-packet 0.1.0 (git+https://github.com/darfink/muonline-packet)",
  "muonline-packet_codec 0.1.0 (git+https://github.com/darfink/muonline-packet)",
+ "murust-game-server 0.1.0",
  "murust-protocol 0.1.0",
+ "murust-repository 0.1.0",
+ "murust-service 0.1.0",
  "serde 1.0.37 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.37 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "tap 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tempdir 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio-core 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -754,6 +744,28 @@ dependencies = [
  "serde 1.0.37 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.37 (registry+https://github.com/rust-lang/crates.io-index)",
  "uuid 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "murust-game-server"
+version = "0.1.0"
+dependencies = [
+ "futures-await 0.1.0 (git+https://github.com/darfink/futures-await)",
+ "jsonrpc-core 8.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "jsonrpc-http-server 8.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "jsonrpc-macros 8.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "muonline-packet 0.1.0 (git+https://github.com/darfink/muonline-packet)",
+ "muonline-packet_codec 0.1.0 (git+https://github.com/darfink/muonline-packet)",
+ "murust-data-model 0.1.0",
+ "murust-protocol 0.1.0",
+ "murust-service 0.1.0",
+ "serde 1.0.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_derive 1.0.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "structopt 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tap 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tokio 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tokio-core 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -780,6 +792,20 @@ dependencies = [
  "boolinator 2.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "diesel 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tempdir 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "uuid 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "murust-service"
+version = "0.1.0"
+dependencies = [
+ "bcrypt 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "matches 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "murust-data-model 0.1.0",
+ "murust-repository 0.1.0",
+ "num-traits 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempdir 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "uuid 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

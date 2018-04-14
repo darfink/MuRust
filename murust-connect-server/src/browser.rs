@@ -30,6 +30,7 @@ impl GameServerBrowser {
 
   /// Adds a remote game server to the browser.
   pub fn add(&self, server_uri: &str) -> io::Result<()> {
+    info!("Added game server: {}", server_uri);
     let mut inner = self.inner();
     let api_client = inner
       .transport

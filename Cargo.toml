@@ -2,7 +2,7 @@
 members = [
   "murust-connect-server",
   "murust-data-model",
-  #"muonline-game-server",
+  "murust-game-server",
   "murust-protocol",
   "murust-repository",
   "murust-service",

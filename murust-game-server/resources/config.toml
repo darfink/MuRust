@@ -1,0 +1,12 @@
+[server]
+host = "192.168.1.201"
+port = "2005"
+motd = "Welcome to Mu Online!"
+
+[rpc]
+host = "192.168.1.201"
+port = "0"
+
+[client]
+serial = "ugkgameshield000"
+validate_serial = true
