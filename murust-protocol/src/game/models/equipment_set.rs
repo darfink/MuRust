@@ -99,8 +99,8 @@ bitfield! {
   pants_high4, set_pants_high4:                       107, 104;
   armor_high4, set_armor_high4:                       111, 108;
 
-  gloves_high4, set_gloves_high4:                     115, 112;
-  boots_high4, set_boots_high4:                       119, 116;
+  boots_high4, set_boots_high4:                       115, 112;
+  gloves_high4, set_gloves_high4:                     119, 116;
 
   fenrir, set_fenrir:                                 121, 120;
   //padding2, _:                                      135, 122;
