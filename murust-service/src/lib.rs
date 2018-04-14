@@ -25,12 +25,12 @@ mod services;
 #[cfg(test)]
 mod tests {
   use super::*;
-  use murust_data_model::configuration::ItemSlot;
   use murust_data_model::entities::item;
+  use murust_data_model::types::ItemSlot;
   use murust_repository::*;
   use tempdir::TempDir;
 
-  fn setup_test_db() -> (TempDir, ServiceManager) {
+  fn setup_test_env() -> (TempDir, ServiceManager) {
     let tmp = TempDir::new("murust-repository").expect("creating tempdir");
     let path_buf = tmp.path().join("database.sqlite");
     let path = path_buf.to_str().expect("converting temp DB path");
@@ -46,7 +46,7 @@ mod tests {
 
   #[test]
   fn successful_account_login_and_logout() {
-    let (_temp, manager) = setup_test_db();
+    let (_temp, manager) = setup_test_env();
     let service = manager.account_service();
     let account = service.login("foobar", "test").unwrap().unwrap();
     assert!(service.logout(&account).is_ok());
@@ -54,7 +54,7 @@ mod tests {
 
   #[test]
   fn account_lockout_after_failed_attempts() {
-    let (_temp, manager) = setup_test_db();
+    let (_temp, manager) = setup_test_env();
     let service = manager.account_service();
 
     let fail = || service.login("foobar", "tist").unwrap();
@@ -64,7 +64,7 @@ mod tests {
 
   #[test]
   fn find_character_by_account_id() {
-    let (_temp, manager) = setup_test_db();
+    let (_temp, manager) = setup_test_env();
     let service = manager.character_service();
     let characters = service.find_by_account_id(1).unwrap();
 
@@ -77,7 +77,7 @@ mod tests {
 
   #[test]
   fn find_items_by_id() {
-    let (_temp, manager) = setup_test_db();
+    let (_temp, manager) = setup_test_env();
     let service = manager.item_service();
 
     let id = item::Id::parse_str("6606af63a93c11e4979700505690798f").unwrap();
