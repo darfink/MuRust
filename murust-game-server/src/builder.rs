@@ -2,7 +2,7 @@ use game::GameService;
 use murust_service::ServiceManager;
 use rpc::{RpcHandler, RpcService};
 use std::{io, net::{SocketAddr, SocketAddrV4}};
-use {GameServerId, ServerInfo, ClientManager, GameServer};
+use {ClientManager, GameServer, GameServerId, ServerInfo};
 
 /// A builder for the Game Server.
 pub struct ServerBuilder {

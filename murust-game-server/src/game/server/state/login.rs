@@ -2,8 +2,8 @@ use super::{PacketSink, PacketStream};
 use futures::prelude::*;
 use muonline_packet::PacketDecodable;
 use murust_data_model::entities::Account;
-use murust_service::{AccountService, AccountLoginError};
-use protocol::game::{VERSION, server, client};
+use murust_service::{AccountLoginError, AccountService};
+use protocol::game::{client, server, VERSION};
 use std::io;
 
 #[allow(unused_unsafe)]

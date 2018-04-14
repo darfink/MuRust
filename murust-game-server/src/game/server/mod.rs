@@ -1,12 +1,12 @@
 use self::traits::{PacketSink, SocketProvider};
-use futures::{Future, Stream, sync::mpsc, future::Either};
-use murust_service::ServiceManager;
-use muonline_packet::{XOR_CIPHER, Packet, crypto};
+use futures::{Future, Stream, future::Either, sync::mpsc};
+use muonline_packet::{crypto, Packet, XOR_CIPHER};
 use muonline_packet_codec::{self, PacketCodec};
+use murust_service::ServiceManager;
 use protocol::game::{server, Client};
 use std::io;
 use tokio::{self, io::AsyncRead, net::{TcpListener, TcpStream}};
-use {ServerInfo, ClientManager};
+use {ClientManager, ServerInfo};
 
 mod state;
 mod traits;
@@ -81,9 +81,7 @@ fn process_client(
     },
     // There are no free slots available for the client.
     None => {
-      let future = stream
-        .send_packet(&server::JoinResult::Failure)
-        .map(|_| ());
+      let future = stream.send_packet(&server::JoinResult::Failure).map(|_| ());
       Either::B(future)
     },
   };
@@ -91,7 +89,6 @@ fn process_client(
   // Spawn each client on an executor
   tokio::spawn(client.map_err(|error| error!("Game Client: {}", error)));
   Ok(())
-
 }
 
 /// Returns the codec used for a Game Server.

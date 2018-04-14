@@ -1,9 +1,9 @@
+use futures::{Future, Sink, sync::mpsc};
 use game::server;
 use murust_service::ServiceManager;
-use futures::{Future, Sink, sync::mpsc};
 use std::{io, thread::{self, JoinHandle}};
 use tap::TapResultOps;
-use {ServerInfo, ClientManager};
+use {ClientManager, ServerInfo};
 
 /// Wraps the underlying game server thread.
 pub struct GameService {

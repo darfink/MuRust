@@ -1,9 +1,9 @@
 use super::{util, PacketSink, PacketStream};
 use futures::prelude::*;
-use protocol::game::{server, Client};
-use murust_data_model::types::Class;
 use murust_data_model::entities::{Account, Character};
+use murust_data_model::types::Class;
 use murust_service::CharacterService;
+use protocol::game::{server, Client};
 use std::io;
 use std::time::Duration;
 
@@ -13,7 +13,8 @@ pub fn serve<S: PacketStream + PacketSink + Send + 'static>(
   (account, character_service): (Account, CharacterService),
   stream: S,
 ) -> io::Result<(Character, S)> {
-  let characters = character_service.find_by_account_id(account.id)
+  let characters = character_service
+    .find_by_account_id(account.id)
     .map_err(|_| Into::<io::Error>::into(io::ErrorKind::Other))?;
 
   // Process one incoming packet at a time.

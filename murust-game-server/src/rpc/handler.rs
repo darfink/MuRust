@@ -1,7 +1,7 @@
-use {ClientManager, ServerInfo};
 use jsonrpc_core::Error;
 use rpc::api::{GameServerApi, GameServerStatus};
 use std::time::{Duration, Instant};
+use {ClientManager, ServerInfo};
 
 /// An RPC handler, implementing the connect server API.
 pub struct RpcHandler {

@@ -1,7 +1,7 @@
 use super::traits::{PacketSink, PacketStream};
 use super::util;
-use murust_service::ServiceManager;
 use futures::prelude::*;
+use murust_service::ServiceManager;
 use std::io;
 
 pub mod lobby;
@@ -14,6 +14,9 @@ pub fn serve<S: PacketStream + PacketSink + Send + 'static>(
   stream: S,
 ) -> io::Result<S> {
   let (account, stream) = await!(login::serve(service_manager.account_service(), stream))?;
-  let (_character, stream) = await!(lobby::serve((account, service_manager.character_service()), stream))?;
+  let (_character, stream) = await!(lobby::serve(
+    (account, service_manager.character_service()),
+    stream
+  ))?;
   Ok(stream)
 }

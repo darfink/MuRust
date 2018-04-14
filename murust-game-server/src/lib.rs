@@ -29,8 +29,8 @@ extern crate jsonrpc_http_server;
 
 pub use builder::ServerBuilder;
 use clients::ClientManager;
-use murust_service::ServiceManager;
 use info::ServerInfo;
+use murust_service::ServiceManager;
 use std::io;
 
 #[macro_use]
@@ -38,8 +38,8 @@ mod macros;
 mod builder;
 mod clients;
 mod game;
-mod rpc;
 mod info;
+mod rpc;
 
 /// The type of a server ID.
 pub type GameServerId = u16;

@@ -1,6 +1,6 @@
-use std::sync::{Arc, Mutex};
-use std::net::SocketAddrV4;
 use GameServerId;
+use std::net::SocketAddrV4;
+use std::sync::{Arc, Mutex};
 
 /// The game server info.
 #[derive(Clone)]
@@ -25,7 +25,5 @@ impl ServerInfo {
   pub fn socket(&self) -> SocketAddrV4 { *self.socket.lock().unwrap() }
 
   /// Updates the socket information of the server.
-  pub fn refresh_socket(&self, socket: SocketAddrV4) {
-    *self.socket.lock().unwrap() = socket;
-  }
+  pub fn refresh_socket(&self, socket: SocketAddrV4) { *self.socket.lock().unwrap() = socket; }
 }

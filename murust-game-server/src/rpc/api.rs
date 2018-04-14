@@ -1,6 +1,6 @@
+use GameServerId;
 use jsonrpc_core::Error;
 use std::net::Ipv4Addr;
-use GameServerId;
 
 build_rpc_trait! {
   pub trait GameServerApi {
@@ -22,7 +22,6 @@ pub struct GameServerStatus {
   pub uptime: u64,
 }
 
-/*impl GameServerStatus {
-  pub fn load_factor(&self) -> f32 { (self.clients as f32) / (self.max_clients as f32) }
-}*/
-
+// impl GameServerStatus {
+// pub fn load_factor(&self) -> f32 { (self.clients as f32) / (self.max_clients
+// as f32) } }
