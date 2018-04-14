@@ -20,20 +20,23 @@ VALUES
 INSERT INTO item_definition
   (code, name, equippable_slot, max_durability, width, height, drop_from_monster, drop_level)
 VALUES
-  (0, 'Kris',        0, 20, 1, 2, 1, 6),
-  (1, 'Short Sword', 0, 22, 1, 3, 1, 3),
-  (2, 'Rapier',      0, 23, 1, 3, 1, 9);
+  (0,    'Kris',         0, 20, 1, 2, 1, 6),
+  (1,    'Short Sword',  0, 22, 1, 3, 1, 3),
+  (2,    'Rapier',       0, 23, 1, 3, 1, 9),
+  (4097, 'Dragon Armor', 3, 68, 2, 3, 1, 59);
 
 -- Create an item instance of a 'Kris + 2' & 'Short Sword + 3'
 INSERT INTO item(id, code, level, durability)
 VALUES
-  (X'6606af63a93c11e4979700505690798f', 0, 2, 20),
-  (X'3f06af63a93c11e4979700505690773f', 1, 3, 22);
+  (X'6606af63a93c11e4979700505690798f',    0,  2, 20),
+  (X'3f06af63a93c11e4979700505690773f',    1,  3, 22),
+  (X'a64f5979c8684d2eb6dc217dd2e5a009', 4097, 13, 55);
 
 -- Equip the 'deadbeef' character with the Short Sword
 INSERT INTO equipment_item(character_id, item_id, slot)
 VALUES
-  (1, X'3f06af63a93c11e4979700505690773f', 0);
+  (1, X'3f06af63a93c11e4979700505690773f', 0),
+  (1, X'a64f5979c8684d2eb6dc217dd2e5a009', 3);
 
 -- Add the Kris to the 'deadbeef' character's inventory
 INSERT INTO inventory_item(inventory_id, item_id, slot)
@@ -44,4 +47,5 @@ INSERT INTO item_eligible_class(item_code, class)
 VALUES
   (0, 'DW'), (0, 'DK'), (0, 'FE'), (0, 'MG'), (0, 'DL'),
   (1, 'DW'), (1, 'DK'), (1, 'FE'), (1, 'MG'), (1, 'DL'),
-  (2, 'DK'), (2, 'FE'), (2, 'MG'), (2, 'DL');
+  (2, 'DK'), (2, 'FE'), (2, 'MG'), (2, 'DL'),
+  (4097, 'DK'), (4097, 'MG');
