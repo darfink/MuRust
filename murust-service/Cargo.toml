@@ -1,5 +1,5 @@
 [package]
-name = "muonline-service"
+name = "murust-service"
 version = "0.1.0"
 authors = ["Elliott Linder <elliott@linder.bz>"]
 
