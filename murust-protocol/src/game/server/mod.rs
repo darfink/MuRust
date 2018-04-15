@@ -108,6 +108,19 @@ impl Serialize for Message {
   }
 }
 
+/// `C1:B8:01` - Send the client's kill count for the character.
+///
+/// This is specific to the client's character only.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// kills | `U8` | Kill count for this character. | -
+#[derive(Serialize, MuPacket, Debug)]
+#[packet(kind = "C1", code = "B8", subcode = "01")]
+pub struct CharacterKillCount(pub u8);
+
 /// `C1:F1:00` — Describes the result of an attempt to join a Game Server.
 ///
 /// This can also be sent after a client has connected. If sent after the initial
