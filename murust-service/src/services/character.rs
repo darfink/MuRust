@@ -22,7 +22,9 @@ pub enum CharacterDeleteError {
 
 /// A service for character management.
 pub struct CharacterService {
+  // TODO: Obviously this item business is ugly as hell
   item_service: ItemService,
+  repo_items: ItemRepository,
   repo_characters: CharacterRepository,
   repo_inventory: InventoryRepository,
 }
@@ -31,11 +33,13 @@ impl CharacterService {
   /// Constructs a new character service.
   pub fn new(
     item_service: ItemService,
+    repo_items: ItemRepository,
     repo_characters: CharacterRepository,
     repo_inventory: InventoryRepository,
   ) -> Self {
     CharacterService {
       item_service,
+      repo_items,
       repo_characters,
       repo_inventory,
     }
@@ -49,6 +53,15 @@ impl CharacterService {
       .into_iter()
       .map(|character| self.map_character_to_entity(character))
       .collect::<Result<Vec<_>>>()
+  }
+
+  /// Returns a character by name.
+  pub fn find_by_name(&self, name: &str) -> Result<Option<Character>> {
+    self
+      .repo_characters
+      .find_by_name(name)?
+      .map_or(Ok(None), |character| self.map_character_to_entity(character).map(Some))
+      .map_err(Into::into)
   }
 
   // Creates a new character and returns it as an entity.
@@ -100,11 +113,20 @@ impl CharacterService {
     character: Character,
   ) -> Result<::std::result::Result<(), (Character, CharacterDeleteError)>> {
     // TODO: Actually validate guild/blocked.
+    // TODO: Use a transaction!
+    self
+      .repo_items
+      .delete_equipment_by_character_id(character.id)?;
+    self
+      .repo_items
+      .clear_inventory_by_id(character.inventory.id)?;
     self
       .repo_characters
-      .delete(&character.id)
-      .map_err(Into::into)
-      .map(Ok)
+      .delete(&character.id)?;
+    self
+      .repo_inventory
+      .delete(character.inventory.id)?;
+    Ok(Ok(()))
   }
 
   fn map_character_to_entity(&self, character: models::Character) -> Result<Character> {

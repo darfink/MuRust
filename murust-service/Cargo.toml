@@ -11,10 +11,6 @@ murust-repository = { path = "../murust-repository" }
 num-traits = "0.2"
 uuid = { version = "0.6", features = ["v4"] }
 
-[dependencies.log]
-features = ["std"]
-version = "0.4"
-
 [dev-dependencies]
 tempdir = "0.3"
 matches = "0.1"

@@ -3,9 +3,6 @@
 #[cfg(test)]
 extern crate tempdir;
 
-#[macro_use]
-extern crate log;
-
 #[cfg(test)]
 #[cfg_attr(test, macro_use)]
 extern crate matches;
@@ -78,6 +75,16 @@ mod tests {
 
     let weapon = characters[0].equipment[ItemSlot::WeaponRight].as_ref();
     assert_eq!(weapon.unwrap().name, "Short Sword");
+  }
+
+  #[test]
+  fn delete_character_from_account() {
+    let (_temp, manager) = setup_test_env();
+    let service = manager.character_service();
+
+    let character = service.find_by_name("deadbeef").unwrap().unwrap();
+    service.delete(character).unwrap().unwrap();
+    assert!(service.find_by_name("deadbeef").unwrap().is_none());
   }
 
   #[test]

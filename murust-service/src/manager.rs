@@ -29,6 +29,7 @@ impl ServiceManager {
   pub fn character_service(&self) -> CharacterService {
     CharacterService::new(
       self.item_service(),
+      ItemRepository::new(&self.context),
       CharacterRepository::new(&self.context),
       InventoryRepository::new(&self.context),
     )
