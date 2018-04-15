@@ -1,6 +1,7 @@
 use schema::character;
+use types::UuidWrapper;
 
-#[derive(Identifiable, Queryable, AsChangeset, Debug)]
+#[derive(Identifiable, Queryable, Debug)]
 #[table_name = "character"]
 pub struct Character {
   pub id: i32,
@@ -18,6 +19,6 @@ pub struct Character {
   pub position_x: i32,
   pub position_y: i32,
   pub player_kills: i32,
-  pub inventory_id: i32,
+  pub inventory_id: UuidWrapper,
   pub account_id: i32,
 }

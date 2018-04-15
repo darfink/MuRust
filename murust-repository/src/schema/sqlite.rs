@@ -34,7 +34,7 @@ table! {
         position_x -> Integer,
         position_y -> Integer,
         player_kills -> Integer,
-        inventory_id -> Integer,
+        inventory_id -> Binary,
         account_id -> Integer,
     }
 }
@@ -49,7 +49,7 @@ table! {
 
 table! {
     inventory (id) {
-        id -> Integer,
+        id -> Binary,
         width -> Integer,
         height -> Integer,
         money -> Integer,
@@ -58,7 +58,7 @@ table! {
 
 table! {
     inventory_item (inventory_id, slot) {
-        inventory_id -> Integer,
+        inventory_id -> Binary,
         item_id -> Binary,
         slot -> Integer,
     }

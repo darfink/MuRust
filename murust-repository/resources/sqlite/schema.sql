@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS character(
   position_x INTEGER NOT NULL CHECK(position_x BETWEEN 0 AND 0xFF),
   position_y INTEGER NOT NULL CHECK(position_y BETWEEN 0 AND 0xFF),
   player_kills INTEGER NOT NULL DEFAULT 0,
-  inventory_id INTEGER NOT NULL,
+  inventory_id BINARY NOT NULL,
   account_id INTEGER NOT NULL,
   UNIQUE(name),
   UNIQUE(account_id, slot),
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS character(
 );
 
 CREATE TABLE IF NOT EXISTS inventory(
-  id INTEGER NOT NULL,
+  id BINARY NOT NULL CHECK(TYPEOF(id) = 'blob' AND LENGTH(id) = 16),
   width INTEGER NOT NULL CHECK(width BETWEEN 1 AND 0xFF),
   height INTEGER NOT NULL CHECK(height BETWEEN 1 AND 0xFF),
   money INTEGER NOT NULL DEFAULT 0 CHECK(money >= 0),
@@ -44,11 +44,11 @@ CREATE TABLE IF NOT EXISTS inventory(
 );
 
 CREATE TABLE IF NOT EXISTS inventory_item(
-  inventory_id INTEGER NOT NULL,
+  inventory_id BINARY NOT NULL,
   item_id BINARY NOT NULL,
   slot INTEGER NOT NULL CHECK(slot BETWEEN 0 AND 0xFF),
   FOREIGN KEY(inventory_id) REFERENCES inventory(id),
-  FOREIGN KEY(item_id) REFERENCES item(id),
+  FOREIGN KEY(item_id) REFERENCES item(id) ON DELETE CASCADE,
   PRIMARY KEY(inventory_id, slot)
 );
 
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS equipment_item(
   item_id BINARY NOT NULL,
   slot INTEGER NOT NULL CHECK(slot BETWEEN 0 AND 11),
   FOREIGN KEY(character_id) REFERENCES character(id),
-  FOREIGN KEY(item_id) REFERENCES item(id),
+  FOREIGN KEY(item_id) REFERENCES item(id) ON DELETE CASCADE,
   PRIMARY KEY(character_id, slot)
 );
 

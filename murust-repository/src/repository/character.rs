@@ -4,6 +4,7 @@ use diesel::{self, prelude::*};
 use error::Result;
 use models::Character;
 use schema::character::dsl;
+use types::UuidWrapper;
 
 /// A repository for characters.
 #[derive(Clone)]
@@ -46,7 +47,7 @@ impl CharacterRepository {
   }
 
   /// Creates a new character and returns it.
-  pub fn create(
+  pub fn create<I: Into<UuidWrapper>>(
     &self,
     slot: i32,
     name: &str,
@@ -54,7 +55,7 @@ impl CharacterRepository {
     map: i32,
     position_x: i32,
     position_y: i32,
-    inventory_id: i32,
+    inventory_id: I,
     account_id: i32,
   ) -> Result<Character> {
     let context = self.context.access();
@@ -66,7 +67,7 @@ impl CharacterRepository {
         dsl::map.eq(map),
         dsl::position_x.eq(position_x),
         dsl::position_y.eq(position_y),
-        dsl::inventory_id.eq(inventory_id),
+        dsl::inventory_id.eq(&inventory_id.into()),
         dsl::account_id.eq(account_id),
       ))
       .execute(&*context)

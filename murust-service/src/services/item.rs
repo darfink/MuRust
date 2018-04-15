@@ -1,6 +1,6 @@
 use error::{Error, Result};
 use mapping::{self, MappableToDomain};
-use murust_data_model::entities::{item, Item};
+use murust_data_model::entities::{item, inventory, Item};
 use murust_repository::*;
 
 /// A service for item management.
@@ -24,10 +24,10 @@ impl ItemService {
     }
   }
 
-  pub fn find_by_id(&self, id: &item::Id) -> Result<Option<Item>> {
+  pub fn find_by_id(&self, id: item::Id) -> Result<Option<Item>> {
     self
       .repo_item
-      .find_by_id(*id)?
+      .find_by_id(id)?
       .map_or(Ok(None), |item| self.map_item_to_entity(item).map(Some))
   }
 
@@ -45,10 +45,10 @@ impl ItemService {
   }
 
   // TODO: How can this be implemented instead?
-  pub(crate) fn find_items_by_inventory_id(&self, inventory_id: i32) -> Result<Vec<(i32, Item)>> {
+  pub(crate) fn find_items_by_inventory_id(&self, inventory_id: inventory::Id) -> Result<Vec<(i32, Item)>> {
     self
       .repo_item
-      .find_items_by_inventory_id(inventory_id)?
+      .find_inventory_contents_by_id(inventory_id)?
       .into_iter()
       .map(|(inventory_item, item)| Ok((inventory_item.slot, self.map_item_to_entity(item)?)))
       .collect::<Result<Vec<_>>>()

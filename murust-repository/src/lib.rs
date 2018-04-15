@@ -116,7 +116,8 @@ mod tests {
     let (_temp, db) = setup_test_db();
     let repository = InventoryRepository::new(&db);
 
-    let inventory = repository.find_by_id(1).unwrap().unwrap();
+    let id = Uuid::parse_str("587d12b748364673a0989476894283e4").unwrap();
+    let inventory = repository.find_by_id(id).unwrap().unwrap();
     assert_eq!(inventory.width, 8);
     assert_eq!(inventory.height, 8);
     assert_eq!(inventory.money, 1337);
@@ -127,11 +128,22 @@ mod tests {
     let (_temp, db) = setup_test_db();
     let repository = ItemRepository::new(&db);
 
-    let items = repository.find_items_by_inventory_id(1).unwrap();
+    let id = Uuid::parse_str("587d12b748364673a0989476894283e4").unwrap();
+    let items = repository.find_inventory_contents_by_id(id).unwrap();
     assert_eq!(items.len(), 1);
 
     let id = Uuid::parse_str("6606af63a93c11e4979700505690798f").unwrap();
     assert_eq!(*items[0].0.item_id, id);
+  }
+
+  #[test]
+  fn clear_items_from_inventory() {
+    let (_temp, db) = setup_test_db();
+    let repository = ItemRepository::new(&db);
+
+    let id = Uuid::parse_str("587d12b748364673a0989476894283e4").unwrap();
+    repository.clear_inventory_by_id(id).unwrap();
+    assert!(repository.find_inventory_contents_by_id(id).unwrap().is_empty());
   }
 
   #[test]
@@ -144,6 +156,16 @@ mod tests {
 
     let id = Uuid::parse_str("3f06af63a93c11e4979700505690773f").unwrap();
     assert!(items.iter().any(|(i, _)| *i.item_id == id));
+  }
+
+  #[test]
+  fn delete_equipment_items_from_character() {
+    let (_temp, db) = setup_test_db();
+    let repository = ItemRepository::new(&db);
+
+    repository.delete_equipment_by_character_id(1).unwrap();
+    let items = repository.find_equipment_by_character_id(1).unwrap();
+    assert!(items.is_empty());
   }
 
   #[test]

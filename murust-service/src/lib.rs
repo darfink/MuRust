@@ -86,7 +86,7 @@ mod tests {
     let service = manager.item_service();
 
     let id = item::Id::parse_str("6606af63a93c11e4979700505690798f").unwrap();
-    let item = service.find_by_id(&id).unwrap().unwrap();
+    let item = service.find_by_id(id).unwrap().unwrap();
 
     assert_eq!(item.level, 2);
     assert_eq!(item.name, "Kris");

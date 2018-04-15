@@ -114,6 +114,7 @@ impl MappableToDomain<Inventory> for models::Inventory {
     }
 
     Ok(Inventory {
+      id: *self.id,
       money: self.money as u32,
       storage,
     })

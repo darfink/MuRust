@@ -8,13 +8,15 @@ VALUES
   (1, 'foobar', '$2y$07$zFM0q8YmKjaYW4Hig6AFz.wroa/eG5DSK4ST9Y0KS4hDw5Jepw31a', 111111, 'test@mail.com');
 
 -- Create a default character inventory with 8x8 space and 1337 in cash
-INSERT INTO inventory(id, width, height, money) VALUES(1, 8, 8, 1337);
+INSERT INTO inventory(id, width, height, money)
+VALUES
+  (X'587d12b748364673a0989476894283e4', 8, 8, 1337);
 
 -- Create a default DK character named deadbeef at level 3
 INSERT INTO character
   (id, slot, name, level, class, map, position_x, position_y, inventory_id, account_id)
 VALUES
-  (1, 2, 'deadbeef', 3, 'DK', 1, 120, 60, 1, 1);
+  (1, 2, 'deadbeef', 3, 'DK', 1, 120, 60, X'587d12b748364673a0989476894283e4', 1);
 
 -- Create item definitions for some test items.
 INSERT INTO item_definition
@@ -57,7 +59,7 @@ VALUES
 -- Add the Kris to the 'deadbeef' character's inventory
 INSERT INTO inventory_item(inventory_id, item_id, slot)
 VALUES
-  (1, X'6606af63a93c11e4979700505690798f', 0);
+  (X'587d12b748364673a0989476894283e4', X'6606af63a93c11e4979700505690798f', 0);
 
 INSERT INTO item_eligible_class(item_code, class)
 VALUES

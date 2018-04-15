@@ -125,7 +125,7 @@ impl CharacterService {
   }
 
   fn map_inventory_to_entity(&self, inventory: models::Inventory) -> Result<Inventory> {
-    let items = self.item_service.find_items_by_inventory_id(inventory.id)?;
+    let items = self.item_service.find_items_by_inventory_id(*inventory.id)?;
     inventory.map_to_entity((items,)).map_err(Into::into)
   }
 }

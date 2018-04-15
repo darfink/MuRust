@@ -3,6 +3,8 @@ use diesel::{self, prelude::*};
 use error::Result;
 use models::Inventory;
 use schema::inventory::dsl;
+use types::UuidWrapper;
+use boolinator::Boolinator;
 
 /// A repository for inventories.
 #[derive(Clone)]
@@ -19,9 +21,9 @@ impl InventoryRepository {
   }
 
   /// Returns an inventory by its ID.
-  pub fn find_by_id(&self, id: i32) -> Result<Option<Inventory>> {
+  pub fn find_by_id<I: Into<UuidWrapper>>(&self, id: I) -> Result<Option<Inventory>> {
     dsl::inventory
-      .find(id)
+      .find(&id.into())
       .first::<Inventory>(&*self.context.access())
       .optional()
       .map_err(Into::into)
@@ -34,6 +36,14 @@ impl InventoryRepository {
       .values((dsl::width.eq(width), dsl::height.eq(height)))
       .execute(&*context)
       .and_then(|_| dsl::inventory.order(dsl::id.desc()).first(&*context))
+      .map_err(Into::into)
+  }
+
+  /// Deletes an inventory by its ID.
+  pub fn delete<I: Into<UuidWrapper>>(&self, inventory_id: I) -> Result<()> {
+    diesel::delete(dsl::inventory.filter(dsl::id.eq(&inventory_id.into())))
+      .execute(&*self.context.access())
+      .and_then(|count| (count == 1).ok_or(diesel::result::Error::NotFound))
       .map_err(Into::into)
   }
 }
