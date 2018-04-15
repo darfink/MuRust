@@ -1,5 +1,5 @@
 use context::{DataContext, DataContextInner};
-use diesel::prelude::*;
+use diesel::{self, prelude::*};
 use error::Result;
 use models::Inventory;
 use schema::inventory::dsl;
@@ -24,6 +24,16 @@ impl InventoryRepository {
       .find(id)
       .first::<Inventory>(&*self.context.access())
       .optional()
+      .map_err(Into::into)
+  }
+
+  /// Creates a new inventory and returns it.
+  pub fn create(&self, width: i32, height: i32) -> Result<Inventory> {
+    let context = self.context.access();
+    diesel::insert_into(dsl::inventory)
+      .values((dsl::width.eq(width), dsl::height.eq(height)))
+      .execute(&*context)
+      .and_then(|_| dsl::inventory.order(dsl::id.desc()).first(&*context))
       .map_err(Into::into)
   }
 }

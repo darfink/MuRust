@@ -1,5 +1,10 @@
+#![feature(vec_remove_item)]
+
 #[cfg(test)]
 extern crate tempdir;
+
+#[macro_use]
+extern crate log;
 
 #[cfg(test)]
 #[cfg_attr(test, macro_use)]

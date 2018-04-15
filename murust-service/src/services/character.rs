@@ -1,8 +1,24 @@
 use ItemService;
 use error::{Error, Result};
 use mapping::MappableToDomain;
-use murust_data_model::entities::{Character, Inventory};
+use murust_data_model::entities::{Character, Equipment, Inventory};
+use murust_data_model::types::{Class, CHARACTER_SLOTS};
 use murust_repository::*;
+
+/// A collection of possible character creation errors.
+#[derive(Debug)]
+pub enum CharacterCreateError {
+  // InvalidClass,
+  // InvalidName,
+  LimitReached,
+}
+
+/// A collection of possible character deletion errors.
+#[derive(Debug)]
+pub enum CharacterDeleteError {
+  GuildCharacter,
+  Blocked,
+}
 
 /// A service for character management.
 pub struct CharacterService {
@@ -33,6 +49,62 @@ impl CharacterService {
       .into_iter()
       .map(|character| self.map_character_to_entity(character))
       .collect::<Result<Vec<_>>>()
+  }
+
+  // Creates a new character and returns it as an entity.
+  pub fn create(
+    &self,
+    name: &str,
+    class: Class,
+    account_id: i32,
+  ) -> Result<::std::result::Result<Character, CharacterCreateError>> {
+    let mut slots_free = CHARACTER_SLOTS.rev().collect::<Vec<_>>();
+    for character in self.repo_characters.find_by_account_id(account_id)? {
+      slots_free.remove_item(&(character.slot as usize));
+    }
+
+    match slots_free.pop() {
+      // TODO: Configurable max characters
+      // TODO: Validate name
+      // TODO: max class
+      // TODO: starting position/world etc...
+      None => return Ok(Err(CharacterCreateError::LimitReached)),
+      Some(slot) => {
+        let inventory = self.repo_inventory.create(8, 8)?;
+        self
+          .repo_characters
+          .create(
+            slot as i32,
+            name,
+            class.into(),
+            0,
+            0,
+            0,
+            inventory.id,
+            account_id,
+          )
+          .map_err(Into::into)
+          .and_then(|character| {
+            character
+              .map_to_entity((Equipment::default(), Inventory::new(8, 8)))
+              .map_err(Into::into)
+          })
+          .map(Ok)
+      },
+    }
+  }
+
+  /// Removes a character from the underlying storage.
+  pub fn delete(
+    &self,
+    character: Character,
+  ) -> Result<::std::result::Result<(), (Character, CharacterDeleteError)>> {
+    // TODO: Actually validate guild/blocked.
+    self
+      .repo_characters
+      .delete(&character.id)
+      .map_err(Into::into)
+      .map(Ok)
   }
 
   fn map_character_to_entity(&self, character: models::Character) -> Result<Character> {

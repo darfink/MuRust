@@ -140,7 +140,7 @@ mod tests {
     let repository = ItemRepository::new(&db);
 
     let items = repository.find_equipment_by_character_id(1).unwrap();
-    assert_eq!(items.len(), 2);
+    assert_eq!(items.len(), 7);
 
     let id = Uuid::parse_str("3f06af63a93c11e4979700505690773f").unwrap();
     assert!(items.iter().any(|(i, _)| *i.item_id == id));

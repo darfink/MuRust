@@ -76,7 +76,7 @@ impl AccountService {
     self.repository.update(&models).map_err(Into::into)
   }
 
-  /// Creates a new account and returns it as an models.
+  /// Creates a new account and returns it as an entity.
   pub fn create(
     &self,
     username: &str,
@@ -112,11 +112,11 @@ impl AccountService {
   }
 
   /// Removes an account from the underlying storage.
-  pub fn delete(&self, account: Account) -> ::std::result::Result<(), (Error, Account)> {
+  pub fn delete(&self, account: Account) -> ::std::result::Result<(), (Account, Error)> {
     self
       .repository
       .delete(&account.id)
-      .map_err(|error| (error.into(), account))
+      .map_err(|error| (account, error.into()))
   }
 
   /// Returns the hash of a password.
