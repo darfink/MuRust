@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use murust_data_model::entities::{Item, Equipment};
+use murust_data_model::entities::{Equipment, Item};
 use murust_data_model::types::{ItemCode, ItemGroup, ItemSlot};
 
 /// The size required by the protocol.
@@ -102,7 +102,7 @@ bitfield! {
   boots_high4, set_boots_high4:                       115, 112;
   gloves_high4, set_gloves_high4:                     119, 116;
 
-  fenrir, set_fenrir:                                 121, 120;
+  fenrir_type, set_fenrir_type:                       121, 120;
   //padding2, _:                                      135, 122;
 }
 
@@ -141,7 +141,7 @@ impl<T: AsMut<[u8]> + AsRef<[u8]>> CharacterEquipmentView<T> {
     self.set_has_dinorant(0);
     self.set_dark_horse(0);
     self.set_has_fenrir(0);
-    self.set_fenrir(0);
+    self.set_fenrir_type(0);
 
     if let Some(item) = item {
       match item.code.tuple() {
@@ -167,10 +167,12 @@ impl<T: AsMut<[u8]> + AsRef<[u8]>> CharacterEquipmentView<T> {
   }
 
   pub fn set_weapon_right(&mut self, item: Option<&Item>) {
-    let code = item.map(|item| {
-      self.set_weapon_right_shine(item_level_shine(item.level));
-      item.code.as_raw()
-    }).unwrap_or(0x1FFF);
+    let code = item
+      .map(|item| {
+        self.set_weapon_right_shine(item_level_shine(item.level));
+        item.code.as_raw()
+      })
+      .unwrap_or(0x1FFF);
 
     self.set_weapon_right_low8((code & 0xFF) as u8);
     self.set_weapon_right_high4(((code & 0xF00) >> 8) as u8);

@@ -1,9 +1,10 @@
 //! Game Client Packets
 
 pub use self::group::Client;
-use super::{Serial, Version};
+use super::{Serial, Version, util::deserialize_class};
 use game::util::StringFixedCredentials;
-use muonline_packet_serialize::IntegerLE;
+use muonline_packet_serialize::{IntegerLE, StringFixed};
+use murust_data_model::types::Class;
 use std::io;
 use typenum;
 
@@ -68,3 +69,51 @@ pub struct AccountLoginRequest {
 #[derive(Deserialize, MuPacket, Debug)]
 #[packet(kind = "C1", code = "F3", subcode = "00")]
 pub struct CharacterListRequest;
+
+/// `C1:F3:01` - Request for a character creation.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// name | `CHAR(10)` | The character's name. | -
+/// class | `U8` | The character's class. | -
+#[derive(Deserialize, MuPacket, Debug)]
+#[packet(kind = "C1", code = "F3", subcode = "01")]
+pub struct CharacterCreate {
+  #[serde(with = "StringFixed::<typenum::U10>")]
+  pub name: String,
+  #[serde(deserialize_with = "deserialize_class")]
+  pub class: Class,
+}
+
+/// `C1:F3:02` - Request for a character deletion.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// name | `CHAR(10)` | The character's name. | -
+/// code | `CHAR(10)` | The account's security code. | -
+#[derive(Deserialize, MuPacket, Debug)]
+#[packet(kind = "C1", code = "F3", subcode = "02")]
+pub struct CharacterDelete {
+  #[serde(with = "StringFixed::<typenum::U10>")]
+  pub name: String,
+  #[serde(with = "StringFixed::<typenum::U10>")]
+  pub security_code: String,
+}
+
+/// `C1:F3:03` - Request for a character selection.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// name | `CHAR(10)` | The character's name. | -
+#[derive(Deserialize, MuPacket, Debug)]
+#[packet(kind = "C1", code = "F3", subcode = "03")]
+pub struct CharacterJoinRequest {
+  #[serde(with = "StringFixed::<typenum::U10>")]
+  pub name: String,
+}

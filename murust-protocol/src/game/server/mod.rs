@@ -4,7 +4,7 @@ use super::{Version, util::serialize_class, VERSION};
 use game::models::{CharacterEquipmentSet, Color};
 use muonline_packet_serialize::{IntegerBE, IntegerLE, StringFixed, VectorLengthLE};
 use murust_data_model::entities::Character;
-use murust_data_model::types::{Class, CtlCode, GuildRole};
+use murust_data_model::types::{Class, CtlCode, Direction, GuildRole, HeroStatus};
 use serde::{Serialize, Serializer};
 use std::iter::IntoIterator;
 use typenum;
@@ -292,4 +292,188 @@ struct CharacterListEntry {
   class: Class,
   equipment: CharacterEquipmentSet,
   guild: GuildRole,
+}
+
+/// `C1:F3:01` — Describes a result of a character creation.
+///
+/// The `FailureOther` field does not present any information to the client, but
+/// it's assumed to be accompanied by a server message, informing to user of a
+/// different result.
+#[derive(MuPacket, Debug)]
+#[packet(kind = "C1", code = "F3", subcode = "01")]
+pub enum CharacterCreateResult {
+  InvalidName,
+  LimitReached,
+  FailureOther,
+  Character {
+    name: String,
+    slot: u8,
+    level: u16,
+    class: Class,
+  },
+}
+
+impl CharacterCreateResult {
+  /// Creates a successful character result.
+  pub fn success(character: &Character) -> Self {
+    CharacterCreateResult::Character {
+      name: character.name.clone(),
+      slot: character.slot,
+      level: character.level,
+      class: character.class,
+    }
+  }
+}
+
+impl Serialize for CharacterCreateResult {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: Serializer,
+  {
+    #[derive(Serialize)]
+    struct CharacterCreateResultSuccess {
+      result: u8,
+      #[serde(with = "StringFixed::<typenum::U10>")]
+      name: String,
+      slot: u8,
+      #[serde(with = "IntegerLE")]
+      level: u16,
+      #[serde(serialize_with = "serialize_class")]
+      class: Class,
+    }
+
+    match self {
+      &CharacterCreateResult::InvalidName => 0u8.serialize(serializer),
+      &CharacterCreateResult::LimitReached => 2u8.serialize(serializer),
+      &CharacterCreateResult::FailureOther => 3u8.serialize(serializer),
+      &CharacterCreateResult::Character {
+        ref name,
+        slot,
+        level,
+        class,
+      } => CharacterCreateResultSuccess {
+        result: 1,
+        name: name.clone(),
+        slot,
+        level,
+        class,
+      }.serialize(serializer),
+    }
+  }
+}
+
+/// `C1:F3:02` — Describes a result of a character deletion.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// result | `U8` | The result of the deletion. | -
+///
+/// Result | Meaning
+/// ------ | -------
+/// `0x00` | Can't delete guild character.
+/// `0x01` | Successfully deleted character.
+/// `0x02` | Invalid personal ID number.
+/// `0x03` | The character is item blocked.
+#[repr(u8)]
+#[derive(MuPacket, Primitive, Copy, Clone, Debug)]
+#[packet(kind = "C1", code = "F3", subcode = "02")]
+pub enum CharacterDeleteResult {
+  GuildCharacter = 0x00,
+  Success = 0x01,
+  InvalidSecurityCode = 0x02,
+  Blocked = 0x03,
+}
+
+primitive_serialize!(CharacterDeleteResult, u8);
+
+/// `C1:F3:03` — Describes a character's information.
+///
+/// Sent upon entering a world after selecting a character.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// x | `U8` | The character's horizontal position. | -
+/// y | `U8` | The character's vertical position. | -
+/// [world](#world) | `U8` | The character's current world. | -
+/// angle | `U8` | The character's angle. | -
+/// XP | `U32` | The character's experience. | LE
+/// XP (level) | `U32` | The required amount of experience to level up. | LE
+/// points | `U16` | The amount of level up points available. | LE
+/// strength | `U16` | The character's strength. | LE
+/// agility | `U16` | The character's agility. | LE
+/// vitality | `U16` | The character's vitality. | LE
+/// energy | `U16` | The character's energy. | LE
+/// HP | `U16` | The character's HP. | LE
+/// HP (max) | `U16` | The character's max HP. | LE
+/// MP | `U16` | The character's MP. | LE
+/// MP (max) | `U16` | The character's max MP. | LE
+/// SD | `U16` | The character's new SD. | LE
+/// SD (max) | `U16` | The character's max SD. | LE
+/// AG | `U16` | The character's AG. | LE
+/// AG (max) | `U16` | The character's max AG. | LE
+/// padding | `U16` | Padding, ignored by the client. | -
+/// money | `U32` | The amount of zen. | LE
+/// PK | `U8` | The character's PK status. | LE
+/// CTL | `U8` | The user's CTL code. | LE
+/// FP⊕ | `U16` | The character's fruit points (increase). | LE
+/// FP⊕(max) | `U16` | The character's max fruit points (increase). | LE
+/// command | `U16` | The character's command. | LE
+/// FP⊖ | `U16` | The character's fruit points (decrease). | LE
+/// FP⊖(max) | `U16` | The character's max fruit points (decrease). | LE
+#[derive(Serialize, MuPacket, Debug, Default)]
+#[packet(kind = "C1", code = "F3", subcode = "03")]
+pub struct CharacterJoin {
+  pub x: u8,
+  pub y: u8,
+  pub world: u8,
+  pub direction: Direction,
+  #[serde(with = "IntegerLE")]
+  pub experience: u32,
+  #[serde(with = "IntegerLE")]
+  pub experience_level: u32,
+  #[serde(with = "IntegerLE")]
+  pub points: u16,
+  #[serde(with = "IntegerLE")]
+  pub strength: u16,
+  #[serde(with = "IntegerLE")]
+  pub agility: u16,
+  #[serde(with = "IntegerLE")]
+  pub vitality: u16,
+  #[serde(with = "IntegerLE")]
+  pub energy: u16,
+  #[serde(with = "IntegerLE")]
+  pub health: u16,
+  #[serde(with = "IntegerLE")]
+  pub health_max: u16,
+  #[serde(with = "IntegerLE")]
+  pub mana: u16,
+  #[serde(with = "IntegerLE")]
+  pub mana_max: u16,
+  #[serde(with = "IntegerLE")]
+  pub shield: u16,
+  #[serde(with = "IntegerLE")]
+  pub shield_max: u16,
+  #[serde(with = "IntegerLE")]
+  pub ag: u16,
+  #[serde(with = "IntegerLE")]
+  pub ag_max: u16,
+  pub padding: u16,
+  #[serde(with = "IntegerLE")]
+  pub money: u32,
+  pub hero_status: HeroStatus,
+  pub ctl: CtlCode,
+  #[serde(with = "IntegerLE")]
+  pub fruit_points_add: u16,
+  #[serde(with = "IntegerLE")]
+  pub fruit_points_add_max: u16,
+  #[serde(with = "IntegerLE")]
+  pub command: u16,
+  #[serde(with = "IntegerLE")]
+  pub fruit_points_sub: u16,
+  #[serde(with = "IntegerLE")]
+  pub fruit_points_sub_max: u16,
 }
