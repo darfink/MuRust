@@ -750,6 +750,7 @@ dependencies = [
 name = "murust-game-server"
 version = "0.1.0"
 dependencies = [
+ "failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures-await 0.1.0 (git+https://github.com/darfink/futures-await)",
  "jsonrpc-core 8.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "jsonrpc-http-server 8.0.0 (registry+https://github.com/rust-lang/crates.io-index)",

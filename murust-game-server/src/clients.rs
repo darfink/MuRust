@@ -75,5 +75,7 @@ impl ClientManager {
   pub fn len(&self) -> usize { self.inner().clients.len() }
 
   /// Returns the inner context.
-  fn inner<'a>(&'a self) -> MutexGuard<'a, ClientManagerInner> { self.0.lock().unwrap() }
+  fn inner(&self) -> MutexGuard<ClientManagerInner> {
+    self.0.lock().expect("locking inner client manager context")
+  }
 }

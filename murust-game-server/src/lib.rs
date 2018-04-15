@@ -4,6 +4,7 @@
 extern crate log;
 extern crate tap;
 
+extern crate failure;
 extern crate futures_await as futures;
 extern crate muonline_packet;
 extern crate muonline_packet_codec;
@@ -22,16 +23,14 @@ extern crate jsonrpc_core;
 extern crate jsonrpc_http_server;
 
 // TODO: Terminology service/server + ServiceManager
-// TODO: Replace all unwraps with expect
-// TODO: Figure out Error string formatting
-// TODO: Figure out what Error type to use/propagate
 // TODO: Determine how logging output should be
+// TODO: Add macro for printing error 'Display' whilst logging error 'Debug'
 
 pub use builder::ServerBuilder;
 use clients::ClientManager;
+use failure::Error;
 use info::ServerInfo;
 use murust_service::ServiceManager;
-use std::io;
 
 #[macro_use]
 mod macros;
@@ -64,14 +63,14 @@ impl GameServer {
   pub fn uri(&self) -> &str { self.rpc_service.uri() }
 
   /// Stops the server.
-  pub fn stop(self) -> io::Result<()> {
+  pub fn stop(self) -> Result<(), Error> {
     let result = self.game_service.stop();
     self.rpc_service.close();
     result
   }
 
   /// Will block, waiting for the server to finish.
-  pub fn wait(self) -> io::Result<()> {
+  pub fn wait(self) -> Result<(), Error> {
     let result = self.game_service.wait();
     self.rpc_service.close();
     result

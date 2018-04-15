@@ -1,21 +1,21 @@
 use super::{PacketSink, PacketStream};
+use failure::{Error, ResultExt};
 use futures::prelude::*;
 use muonline_packet::PacketDecodable;
 use murust_data_model::entities::Account;
 use murust_service::{AccountLoginError, AccountService};
 use protocol::game::{client, server, VERSION};
-use std::io;
 
 #[allow(unused_unsafe)]
 #[async(boxed_send)]
 pub fn serve<S: PacketStream + PacketSink + Send + 'static>(
   account_service: AccountService,
   stream: S,
-) -> io::Result<(Account, S)> {
-  // TODO: Return InvalidData instead? Or chain the error
+) -> Result<(Account, S), Error> {
   // The next packet expected from the client is a login request
   let (packet, stream) = await!(stream.next_packet())?;
-  let request = client::AccountLoginRequest::from_packet(&packet)?;
+  let request = client::AccountLoginRequest::from_packet(&packet)
+    .context("Invalid client packet; expected account login request")?;
 
   match process_login(&account_service, &request)? {
     Ok(account) => {
@@ -36,7 +36,7 @@ pub fn serve<S: PacketStream + PacketSink + Send + 'static>(
 fn process_login(
   account_service: &AccountService,
   request: &client::AccountLoginRequest,
-) -> io::Result<Result<Account, server::AccountLoginResult>> {
+) -> Result<Result<Account, server::AccountLoginResult>, Error> {
   if !is_valid_client(request) {
     return Ok(Err(server::AccountLoginResult::InvalidGameVersion));
   }
@@ -44,7 +44,7 @@ fn process_login(
   // TODO: Inform the user if server is full from here?
   let result = account_service
     .login(&request.username, &request.password)
-    .map_err(|_| Into::<io::Error>::into(io::ErrorKind::Other))?
+    .context("Account service failed to process login")?
     .map_err(|error| match error {
       // TODO: It should not be revealed that the password was incorrect (only InvalidAccount)
       AccountLoginError::InvalidUsername => server::AccountLoginResult::InvalidAccount,

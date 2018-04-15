@@ -4,6 +4,7 @@ name = "murust-game-server"
 version = "0.1.0"
 
 [dependencies]
+failure = "0.1"
 futures-await = { git = "https://github.com/darfink/futures-await" }
 jsonrpc-core = "8.0"
 jsonrpc-http-server = "8.0"

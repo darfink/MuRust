@@ -1,7 +1,8 @@
+use failure::Error;
 use game::GameService;
 use murust_service::ServiceManager;
 use rpc::{RpcHandler, RpcService};
-use std::{io, net::{SocketAddr, SocketAddrV4}};
+use std::net::{SocketAddr, SocketAddrV4};
 use {ClientManager, GameServer, GameServerId, ServerInfo};
 
 /// A builder for the Game Server.
@@ -20,8 +21,8 @@ impl ServerBuilder {
       max_clients: 100,
       server_id,
       service_manager,
-      socket_rpc: "127.0.0.1:0".parse().unwrap(),
-      socket_game: "0.0.0.0:0".parse().unwrap(),
+      socket_rpc: "127.0.0.1:0".parse().expect("parsing default RPC socket"),
+      socket_game: "0.0.0.0:0".parse().expect("parsing default Game socket"),
     }
   }
 
@@ -50,7 +51,7 @@ impl ServerBuilder {
   }
 
   /// Spawns the Game & RPC services and returns a controller.
-  pub fn spawn(self) -> io::Result<GameServer> {
+  pub fn spawn(self) -> Result<GameServer, Error> {
     let client_manager = ClientManager::new(self.max_clients);
     let server_info = ServerInfo::new(self.server_id, self.socket_game);
 
