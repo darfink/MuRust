@@ -15,11 +15,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "array-macro"
-version = "1.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
 name = "arrayvec"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -248,26 +243,6 @@ dependencies = [
 name = "dtoa"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "enum-map"
-version = "0.2.27"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "array-macro 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "enum-map-derive 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "reexport-proc-macro 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "enum-map-derive"
-version = "0.2.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "proc-macro2 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.13.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "enum-primitive-derive"
@@ -737,7 +712,6 @@ name = "murust-data-model"
 version = "0.1.0"
 dependencies = [
  "bitflags 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "enum-map 0.2.27 (registry+https://github.com/rust-lang/crates.io-index)",
  "enum-primitive-derive 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "muonline-packet_serialize 0.1.0 (git+https://github.com/darfink/muonline-packet)",
  "num-traits 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -774,7 +748,6 @@ name = "murust-protocol"
 version = "0.1.0"
 dependencies = [
  "bitfield 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "enum-map 0.2.27 (registry+https://github.com/rust-lang/crates.io-index)",
  "enum-primitive-derive 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "muonline-packet 0.1.0 (git+https://github.com/darfink/muonline-packet)",
  "muonline-packet_derive 0.1.0 (git+https://github.com/darfink/muonline-packet)",
@@ -996,11 +969,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "redox_syscall 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "reexport-proc-macro"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "regex"
@@ -1540,7 +1508,6 @@ dependencies = [
 [metadata]
 "checksum aho-corasick 0.6.4 (registry+https://github.com/rust-lang/crates.io-index)" = "d6531d44de723825aa81398a6415283229725a00fa30713812ab9323faa82fc4"
 "checksum ansi_term 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ee49baf6cb617b853aa8d93bf420db2383fab46d314482ca2803b40d5fde979b"
-"checksum array-macro 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "5296df5553b8a53095f8d0d78da6d2bdf4148dd83d30ed5e3b66b45bf863b986"
 "checksum arrayvec 0.4.7 (registry+https://github.com/rust-lang/crates.io-index)" = "a1e964f9e24d588183fcb43503abda40d288c8657dfc27311516ce2f05675aef"
 "checksum atty 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)" = "af80143d6f7608d746df1520709e5d141c96f240b0e62b0aa41bdfb53374d9d4"
 "checksum backtrace 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)" = "ebbbf59b1c43eefa8c3ede390fcc36820b4999f7914104015be25025e0d62af2"
@@ -1569,8 +1536,6 @@ dependencies = [
 "checksum diesel 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "06b6446da8e5ae24540deeb54b724ca401efd321fb0c77e583df05a086e05a2a"
 "checksum diesel_derives 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "6471a2b637b414d3ee1504cf230409a550381c79204282f8fe06c527e4ae56be"
 "checksum dtoa 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "09c3753c3db574d215cba4ea76018483895d7bff25a31b49ba45db21c48e50ab"
-"checksum enum-map 0.2.27 (registry+https://github.com/rust-lang/crates.io-index)" = "9875da46c2c7332b894202f4557f69f280c150631ed820410c45f1822391fb0a"
-"checksum enum-map-derive 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "347806cb24f07b6a05e0ae2437ffb975b7324a996a1952619d0d19f7cb30dc08"
 "checksum enum-primitive-derive 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "e2b90e520ec62c1864c8c78d637acbfe8baf5f63240f2fb8165b8325c07812dd"
 "checksum error-chain 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ff511d5dc435d703f4971bc399647c9bc38e20cb41452e3b9feb4765419ed3f3"
 "checksum failure 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "934799b6c1de475a012a02dab0ace1ace43789ee4b99bcfbf1a2e3e8ced5de82"
@@ -1642,7 +1607,6 @@ dependencies = [
 "checksum rand 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "eba5f8cb59cc50ed56be8880a5c7b496bfd9bd26394e176bc67884094145c2c5"
 "checksum redox_syscall 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)" = "0d92eecebad22b767915e4d529f89f28ee96dbbf5a4810d2b844373f136417fd"
 "checksum redox_termios 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "7e891cfe48e9100a70a3b6eb652fef28920c117d366339687bd5576160db0f76"
-"checksum reexport-proc-macro 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "2c29ce8545a780d45d2095ea797ecfa7b83eb91f1f3eac7303a436f8516b9f90"
 "checksum regex 0.2.10 (registry+https://github.com/rust-lang/crates.io-index)" = "aec3f58d903a7d2a9dc2bf0e41a746f4530e0cab6b615494e058f67a3ef947fb"
 "checksum regex-syntax 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)" = "b2550876c31dc914696a6c2e01cbce8afba79a93c8ae979d2fe051c0230b3756"
 "checksum relay 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "1576e382688d7e9deecea24417e350d3062d97e32e45d70b1cde65994ff1489a"

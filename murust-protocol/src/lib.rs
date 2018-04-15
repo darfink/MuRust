@@ -18,7 +18,6 @@
 
 #[macro_use]
 extern crate enum_primitive_derive;
-extern crate enum_map;
 extern crate num_traits;
 extern crate typenum;
 

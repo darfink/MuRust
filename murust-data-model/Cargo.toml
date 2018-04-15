@@ -5,7 +5,6 @@ authors = ["Elliott Linder <elliott@linder.bz>"]
 
 [dependencies]
 bitflags = "1.0"
-enum-map = "0.2"
 enum-primitive-derive = "0.1"
 muonline-packet_serialize = { git = "https://github.com/darfink/muonline-packet" }
 num-traits = "0.2"
