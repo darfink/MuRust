@@ -34,7 +34,7 @@ pub fn serve_impl<S: PacketStream + PacketSink + Send + 'static>(
 
   match Client::from_packet(&packet)? {
     Client::CharacterListRequest => {
-      // TODO: Dynamically decide the maximum class for the character.
+      // TODO: Dynamically decide the maximum class for the account.
       let list = server::CharacterList::new(Class::FairyElf, &characters);
       stream = await!(stream.send_packet(&list))?;
 
@@ -63,13 +63,11 @@ pub fn serve_impl<S: PacketStream + PacketSink + Send + 'static>(
       }
     },
     Client::CharacterDelete(request) => {
-      let position = characters
-        .iter()
-        .position(|c| c.name == request.name)
-        .ok_or_else(|| {
-          let error = "Client sent invalid character name for deletion";
-          Error::from(Context::new(error))
-        })?;
+      let character = characters
+        .remove_item_by(|c| c.name == request.name)
+        .ok_or(Error::from(Context::new(
+          "Client sent invalid character name for deletion",
+        )))?;
 
       // TODO: Avoid allocation here, change deserialization?
       // TODO: These attempts should perhaps be throttled as well?
@@ -77,7 +75,6 @@ pub fn serve_impl<S: PacketStream + PacketSink + Send + 'static>(
         info!("Client entered an invalid security code for character deletion");
         stream = await!(stream.send_packet(&server::CharacterDeleteResult::InvalidSecurityCode))?;
       } else {
-        let character = characters.remove(position);
         let result = character_service
           .delete(character)
           .context("Character service failed to delete character")?;
@@ -94,6 +91,15 @@ pub fn serve_impl<S: PacketStream + PacketSink + Send + 'static>(
           },
         }
       }
+    },
+    Client::CharacterJoinRequest(request) => {
+      let character = characters
+        .remove_item_by(|c| c.name == request.name)
+        .ok_or(Error::from(Context::new(
+          "Client sent invalid character name for selection",
+        )))?;
+      stream = await!(stream.send_packet(&server::CharacterJoin::new(&character)))?;
+      return Ok((character, stream));
     },
     _ => return Err(Context::new("Invalid client packet; expected character lobby request").into()),
   }
@@ -117,5 +123,21 @@ fn map_character_delete_error(error: CharacterDeleteError) -> server::CharacterD
   match error {
     CharacterDeleteError::GuildCharacter => server::CharacterDeleteResult::GuildCharacter,
     CharacterDeleteError::Blocked => server::CharacterDeleteResult::Blocked,
+  }
+}
+
+trait RemoveItemBy<T> {
+  fn remove_item_by<P>(&mut self, predicate: P) -> Option<T>
+  where
+    P: FnMut(&T) -> bool;
+}
+
+impl<T> RemoveItemBy<T> for Vec<T> {
+  fn remove_item_by<P>(&mut self, predicate: P) -> Option<T>
+  where
+    P: FnMut(&T) -> bool,
+  {
+    let index = (*self).iter().position(predicate)?;
+    Some(self.remove(index))
   }
 }
