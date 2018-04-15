@@ -7,6 +7,16 @@ pub struct Inventory {
   pub money: u32,
 }
 
+impl Inventory {
+  /// Constructs a new inventory instance.
+  pub fn new(width: u8, height: u8) -> Self {
+    Inventory {
+      storage: ItemStorage::new(width, height),
+      money: 0,
+    }
+  }
+}
+
 impl Deref for Inventory {
   type Target = ItemStorage;
 
