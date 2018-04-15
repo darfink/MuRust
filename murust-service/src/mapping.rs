@@ -12,6 +12,8 @@ pub enum MappingError {
   Enum,
   #[fail(display = "An inventory contained invalid slot indexes.")]
   InvalidStorage,
+  #[fail(display = "An equipment contained invalid slot indexes.")]
+  InvalidEquipment,
 }
 
 impl From<TryFromIntError> for MappingError {
@@ -127,7 +129,13 @@ impl<I: IntoIterator<Item = (i32, Item)>> MappableToDomain<Equipment> for I {
   fn map_to_entity(self, _: Self::Dependencies) -> Result<Equipment> {
     let mut equipment = Equipment::default();
     for (slot, item) in self.into_iter() {
-      equipment[ItemSlot::from_i32(slot).ok_or(MappingError::Enum)?] = Some(item);
+      let item_slot = ItemSlot::from_i32(slot).ok_or(MappingError::Enum)?;
+
+      if item.equippable_slot != Some(item_slot) {
+        return Err(MappingError::InvalidEquipment);
+      }
+
+      equipment[item_slot] = Some(item);
     }
     Ok(equipment)
   }
