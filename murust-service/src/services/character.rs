@@ -4,12 +4,14 @@ use mapping::MappableToDomain;
 use murust_data_model::entities::{Character, Equipment, Inventory};
 use murust_data_model::types::{Class, CHARACTER_SLOTS};
 use murust_repository::*;
+use std::ops::Range;
 
 /// A collection of possible character creation errors.
 #[derive(Debug)]
 pub enum CharacterCreateError {
   // InvalidClass,
-  // InvalidName,
+  OccupiedName,
+  InvalidName,
   LimitReached,
 }
 
@@ -27,6 +29,7 @@ pub struct CharacterService {
   repo_items: ItemRepository,
   repo_characters: CharacterRepository,
   repo_inventory: InventoryRepository,
+  valid_name_range: Range<usize>,
 }
 
 impl CharacterService {
@@ -42,6 +45,7 @@ impl CharacterService {
       repo_items,
       repo_characters,
       repo_inventory,
+      valid_name_range: (4..11),
     }
   }
 
@@ -73,47 +77,50 @@ impl CharacterService {
     class: Class,
     account_id: i32,
   ) -> Result<::std::result::Result<Character, CharacterCreateError>> {
-    let mut slots_free = CHARACTER_SLOTS.rev().collect::<Vec<_>>();
-    for character in self.repo_characters.find_by_account_id(account_id)? {
-      slots_free.remove_item(&(character.slot as usize));
+    let slot = match self.get_free_character_slot(account_id)? {
+      None => return Ok(Err(CharacterCreateError::LimitReached)),
+      Some(slot) => slot,
+    };
+
+    // TODO: Validate using regex as well
+    if !self.valid_name_range.contains(name.len()) {
+      return Ok(Err(CharacterCreateError::InvalidName));
     }
 
-    match slots_free.pop() {
-      // TODO: Configurable max characters
-      // TODO: Validate name
-      // TODO: max class
-      // TODO: starting position/world etc...
-      None => return Ok(Err(CharacterCreateError::LimitReached)),
-      Some(slot) => {
-        // TODO: UGLY! map → storage/model
-        let inventory = models::Inventory {
-          id: Inventory::new(8, 8).id.into(),
-          width: 8,
-          height: 8,
-          money: 0,
-        };
-        self.repo_inventory.save(&inventory)?;
-        self
-          .repo_characters
-          .create(
-            slot as i32,
-            name,
-            class.into(),
-            0,
-            0,
-            0,
-            inventory.id,
-            account_id,
-          )
-          .map_err(Into::into)
-          .and_then(|character| {
-            character
-              .map_to_entity((Equipment::default(), Inventory::new(8, 8)))
-              .map_err(Into::into)
-          })
-          .map(Ok)
-      },
+    if self.repo_characters.find_by_name(name)?.is_some() {
+      return Ok(Err(CharacterCreateError::OccupiedName));
     }
+
+    // TODO: Configurable max characters
+    // TODO: max class
+    // TODO: starting position/world etc...
+    // TODO: UGLY! map → storage/model
+    let inventory = models::Inventory {
+      id: Inventory::new(8, 8).id.into(),
+      width: 8,
+      height: 8,
+      money: 0,
+    };
+    self.repo_inventory.save(&inventory)?;
+    self
+      .repo_characters
+      .create(
+        slot as i32,
+        name,
+        class.into(),
+        0,
+        0,
+        0,
+        inventory.id,
+        account_id,
+      )
+      .map_err(Into::into)
+      .and_then(|character| {
+        character
+          .map_to_entity((Equipment::default(), Inventory::new(8, 8)))
+          .map_err(Into::into)
+      })
+      .map(Ok)
   }
 
   /// Removes a character from the underlying storage.
@@ -132,6 +139,15 @@ impl CharacterService {
     self.repo_characters.delete(&character.id)?;
     self.repo_inventory.delete(character.inventory.id)?;
     Ok(Ok(()))
+  }
+
+  /// Returns the first available character slot for an account.
+  fn get_free_character_slot(&self, account_id: i32) -> Result<Option<u8>> {
+    let mut slots_free = CHARACTER_SLOTS.rev().collect::<Vec<_>>();
+    for character in self.repo_characters.find_by_account_id(account_id)? {
+      slots_free.remove_item(&(character.slot as usize));
+    }
+    Ok(slots_free.pop().map(|slot| slot as u8))
   }
 
   fn map_character_to_entity(&self, character: models::Character) -> Result<Character> {

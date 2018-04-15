@@ -1,4 +1,4 @@
-#![feature(vec_remove_item)]
+#![feature(vec_remove_item, range_contains)]
 
 #[cfg(test)]
 extern crate tempdir;

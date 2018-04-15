@@ -16,8 +16,9 @@ pub fn serve<S: PacketStream + PacketSink + Send + 'static>(
   // TODO: Log out account upon exit!
   let (account, stream) = await!(login::serve(service_manager.account_service(), stream))?;
   let (_character, stream) = await!(lobby::serve(
-    (account, service_manager.character_service()),
-    stream
+    account,
+    service_manager.character_service(),
+    stream,
   ))?;
   Ok(stream)
 }

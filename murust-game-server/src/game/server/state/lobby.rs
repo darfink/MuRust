@@ -10,7 +10,8 @@ use std::time::Duration;
 #[allow(unused_unsafe)]
 #[async(boxed_send)]
 pub fn serve<S: PacketStream + PacketSink + Send + 'static>(
-  (account, character_service): (Account, CharacterService),
+  account: Account,
+  character_service: CharacterService,
   stream: S,
 ) -> Result<(Character, S), Error> {
   // Only fetch the account's characters once
@@ -73,6 +74,7 @@ pub fn serve_impl<S: PacketStream + PacketSink + Send + 'static>(
       // TODO: Avoid allocation here, change deserialization?
       // TODO: These attempts should perhaps be throttled as well?
       if request.security_code != account.security_code.to_string() {
+        info!("Client entered an invalid security code for character deletion");
         stream = await!(stream.send_packet(&server::CharacterDeleteResult::InvalidSecurityCode))?;
       } else {
         let character = characters.remove(position);
@@ -104,6 +106,9 @@ pub fn serve_impl<S: PacketStream + PacketSink + Send + 'static>(
 fn map_character_create_error(error: CharacterCreateError) -> server::CharacterCreateResult {
   match error {
     CharacterCreateError::LimitReached => server::CharacterCreateResult::LimitReached,
+    CharacterCreateError::InvalidName | CharacterCreateError::OccupiedName => {
+      server::CharacterCreateResult::InvalidName
+    },
   }
 }
 
