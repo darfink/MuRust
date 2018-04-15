@@ -1,7 +1,7 @@
 use schema::{inventory, inventory_item};
 use types::UuidWrapper;
 
-#[derive(Identifiable, Queryable, AsChangeset, Debug)]
+#[derive(Identifiable, Queryable, AsChangeset, Insertable, Debug)]
 #[table_name = "inventory"]
 pub struct Inventory {
   pub id: UuidWrapper,

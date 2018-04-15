@@ -143,7 +143,12 @@ mod tests {
 
     let id = Uuid::parse_str("587d12b748364673a0989476894283e4").unwrap();
     repository.clear_inventory_by_id(id).unwrap();
-    assert!(repository.find_inventory_contents_by_id(id).unwrap().is_empty());
+    assert!(
+      repository
+        .find_inventory_contents_by_id(id)
+        .unwrap()
+        .is_empty()
+    );
   }
 
   #[test]

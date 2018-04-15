@@ -60,7 +60,9 @@ impl CharacterService {
     self
       .repo_characters
       .find_by_name(name)?
-      .map_or(Ok(None), |character| self.map_character_to_entity(character).map(Some))
+      .map_or(Ok(None), |character| {
+        self.map_character_to_entity(character).map(Some)
+      })
       .map_err(Into::into)
   }
 
@@ -83,7 +85,14 @@ impl CharacterService {
       // TODO: starting position/world etc...
       None => return Ok(Err(CharacterCreateError::LimitReached)),
       Some(slot) => {
-        let inventory = self.repo_inventory.create(8, 8)?;
+        // TODO: UGLY! map → storage/model
+        let inventory = models::Inventory {
+          id: Inventory::new(8, 8).id.into(),
+          width: 8,
+          height: 8,
+          money: 0,
+        };
+        self.repo_inventory.save(&inventory)?;
         self
           .repo_characters
           .create(
@@ -120,12 +129,8 @@ impl CharacterService {
     self
       .repo_items
       .clear_inventory_by_id(character.inventory.id)?;
-    self
-      .repo_characters
-      .delete(&character.id)?;
-    self
-      .repo_inventory
-      .delete(character.inventory.id)?;
+    self.repo_characters.delete(&character.id)?;
+    self.repo_inventory.delete(character.inventory.id)?;
     Ok(Ok(()))
   }
 

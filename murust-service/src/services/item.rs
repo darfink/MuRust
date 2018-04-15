@@ -1,6 +1,6 @@
 use error::{Error, Result};
 use mapping::{self, MappableToDomain};
-use murust_data_model::entities::{item, inventory, Item};
+use murust_data_model::entities::{inventory, item, Item};
 use murust_repository::*;
 
 /// A service for item management.
@@ -45,7 +45,10 @@ impl ItemService {
   }
 
   // TODO: How can this be implemented instead?
-  pub(crate) fn find_items_by_inventory_id(&self, inventory_id: inventory::Id) -> Result<Vec<(i32, Item)>> {
+  pub(crate) fn find_items_by_inventory_id(
+    &self,
+    inventory_id: inventory::Id,
+  ) -> Result<Vec<(i32, Item)>> {
     self
       .repo_item
       .find_inventory_contents_by_id(inventory_id)?

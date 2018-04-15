@@ -77,7 +77,7 @@ impl ItemRepository {
     Ok(())
   }
 
-  /// Saves an item by updating or replacing it.
+  /// Saves an item by inserting or replacing it.
   pub fn save(&self, item: &Item) -> Result<()> {
     diesel::replace_into(dsl::item)
       .values(item)

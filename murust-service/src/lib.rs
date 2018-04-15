@@ -28,7 +28,7 @@ mod services;
 mod tests {
   use super::*;
   use murust_data_model::entities::item;
-  use murust_data_model::types::ItemSlot;
+  use murust_data_model::types::{Class, ItemSlot};
   use murust_repository::*;
   use tempdir::TempDir;
 
@@ -75,6 +75,18 @@ mod tests {
 
     let weapon = characters[0].equipment[ItemSlot::WeaponRight].as_ref();
     assert_eq!(weapon.unwrap().name, "Short Sword");
+  }
+
+  #[test]
+  fn create_character_for_account() {
+    let (_temp, manager) = setup_test_env();
+    let service = manager.character_service();
+
+    let character = service
+      .create("hello", Class::DarkWizard, 1)
+      .unwrap()
+      .unwrap();
+    assert_eq!(character.name, "hello");
   }
 
   #[test]
