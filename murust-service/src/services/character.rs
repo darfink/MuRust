@@ -82,8 +82,10 @@ impl CharacterService {
       Some(slot) => slot,
     };
 
-    // TODO: Validate using regex as well
-    if !self.valid_name_range.contains(name.len()) {
+    // TODO: Should the name regex be configurable?
+    if !self.valid_name_range.contains(name.len())
+      || name.chars().any(|c| !c.is_ascii_alphanumeric())
+    {
       return Ok(Err(CharacterCreateError::InvalidName));
     }
 

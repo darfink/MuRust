@@ -14,7 +14,6 @@ pub enum AccountLoginError {
 }
 
 /// A service for account management.
-#[derive(Clone)]
 pub struct AccountService {
   /// The database connection.
   repository: AccountRepository,
