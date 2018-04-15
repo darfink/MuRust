@@ -1,5 +1,6 @@
 use entities::item::{self, Item};
-use std::collections::HashMap;
+use std::collections::{hash_map, HashMap};
+use std::iter::{IntoIterator, Iterator};
 
 #[derive(Debug)]
 pub struct ItemStorage {
@@ -88,8 +89,8 @@ impl ItemStorage {
       .map(|slot| slot as u8)
   }
 
-  /// Returns an iterator of all items in the storage.
-  pub fn items(&self) -> impl Iterator<Item = &Item> { self.items.iter().map(|(_, item)| item) }
+  /// Returns the number of items in the storage.
+  pub fn items(&self) -> usize { self.items.len() }
 
   /// Returns total number of slots in the storage.
   pub fn slots(&self) -> usize { (self.width * self.height) as usize }
@@ -144,6 +145,35 @@ impl ItemStorage {
         self.grid[(y * self.width + x) as usize] = None;
       }
     }
+  }
+}
+
+impl<'a> IntoIterator for &'a ItemStorage {
+  type Item = (u8, &'a Item);
+  type IntoIter = ItemStorageIterator<'a>;
+
+  fn into_iter(self) -> Self::IntoIter {
+    ItemStorageIterator {
+      items: self.items.iter(),
+      storage: self,
+    }
+  }
+}
+
+/// An iterator over a storage's items.
+pub struct ItemStorageIterator<'a> {
+  items: hash_map::Iter<'a, item::Id, Item>,
+  storage: &'a ItemStorage,
+}
+
+impl<'a> Iterator for ItemStorageIterator<'a> {
+  type Item = (u8, &'a Item);
+
+  fn next(&mut self) -> Option<Self::Item> {
+    self
+      .items
+      .next()
+      .and_then(|(_, item)| self.storage.get_item_slot(item).map(|slot| (slot, item)))
   }
 }
 
