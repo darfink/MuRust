@@ -1,10 +1,10 @@
 //! Game Server Packets
 
 use super::{Version, util::serialize_class, VERSION};
-use game::models::{CharacterEquipmentSet, Color};
+use game::models::{CharacterEquipmentSet, Color, ItemInfo};
 use muonline_packet_serialize::{IntegerBE, IntegerLE, StringFixed, VectorLengthLE};
 use murust_data_model::entities::Character;
-use murust_data_model::types::{Class, CtlCode, Direction, GuildRole, HeroStatus};
+use murust_data_model::types::{Class, CtlCode, Direction, GuildRole, HeroStatus, ItemSlot};
 use serde::{Serialize, Serializer};
 use std::iter::IntoIterator;
 use typenum;
@@ -390,7 +390,7 @@ primitive_serialize!(CharacterDeleteResult, u8);
 
 /// `C1:F3:03` — Describes a character's information.
 ///
-/// Sent upon entering a world after selecting a character.
+/// Sent upon entering a map after selecting a character.
 ///
 /// ## Layout
 ///
@@ -398,7 +398,7 @@ primitive_serialize!(CharacterDeleteResult, u8);
 /// ----- | ---- | ----------- | ---------
 /// x | `U8` | The character's horizontal position. | -
 /// y | `U8` | The character's vertical position. | -
-/// [world](#world) | `U8` | The character's current world. | -
+/// map | `U8` | The character's current map. | -
 /// angle | `U8` | The character's angle. | -
 /// XP | `U32` | The character's experience. | LE
 /// XP (level) | `U32` | The required amount of experience to level up. | LE
@@ -429,7 +429,7 @@ primitive_serialize!(CharacterDeleteResult, u8);
 pub struct CharacterJoin {
   pub x: u8,
   pub y: u8,
-  pub world: u8,
+  pub map: u8,
   pub direction: Direction,
   #[serde(with = "IntegerLE")]
   pub experience: u32,
@@ -476,4 +476,80 @@ pub struct CharacterJoin {
   pub fruit_points_sub: u16,
   #[serde(with = "IntegerLE")]
   pub fruit_points_sub_max: u16,
+}
+
+impl CharacterJoin {
+  pub fn new(character: &Character) -> Self {
+    CharacterJoin {
+      x: character.position.x,
+      y: character.position.y,
+      map: character.map,
+      ..Default::default()
+    }
+  }
+}
+
+/// `C1:F3:08` - Describes the hero status of a character.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// id | `U16` | The entity ID of the target. | -
+/// status | `U8` | The character's hero status. | -
+#[derive(Serialize, MuPacket, Debug)]
+#[packet(kind = "C1", code = "F3", subcode = "08")]
+pub struct CharacterHeroStatus {
+  #[serde(with = "IntegerBE")]
+  pub id: u16,
+  pub status: HeroStatus,
+}
+
+/// `C2:F3:10` - Describes the contents of a character's inventory.
+///
+/// ## Layout
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// count | `U8` | The number of items in the inventory. | -
+/// items | `Item[]` | An array of inventory items. | -
+///
+/// ### Layout - Item
+///
+/// Field | Type | Description | Endianess
+/// ----- | ---- | ----------- | ---------
+/// slot | `U8` | The inventory slot for the item. | -
+#[derive(Serialize, MuPacket, Debug)]
+#[packet(kind = "C2", code = "F3", subcode = "10")]
+pub struct CharacterInventory(#[serde(with = "VectorLengthLE::<u8>")] Vec<CharacterInventoryEntry>);
+
+impl CharacterInventory {
+  /// Constructs a new character inventory.
+  pub fn new(character: &Character) -> Self {
+    let equipment = character.equipment.into_iter().filter_map(|(slot, item)| {
+      item.as_ref().map(|item| CharacterInventoryEntry {
+        slot: slot as u8,
+        item: ItemInfo::new(item),
+      })
+    });
+
+    let inventory = character
+      .inventory
+      .into_iter()
+      .map(|(slot, item)| CharacterInventoryEntry {
+        slot: slot + ItemSlot::SIZE as u8,
+        item: ItemInfo::new(item),
+      });
+
+    // TODO: Personal shop items
+    let items = equipment.chain(inventory).collect::<Vec<_>>();
+    CharacterInventory(items)
+  }
+}
+
+/// An item inventory entry.
+#[derive(Serialize, Debug)]
+struct CharacterInventoryEntry {
+  slot: u8,
+  item: ItemInfo,
 }
