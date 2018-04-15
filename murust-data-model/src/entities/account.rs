@@ -1,4 +1,5 @@
-#[derive(Debug)]
+// TODO: Security code should be a string? Can be prefixed with zeros.
+#[derive(Debug, Clone)]
 pub struct Account {
   pub id: i32,
   pub username: String,

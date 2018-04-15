@@ -50,8 +50,10 @@ mod tests {
   fn successful_account_login_and_logout() {
     let (_temp, manager) = setup_test_env();
     let service = manager.account_service();
+
     let account = service.login("foobar", "test").unwrap().unwrap();
     assert!(service.logout(&account).is_ok());
+    service.login("foobar", "test").unwrap().unwrap();
   }
 
   #[test]

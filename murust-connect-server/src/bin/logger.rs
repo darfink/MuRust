@@ -6,7 +6,7 @@ pub struct StdLogger;
 impl StdLogger {
   pub fn init() {
     log::set_logger(&LOGGER).expect("initializing default logger");
-    log::set_max_level(log::LevelFilter::Info);
+    log::set_max_level(log::LevelFilter::Debug);
   }
 }
 

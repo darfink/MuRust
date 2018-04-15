@@ -7,7 +7,6 @@ use murust_service::{CharacterCreateError, CharacterDeleteError, CharacterServic
 use protocol::game::{server, Client};
 use std::time::Duration;
 
-#[allow(unused_unsafe)]
 #[async(boxed_send)]
 pub fn serve<S: PacketStream + PacketSink + Send + 'static>(
   account: Account,
@@ -21,7 +20,6 @@ pub fn serve<S: PacketStream + PacketSink + Send + 'static>(
   await!(serve_impl(account, characters, character_service, stream))
 }
 
-#[allow(unused_unsafe)]
 #[async(boxed_send)]
 pub fn serve_impl<S: PacketStream + PacketSink + Send + 'static>(
   account: Account,

@@ -47,7 +47,7 @@ mod tests {
     let accounts = AccountRepository::new(&db);
 
     assert!(accounts.find_by_username("foobar").unwrap().is_some());
-    assert!(accounts.find_by_id(&1).unwrap().is_some());
+    assert!(accounts.find_by_id(1).unwrap().is_some());
   }
 
   #[test]

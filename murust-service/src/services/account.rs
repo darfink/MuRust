@@ -37,6 +37,13 @@ impl AccountService {
     }
   }
 
+  /// Returns an account by its ID.
+  pub fn find_by_id(&self, account_id: i32) -> Result<Option<Account>> {
+    self.repository.find_by_id(account_id)?
+      .map_or(Ok(None), |account| account.map_to_entity(()).map(Some))
+      .map_err(Into::into)
+  }
+
   /// Returns an account if the provided credentials are correct.
   pub fn login(
     &self,
@@ -69,9 +76,9 @@ impl AccountService {
   pub fn logout(&self, account: &Account) -> Result<()> {
     let mut models = self
       .repository
-      .find_by_id(&account.id)?
+      .find_by_id(account.id)?
       .ok_or(Error::MissingPersistence)?;
-    models.logged_in = true;
+    models.logged_in = false;
     self.repository.update(&models).map_err(Into::into)
   }
 
@@ -95,7 +102,7 @@ impl AccountService {
   pub fn update(&self, account: &Account) -> Result<()> {
     let mut models = self
       .repository
-      .find_by_id(&account.id)?
+      .find_by_id(account.id)?
       .ok_or(Error::MissingPersistence)?;
 
     // TODO: Can these allocations be prevented?

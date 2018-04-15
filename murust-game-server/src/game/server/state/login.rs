@@ -6,7 +6,6 @@ use murust_data_model::entities::Account;
 use murust_service::{AccountLoginError, AccountService};
 use protocol::game::{client, server, VERSION};
 
-#[allow(unused_unsafe)]
 #[async(boxed_send)]
 pub fn serve<S: PacketStream + PacketSink + Send + 'static>(
   account_service: AccountService,
@@ -22,6 +21,8 @@ pub fn serve<S: PacketStream + PacketSink + Send + 'static>(
       // Inform of success and return the client's account
       let success = server::AccountLoginResult::Success;
       let stream = await!(stream.send_packet(&success))?;
+
+      info!("Account '{}' logged in", &account.username);
       Ok((account, stream))
     },
     Err(result) => {

@@ -29,9 +29,9 @@ impl AccountRepository {
   }
 
   /// Returns an account by its ID.
-  pub fn find_by_id(&self, account_id: &i32) -> Result<Option<Account>> {
+  pub fn find_by_id(&self, account_id: i32) -> Result<Option<Account>> {
     dsl::account
-      .find(account_id)
+      .find(&account_id)
       .first::<Account>(&*self.context.access())
       .optional()
       .map_err(Into::into)
