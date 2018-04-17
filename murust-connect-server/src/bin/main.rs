@@ -46,12 +46,19 @@ fn main() {
   }
 
   let (_temp, manager) = setup_test_env();
-  let gs = mugs::GameServer::builder(1, manager).spawn().unwrap();
-  server.add_game_server(gs.uri()).unwrap();
+  let config = mugs::GameServerConfig {
+    id: 1,
+    socket: "0.0.0.0:0".parse().unwrap(),
+    maximum_players: 3,
+  };
+  let gs = mugs::GameServer::spawn(config, manager);
+  let gs_rpc = mugs::rpc::spawn_service("0.0.0.0:0".parse().unwrap(), gs.context()).unwrap();
+  server.add_game_server(gs_rpc.uri()).unwrap();
 
   // Start the connect server
   server.wait().unwrap();
   gs.wait().unwrap();
+  gs_rpc.close();
 }
 
 fn setup_test_env() -> (TempDir, ServiceManager) {

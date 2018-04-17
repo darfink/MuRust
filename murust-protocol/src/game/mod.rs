@@ -6,6 +6,7 @@ pub mod client;
 pub mod models;
 pub mod server;
 mod util;
+mod visitors;
 
 /// Serial identifier for the client.
 pub type Serial = [u8; 16];

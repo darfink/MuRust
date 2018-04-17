@@ -1,7 +1,10 @@
 [server]
+id = 3
+description = "A random test"
 host = "192.168.1.201"
 port = "2005"
 motd = "Welcome to Mu Online!"
+database = "postgres://"
 
 [rpc]
 host = "192.168.1.201"
@@ -9,4 +12,97 @@ port = "0"
 
 [client]
 serial = "ugkgameshield000"
-validate_serial = true
+validateSerial = true
+
+[game]
+infoRange = 20
+
+[[warpInfo]]
+  index = 0
+  name = "Lorencia"
+  cost = 4000
+  levelRequirement = 10
+
+  [warpInfo.exitGate]
+    direction = "North"
+    map = "Lorencia"
+
+[account]
+maximumCharacters = 5
+
+[character]
+maximumInventoryMoney = 1000000
+maximumLetters = 20
+maximumLevel = 400
+recoveryInterval = 20
+
+[class]
+  pointsPerLevel = 5
+  startMap = "Lorencia"
+
+  [class.DK]
+  strength = 28
+  agility = 20
+  vitality = 25
+  energy = 10
+  command = 0
+  health = 110
+  healthPerLevel = 2
+  mana = 20
+  manaPerLevel = 0.5
+
+  [class.DW]
+  strength = 18
+  agility = 18
+  vitality = 15
+  energy = 30
+  command = 0
+  health = 60
+  healthPerLevel = 1
+  mana = 60
+  manaPerLevel = 2
+
+  [class.FE]
+  strength = 22
+  agility = 25
+  vitality = 20
+  energy = 15
+  command = 0
+  health = 80
+  healthPerLevel = 1
+  mana = 30
+  manaPerLevel = 1.5
+  startMap = "Noria"
+
+  [class.MG]
+  pointsPerLevel = 7
+  strength = 26
+  agility = 26
+  vitality = 26
+  energy = 16
+  command = 0
+  health = 110
+  healthPerLevel = 1
+  mana = 60
+  manaPerLevel = 1
+
+  [class.DL]
+  pointsPerLevel = 7
+  strength = 26
+  agility = 20
+  vitality = 20
+  energy = 15
+  command = 25
+  health = 90
+  healthPerLevel = 1.5
+  mana = 40
+  manaPerLevel = 1
+
+# SHOULD THIS BE IN DA DATABASE!?
+[[maps]]
+identifier = 0
+name = "Lorencia"
+
+[[maps]]
+identifier = 1
+name = "Dungeon"

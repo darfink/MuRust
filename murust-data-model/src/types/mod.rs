@@ -9,3 +9,6 @@ mod ctl;
 mod direction;
 mod item;
 mod position;
+
+// The in-game ID for an object.
+pub type ObjectId = u16;

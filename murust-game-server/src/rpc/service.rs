@@ -1,4 +1,5 @@
-use failure::{Error, ResultExt};
+use error::Result;
+use failure::ResultExt;
 use jsonrpc_core::IoHandler;
 use jsonrpc_http_server::{Server, ServerBuilder};
 use rpc::api::GameServerApi;
@@ -12,7 +13,7 @@ pub struct RpcService {
 
 impl RpcService {
   /// Spawns the RPC service on the HTTP protocol.
-  pub fn spawn<T: GameServerApi>(socket: SocketAddr, api: T) -> Result<Self, Error> {
+  pub fn spawn<T: GameServerApi>(socket: SocketAddr, api: T) -> Result<Self> {
     let mut io = IoHandler::new();
     io.extend_with(api.to_delegate());
 

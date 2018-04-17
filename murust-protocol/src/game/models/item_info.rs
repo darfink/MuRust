@@ -5,7 +5,7 @@ use murust_data_model::types::ItemCode;
 /// The size required by the protocol.
 const ITEM_INFO_SIZE: usize = 7;
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Deserialize, Copy, Clone, Debug)]
 pub struct ItemInfo([u8; ITEM_INFO_SIZE]);
 
 impl ItemInfo {

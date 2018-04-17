@@ -10,7 +10,7 @@ pub enum AccountLoginError {
   InvalidUsername,
   InvalidPassword(Account),
   AlreadyConnected(Account),
-  TooManyAttempts(Account),
+  Throttled(Account),
 }
 
 /// A service for account management.
@@ -39,7 +39,9 @@ impl AccountService {
 
   /// Returns an account by its ID.
   pub fn find_by_id(&self, account_id: i32) -> Result<Option<Account>> {
-    self.repository.find_by_id(account_id)?
+    self
+      .repository
+      .find_by_id(account_id)?
       .map_or(Ok(None), |account| account.map_to_entity(()).map(Some))
       .map_err(Into::into)
   }
@@ -58,7 +60,7 @@ impl AccountService {
 
     let map_to_entity = |account: models::Account| account.map_to_entity(());
     let error = if self.is_timed_out(&account)? {
-      AccountLoginError::TooManyAttempts(map_to_entity(account)?)
+      AccountLoginError::Throttled(map_to_entity(account)?)
     } else if !self.is_valid_password(password, &account)? {
       self.increment_login_attempts(&mut account)?;
       AccountLoginError::InvalidPassword(map_to_entity(account)?)

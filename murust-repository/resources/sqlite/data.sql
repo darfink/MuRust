@@ -16,7 +16,7 @@ VALUES
 INSERT INTO character
   (id, slot, name, level, class, map, position_x, position_y, inventory_id, account_id)
 VALUES
-  (1, 2, 'deadbeef', 3, 'DK', 1, 120, 60, X'587d12b748364673a0989476894283e4', 1);
+  (1, 2, 'deadbeef', 3, 'DK', 0, 120, 60, X'587d12b748364673a0989476894283e4', 1);
 
 -- Create item definitions for some test items.
 INSERT INTO item_definition

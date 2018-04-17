@@ -1,0 +1,8 @@
+[package]
+name = "murust-game-world"
+version = "0.1.0"
+authors = ["Elliott Linder <elliott@linder.bz>"]
+
+[dependencies]
+murust-data-model = { path = "../murust-data-model" }
+specs = "0.10"

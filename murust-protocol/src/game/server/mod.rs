@@ -108,6 +108,65 @@ impl Serialize for Message {
   }
 }
 
+/// `C2:12`
+#[derive(Serialize, MuPacket, Debug)]
+#[packet(kind = "C1", code = "12")]
+pub struct ViewportPlayers(#[serde(with = "VectorLengthLE::<u8>")] Vec<PlayerView>);
+
+#[derive(Serialize, Debug)]
+struct PlayerView {
+  #[serde(with = "IntegerBE")]
+  player_id: u16, // 0
+  position_x: u8, // 2
+  position_y: u8, // 3
+  #[serde(serialize_with = "serialize_class")]
+  class: Class, // 4
+  equipment: CharacterEquipmentSet, // 5
+  padding: [u8; 2], // 22
+  skill_state: u32, // 24
+  #[serde(with = "StringFixed::<typenum::U10>")]
+  name: String, // 28
+  tx: u8,         // 38
+  ty: u8,         // 39
+  direction_pk_level: u8, // 40
+}
+
+/// `C1:24` - Describes the result of an item move request.
+#[derive(MuPacket, Debug)]
+#[packet(kind = "C1", code = "24")]
+pub enum ItemMoveResult {
+  Failure,
+  Success {
+    storage: u8,
+    slot: u8,
+    item_info: ItemInfo,
+  },
+}
+
+impl Serialize for ItemMoveResult {
+  fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+    #[derive(Serialize, Debug)]
+    struct ItemMoveSuccess {
+      storage: u8,
+      slot: u8,
+      item_info: ItemInfo,
+    }
+
+    match self {
+      &ItemMoveResult::Failure => 0xFFu8.serialize(serializer),
+      &ItemMoveResult::Success {
+        storage,
+        slot,
+        item_info,
+      } => ItemMoveSuccess {
+        storage,
+        slot,
+        item_info,
+      }.serialize(serializer),
+    }
+  }
+}
+
 /// `C1:B8:01` - Send the client's kill count for the character.
 ///
 /// This is specific to the client's character only.
@@ -158,10 +217,7 @@ impl JoinResult {
 }
 
 impl Serialize for JoinResult {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-    S: Serializer,
-  {
+  fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
     #[derive(Serialize, Debug)]
     struct JoinResultSuccess {
       result: u8,
@@ -439,7 +495,7 @@ primitive_serialize!(CharacterDeleteResult, u8);
 /// FP⊖(max) | `U16` | The character's max fruit points (decrease). | LE
 #[derive(Serialize, MuPacket, Debug, Default)]
 #[packet(kind = "C1", code = "F3", subcode = "03")]
-pub struct CharacterJoin {
+pub struct CharacterInfo {
   pub x: u8,
   pub y: u8,
   pub map: u8,
@@ -491,9 +547,9 @@ pub struct CharacterJoin {
   pub fruit_points_sub_max: u16,
 }
 
-impl CharacterJoin {
+impl CharacterInfo {
   pub fn new(character: &Character) -> Self {
-    CharacterJoin {
+    CharacterInfo {
       x: character.position.x,
       y: character.position.y,
       map: character.map,
@@ -525,18 +581,14 @@ pub struct CharacterHeroStatus {
 /// Field | Type | Description | Endianess
 /// ----- | ---- | ----------- | ---------
 /// count | `U8` | The number of items in the inventory. | -
-/// items | `Item[]` | An array of inventory items. | -
+/// items | `Item[]` | An array of items. | -
 ///
 /// ### Layout - Item
-///
-/// Field | Type | Description | Endianess
-/// ----- | ---- | ----------- | ---------
-/// slot | `U8` | The inventory slot for the item. | -
 #[derive(Serialize, MuPacket, Debug)]
 #[packet(kind = "C2", code = "F3", subcode = "10")]
-pub struct CharacterInventory(#[serde(with = "VectorLengthLE::<u8>")] Vec<CharacterInventoryEntry>);
+pub struct InventoryList(#[serde(with = "VectorLengthLE::<u8>")] Vec<CharacterInventoryEntry>);
 
-impl CharacterInventory {
+impl InventoryList {
   /// Constructs a new character inventory.
   pub fn new(character: &Character) -> Self {
     let equipment = character.equipment.into_iter().filter_map(|(slot, item)| {
@@ -556,7 +608,7 @@ impl CharacterInventory {
 
     // TODO: Personal shop items
     let items = equipment.chain(inventory).collect::<Vec<_>>();
-    CharacterInventory(items)
+    InventoryList(items)
   }
 }
 

@@ -70,6 +70,20 @@ impl ItemStorage {
       .and_then(|id| self.remove_item(id))
   }
 
+  /// Tries to move an item at one slot to another.
+  pub fn move_item_between_slots(&mut self, source: u8, target: u8) -> Option<()> {
+    // TODO: Source should be ensured that it's top left corner.
+    let item = self.remove_item_at_slot(source)?;
+    self
+      .add_item_at_slot(target, item)
+      .map_err(|item| {
+        self
+          .add_item_at_slot(source, item)
+          .expect("returning item slot")
+      })
+      .ok()
+  }
+
   /// Returns an item based on its ID.
   pub fn get_item(&mut self, item_id: item::Id) -> Option<&Item> { self.items.get(&item_id) }
 
