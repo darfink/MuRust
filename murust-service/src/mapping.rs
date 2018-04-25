@@ -31,14 +31,15 @@ pub trait MappableToDomain<T> {
 }
 
 impl MappableToDomain<Account> for models::Account {
-  type Dependencies = ();
+  type Dependencies = (Vec<Character>,);
 
-  fn map_to_entity(self, _: Self::Dependencies) -> Result<Account> {
+  fn map_to_entity(self, (characters,): Self::Dependencies) -> Result<Account> {
     Ok(Account {
       id: self.id,
       username: self.username,
       security_code: u32::try_from(self.security_code)?,
       email: self.email,
+      characters,
     })
   }
 }

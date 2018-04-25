@@ -13,7 +13,10 @@ impl ServiceManager {
 
   /// Returns the account service.
   pub fn account_service(&self) -> AccountService {
-    AccountService::new(AccountRepository::new(&self.context))
+    AccountService::new(
+      AccountRepository::new(&self.context),
+      self.character_service(),
+    )
   }
 
   /// Returns the item service.

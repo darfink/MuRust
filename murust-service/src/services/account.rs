@@ -1,3 +1,4 @@
+use CharacterService;
 use bcrypt;
 use error::{Error, Result};
 use mapping::MappableToDomain;
@@ -17,6 +18,7 @@ pub enum AccountLoginError {
 pub struct AccountService {
   /// The database connection.
   repository: AccountRepository,
+  characters: CharacterService,
   /// The cost used for the hashing algorithm.
   hashing_cost: u32,
   /// The number of attempts until a user will start being timed out
@@ -27,10 +29,11 @@ pub struct AccountService {
 
 impl AccountService {
   /// Constructs a new account service.
-  pub fn new(repository: AccountRepository) -> Self {
+  pub fn new(repository: AccountRepository, characters: CharacterService) -> Self {
     // TODO: These settings should be supplied by injection
     AccountService {
       repository,
+      characters,
       hashing_cost: 10,
       lockout_attempts: 1,
       lockout_time_max: 60 * 24 * 2,
@@ -42,8 +45,9 @@ impl AccountService {
     self
       .repository
       .find_by_id(account_id)?
-      .map_or(Ok(None), |account| account.map_to_entity(()).map(Some))
-      .map_err(Into::into)
+      .map_or(Ok(None), |account| {
+        self.map_account_to_entity(account).map(Some)
+      })
   }
 
   /// Returns an account if the provided credentials are correct.
@@ -58,7 +62,7 @@ impl AccountService {
       Some(account) => account,
     };
 
-    let map_to_entity = |account: models::Account| account.map_to_entity(());
+    let map_to_entity = |account: models::Account| self.map_account_to_entity(account);
     let error = if self.is_timed_out(&account)? {
       AccountLoginError::Throttled(map_to_entity(account)?)
     } else if !self.is_valid_password(password, &account)? {
@@ -93,11 +97,10 @@ impl AccountService {
     email: &str,
   ) -> Result<Account> {
     let password_hash = self.hash_password(password)?;
-    self
+    let account = self
       .repository
-      .create(username, &password_hash, security_code as i32, email)?
-      .map_to_entity(())
-      .map_err(Into::into)
+      .create(username, &password_hash, security_code as i32, email)?;
+    Ok(self.map_account_to_entity(account)?)
   }
 
   /// Updates an account's underlying storage.
@@ -125,6 +128,11 @@ impl AccountService {
       .repository
       .delete(&account.id)
       .map_err(|error| (account, error.into()))
+  }
+
+  fn map_account_to_entity(&self, account: models::Account) -> Result<Account> {
+    let characters = self.characters.find_by_account_id(account.id)?;
+    Ok(account.map_to_entity((characters,))?)
   }
 
   /// Returns the hash of a password.
