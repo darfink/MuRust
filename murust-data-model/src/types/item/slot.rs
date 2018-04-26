@@ -40,11 +40,3 @@ impl ItemSlot {
     SLOTS.into_iter()
   }
 }
-
-// TODO: This should be 108 total?
-// pub enum PlayerInventory {
-//    Equipment(Slot),
-//    Zen,
-//    Inventory,
-//    Shop,
-//}
