@@ -23,7 +23,7 @@ impl ItemSlot {
 
   /// Returns all possible item slot values.
   pub fn values() -> ::std::slice::Iter<'static, ItemSlot> {
-    static SLOTS: [ItemSlot; 12] = [
+    static SLOTS: [ItemSlot; ItemSlot::SIZE] = [
       ItemSlot::WeaponRight,
       ItemSlot::WeaponLeft,
       ItemSlot::Helm,
